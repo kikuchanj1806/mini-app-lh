@@ -1,0 +1,34 @@
+<div class="faq-page">
+  <div class="faq-list">
+    @for (it of faqs; track it.id) {
+      <div class="faq-item">
+        <button
+          type="button"
+          class="faq-row"
+          (click)="toggle(it)"
+          [attr.aria-expanded]="isOpen(it)"
+        >
+          <span class="faq-icon" aria-hidden="true">
+            <i class="fas fa-comment-dots"></i>
+          </span>
+
+          <span class="faq-title">
+            {{ it.question }}
+          </span>
+
+          <span class="faq-chevron" aria-hidden="true">
+            <i class="fas" [class.fa-chevron-down]="!isOpen(it)" [class.fa-chevron-up]="isOpen(it)"></i>
+          </span>
+        </button>
+
+        @if (isOpen(it)) {
+          <div class="faq-answer">
+            <div class="answer-bubble">
+              {{ it.answer }}
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

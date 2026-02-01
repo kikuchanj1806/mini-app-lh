@@ -1,0 +1,45 @@
+<div class="review-page">
+  <div class="review-card">
+    <h2 class="review-title">Đánh giá dịch vụ</h2>
+    <div class="review-subtitle">Chúng tôi rất mong nhận được phản hồi từ bạn!</div>
+
+    <!-- Stars -->
+    <div class="stars" role="radiogroup" aria-label="Đánh giá sao">
+      <button
+        type="button"
+        class="star-btn"
+        *ngFor="let _ of [0,1,2,3,4]; let i = index; trackBy: trackByIdx"
+        (mouseenter)="setHover(i + 1)"
+        (mouseleave)="clearHover()"
+        (click)="setRate(i + 1)"
+        [attr.aria-checked]="displayRate >= (i + 1)"
+        role="radio"
+      >
+        <svg viewBox="0 0 24 24" class="star" [class.filled]="displayRate >= (i + 1)">
+          <path
+            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z">
+          </path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Textarea -->
+    <div class="review-input">
+      <textarea
+        [(ngModel)]="comment"
+        rows="5"
+        placeholder="Nhập nội dung đánh giá..."
+      ></textarea>
+    </div>
+
+    <!-- Submit -->
+    <button
+      type="button"
+      class="btn-submit"
+      [disabled]="!rating"
+      (click)="submit()"
+    >
+      Gửi đánh giá
+    </button>
+  </div>
+</div>

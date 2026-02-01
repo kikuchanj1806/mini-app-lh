@@ -1,0 +1,12 @@
+<div class="map-wrap">
+  <iframe
+    class="map-iframe"
+    [src]="mapUrl"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+
+  <button type="button" class="map-open" (click)="openInMap()">
+    Mở trong Google Maps
+  </button>
+</div>

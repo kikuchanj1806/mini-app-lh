@@ -24,7 +24,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./spinner-with-logo.component.scss'],
 })
 export class SpinnerWithLogoComponent {
-  @Input() logoUrl = 'https://posstatic.nvndev.net/assets/img/favicon.svg';
+  @Input() logoUrl = 'https://smartzalo.io.vn/assets/img/Quoc_Huy_Viet_Nam_Chuan.png';
 
   /** Kích thước vòng (rem) và độ dày nét (px) */
   @Input() sizeRem = 2.85;

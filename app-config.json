@@ -20,9 +20,9 @@
     "main.js"
   ],
   "listAsyncJS": [
-    "269.js",
     "502.js",
     "607.js",
+    "899.js",
     "common.js"
   ]
 }

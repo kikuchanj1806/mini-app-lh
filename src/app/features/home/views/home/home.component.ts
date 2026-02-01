@@ -1,9 +1,17 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Subscription, takeUntil} from 'rxjs';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 import {IResBanner} from '../../../../shared/models/api';
 import {WeatherService} from '../../../../shared/services/weather.service';
 import { openPhone } from 'zmp-sdk/apis';
+import {NotifyService, UserService} from '../../../../core/services';
+import {ZmaShortcutService} from '../../../../shared/services/feature-specific/home/zm-shortcut.service';
+import {environment} from '../../../../../environments';
+import {NgbOffcanvasOptions} from '@ng-bootstrap/ng-bootstrap';
+import {CreateShortcutComponent} from '../../../../shared/components/modals/create-shortcut/create-shortcut.component';
+import {OffcanvasCustomService} from '../../../../shared/services/modal-canvas-custom.service';
+import {Router} from '@angular/router';
+import {FollowOfficialService} from '../../../../shared/services/feature-specific/home/follow-official.service';
 
 type UiTool = { key: string; label: string; iconUrl: string; route?: string };
 type ExtraService = { key: string; label: string; iconUrl: string; colorClass: string; route?: string };
@@ -16,6 +24,8 @@ type ExtraService = { key: string; label: string; iconUrl: string; colorClass: s
 })
 export class HomeComponent extends AppCommonComponent implements OnInit, OnDestroy {
   slides: IResBanner[] = [];
+  hasFollowed = false;
+  private oaId = environment.OAId;
 
   // UI date
   todayWeekday = '';
@@ -37,7 +47,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
 
   mainTools: UiTool[] = [
     {key: 'calendar', label: 'Đăng ký lịch làm việc', iconUrl: '/assets/img/icons/lich_lam_viec.png', route: 'bookappointment'},
-    {key: 'map', label: 'Bản đồ', iconUrl: '/assets/img/icons/maps_icon.png'},
+    {key: 'map', label: 'Bản đồ', iconUrl: '/assets/img/icons/maps_icon.png', route: 'map'},
     {key: 'law', label: 'Thư viện pháp luật', iconUrl: '/assets/img/icons/phap_luat.png'},
     {key: 'security', label: 'Tin tức an ninh', iconUrl: '/assets/img/icons/news-paper.png'},
 
@@ -62,13 +72,24 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
 
   private subs = new Subscription();
 
-  constructor(private weatherService: WeatherService) {
+  constructor(
+    private weatherService: WeatherService,
+    private followSvc: FollowOfficialService,
+    private zmaShortcut: ZmaShortcutService,
+    private _notify: NotifyService,
+    private offCanvasService: OffcanvasCustomService,
+    private route: Router,
+    private users: UserService,
+    ) {
     super();
   }
 
   ngOnInit() {
     this.setHeader({variant: 'title', title: '', show: false})
     this.setToday();
+
+    const stored = this.users.userInfoValue ?? this.appService.getUserInfo;
+    this.hasFollowed = !!stored?.followedOA;
 
     this.slides = [
       {
@@ -94,8 +115,63 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     // TODO: this.router.navigate([it.route]) hoặc open modal...
   }
 
-  onExtraClick(it: ExtraService) {
-    console.log('extra click', it.key);
+  async onExtraClick(it: ExtraService) {
+    if (it.key === 'shortcut') {
+
+      const appId = environment.apiConfig.appId;
+      const appName = 'UBND xã Trường Tân';
+      const appIcon = 'https://smartzalo.io.vn/assets/img/Quoc_Huy_Viet_Nam_Chuan.png';
+
+      const res = await this.zmaShortcut.createShortcutSafe({
+        params: {
+          utm_source: 'shortcut',
+          utm_medium: 'default',
+          utm_campaign: 'default',
+        },
+        devBypass: false,
+
+        appId,
+        appName,
+        appIcon,
+      });
+      //
+      // if (!res.ok) {
+      //   this._notify.warning(res.message || 'Không thể tạo phím tắt.');
+      //   return;
+      // }
+      //
+      // if (res.bypass) {
+      //   this._notify.info('[DEV] Đã bypass tạo phím tắt.');
+      //   return;
+      // }
+      //
+      // if (res.url) {
+      //   window.open(res.url, '_blank');
+      //   this._notify.info('Đang mở trang tạo phím tắt. Vui lòng thao tác theo hướng dẫn.');
+      //   return;
+      // }
+      //
+      // this._notify.success('Đã gửi yêu cầu tạo phím tắt. Vui lòng xác nhận trên Zalo.');
+        const opts: NgbOffcanvasOptions = {
+          position: 'bottom',
+          backdrop: true,
+          keyboard: true,
+          scroll: false,
+          container: 'body',
+          panelClass: 'offcanvas-bottom-sheet',
+        };
+
+        const ref = this.offCanvasService.open(CreateShortcutComponent, opts);
+        ref.componentInstance.shortcutUrl = res.url;
+    }
+
+    if(it.key === 'faq') {
+      this.route.navigate(['/asked'])
+    }
+
+    if(it.key === 'rate') {
+      this.route.navigate(['/review'])
+    }
   }
 
   onHotline() {
@@ -103,7 +179,38 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   onFollowOfficial() {
-    console.log('Follow official channel');
+    if (this.hasFollowed) return;
+
+    this.followSvc.follow$(this.oaId, {
+      devBypass: false,
+    })
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((rs) => {
+        if (rs === 'already') {
+          this.hasFollowed = true;
+          this._notify.info('Bạn đã quan tâm kênh này.');
+          return;
+        }
+
+        if (rs === 'followed') {
+          this.hasFollowed = true;
+          this._notify.success('Quan tâm thành công!');
+          return;
+        }
+
+        if (rs === 'bypass') {
+          this.hasFollowed = true;
+          this._notify.info('[DEV] Đã bypass follow OA.');
+          return;
+        }
+
+        if (rs === 'denied') {
+          this._notify.warning('Bạn đã từ chối quan tâm OA.');
+          return;
+        }
+
+        this._notify.error('Không thể quan tâm OA. Vui lòng thử lại.');
+      });
   }
 
   onQuickNotify() {

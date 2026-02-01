@@ -3,6 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import {HomeComponent} from './views/home/home.component';
 import {FeedbackComponent} from './views/feedback/feedback.component';
 import {NewsLatestComponent} from './views/news/news-latest.component';
+import {AskedQuestionsComponent} from './views/asked-questions/asked-questions.component';
+import {ReviewComponent} from './views/review/review.component';
+import {MapsComponent} from './views/maps/maps.component';
 
 const routes: Routes = [
   {
@@ -16,6 +19,18 @@ const routes: Routes = [
   {
     path: 'news',
     component: NewsLatestComponent
+  },
+  {
+    path: 'asked',
+    component: AskedQuestionsComponent
+  },
+  {
+    path: 'review',
+    component: ReviewComponent
+  },
+  {
+    path: 'map',
+    component: MapsComponent
   }
 ];
 

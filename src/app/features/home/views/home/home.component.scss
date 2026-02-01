@@ -476,11 +476,11 @@
   }
 
   .pill-title {
-    font-size: 15px;
+    font-size: 12px;
   }
 
   .pill-sub {
-    font-size: 12px;
+    font-size: 11px;
   }
 }
 
@@ -603,10 +603,10 @@
     min-height: 112px;
   }
   .stat-card__value {
-    font-size: 30px;
+    font-size: 24px;
   }
   .ward-stats__header-title {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
@@ -812,7 +812,7 @@
     height: 60px;
   }
   .section-title__text {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
@@ -1008,10 +1008,10 @@
 /* Responsive */
 @media (max-width: 420px) {
   .oc-head__t1 {
-    font-size: 18px;
+    font-size: 16px;
   }
   .oc-head__t2 {
-    font-size: 13px;
+    font-size: 14px;
   }
   .oc-banner img {
     height: 140px;
@@ -1194,10 +1194,10 @@
 /* responsive */
 @media (max-width: 420px) {
   .li-title {
-    font-size: 18px;
+    font-size: 16px;
   }
   .li-h3 {
-    font-size: 16px;
+    font-size: 14px;
   }
   .li-img img {
     height: 130px;
@@ -1343,6 +1343,6 @@
 
 /* responsive */
 @media (max-width: 420px) {
-  .em-head__title { font-size: 18px; }
-  .em-right__num { font-size: 20px; }
+  .em-head__title { font-size: 16px; }
+  .em-right__num { font-size: 18px; }
 }

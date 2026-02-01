@@ -7,12 +7,18 @@ import {UniversalSlideComponent} from '../../shared/components/actions';
 import {HomeComponent} from './views/home/home.component';
 import {FeedbackComponent} from './views/feedback/feedback.component';
 import {NewsLatestComponent} from './views/news/news-latest.component';
+import {AskedQuestionsComponent} from './views/asked-questions/asked-questions.component';
+import {ReviewComponent} from './views/review/review.component';
+import {MapsComponent} from './views/maps/maps.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
     FeedbackComponent,
-    NewsLatestComponent
+    NewsLatestComponent,
+    AskedQuestionsComponent,
+    ReviewComponent,
+    MapsComponent
   ],
   imports: [
     CommonModule,

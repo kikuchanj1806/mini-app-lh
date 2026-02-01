@@ -241,8 +241,14 @@
             </div>
           </div>
 
-          <button type="button" class="oc-follow" (click)="onFollowOfficial()">
-            Quan tâm
+          <button
+            type="button"
+            class="oc-follow"
+            [class.is-followed]="hasFollowed"
+            [disabled]="hasFollowed"
+            (click)="onFollowOfficial()"
+          >
+            {{ hasFollowed ? 'Đã quan tâm' : 'Quan tâm' }}
           </button>
         </div>
 
