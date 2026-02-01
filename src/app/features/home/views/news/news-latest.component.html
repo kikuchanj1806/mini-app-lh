@@ -1,0 +1,33 @@
+<div class="nl-page">
+  <!-- section title nhỏ: icon + text đỏ -->
+  <div class="nl-section">
+    <img class="nl-badge" src="assets/img/demo/icons/new-update.png" alt="new" />
+    <div class="nl-section__text">Tin tức mới nhất</div>
+  </div>
+
+  <div class="nl-list">
+    @for (it of items; track it.id) {
+      <article class="nl-item" (click)="openDetail(it)">
+        <h2 class="nl-title">{{ it.title }}</h2>
+
+        <div class="nl-img">
+          <img [src]="it.imageUrl" alt="news" loading="lazy" />
+        </div>
+
+        <div class="nl-meta">
+          <div class="nl-date">
+            <i class="fa-regular fa-calendar"></i>
+            <span>{{ it.date }}</span>
+          </div>
+
+          <button type="button" class="nl-like" (click)="toggleLike(it, $event)">
+            <span>Quan tâm</span>
+            <i class="fa-regular" [class.fa-bookmark]="!it.liked" [class.fa-bookmark-solid]="it.liked"></i>
+          </button>
+        </div>
+      </article>
+
+      <div class="nl-divider"></div>
+    }
+  </div>
+</div>

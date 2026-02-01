@@ -1,0 +1,134 @@
+<div class="ba-page">
+  @if (step === 1) {
+    <!-- STEP 1: chưa login -->
+    <div class="ba-center">
+      <div class="ba-icon">
+        <i class="fa-regular fa-qrcode"></i>
+      </div>
+
+      <h1 class="ba-title">Vui lòng đăng nhập</h1>
+      <p class="ba-sub">Đăng nhập để xem danh sách số thứ tự của bạn</p>
+
+      <button type="button" class="ba-btn" (click)="onLoginNow()">
+        Đăng nhập ngay
+      </button>
+    </div>
+  } @else {
+    <!-- STEP 2: đã login -->
+    <div class="ba-top">
+      <div class="ba-top__text">Bạn muốn lấy số thứ tự?</div>
+      <button
+        type="button"
+        class="ba-take"
+        (click)="onTakeNumber()"
+        [disabled]="loadingTickets || !canTakeNumber"
+      >
+        Lấy số
+      </button>
+    </div>
+
+    @if (loadingTickets) {
+      <!-- Loading -->
+      <div class="ticket-card ticket-card--loading">
+        <div class="ticket-head">
+          <div class="ticket-no">
+            <span class="ticket-no__label">Số:</span>
+            <span class="ticket-no__value">...</span>
+          </div>
+          <div class="ticket-status">
+          <span class="ticket-status__icon">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </span>
+            <span>Đang tải...</span>
+          </div>
+        </div>
+
+        <div class="ticket-time">
+          <i class="fa-regular fa-clock"></i>
+          <span>--:-- - --:--</span>
+        </div>
+
+        <div class="ticket-service">Đang lấy dữ liệu...</div>
+      </div>
+    } @else {
+      @if (tickets && tickets.length) {
+        <!-- LIST -->
+        @for (t of tickets; track t.id) {
+          <div
+            class="ticket-card mb-3"
+            [class.ticket-card--active]="t.id === selectedTicketId"
+            (click)="onSelectTicket(t.id)"
+          >
+            <div class="ticket-head">
+              <div class="ticket-no">
+                <span class="ticket-no__label">Số:</span>
+                <span class="ticket-no__value">{{ displayTicketNo(t) }}</span>
+              </div>
+
+              <div class="ticket-status">
+              <span class="ticket-status__icon">
+                <i class="fa-solid fa-hourglass-half"></i>
+              </span>
+                <span>{{ mapStatus(t.status) }}</span>
+              </div>
+            </div>
+
+            <div class="ticket-time">
+              <i class="fa-regular fa-clock"></i>
+              <span>{{ displayTimeRange(t) }}</span>
+            </div>
+
+            <div class="ticket-service">{{ displayServiceTitle(t) }}</div>
+
+            <div class="ticket-actions">
+              <button
+                type="button"
+                class="btn-outline btn-outline--blue"
+                (click)="$event.stopPropagation(); onCopyTicket(t)"
+              >
+                <i class="fa-regular fa-copy"></i>
+                <span>Sao chép</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn-outline btn-outline--green"
+                (click)="$event.stopPropagation(); onDetailTicket(t)"
+              >
+                <i class="fa-solid fa-qrcode"></i>
+                <span>Xem chi tiết</span>
+              </button>
+            </div>
+          </div>
+        }
+
+      } @else {
+        <!-- Empty -->
+        <div class="ticket-card ticket-card--empty">
+          <div class="ticket-head">
+            <div class="ticket-no">
+              <span class="ticket-no__label">Số:</span>
+              <span class="ticket-no__value">---</span>
+            </div>
+
+            <div class="ticket-status">
+            <span class="ticket-status__icon">
+              <i class="fa-regular fa-circle-question"></i>
+            </span>
+              <span>Bạn chưa lấy số hôm nay</span>
+            </div>
+          </div>
+
+          <div class="ticket-time">
+            <i class="fa-regular fa-clock"></i>
+            <span>Hôm nay</span>
+          </div>
+
+          <div class="ticket-service">
+            Hãy bấm <b>Lấy số</b> để chọn lĩnh vực và khung giờ.
+          </div>
+        </div>
+      }
+    }
+  }
+</div>

@@ -1,0 +1,80 @@
+
+.td-container {
+  max-width: 430px;
+}
+
+.td-card {
+  border: 0;
+}
+
+.td-number {
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: 2px;
+  color: #1d4ed8;
+}
+
+.td-qr {
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
+}
+
+.td-soft-primary { background: rgba(37, 99, 235, 0.08); }
+.td-soft-success { background: rgba(34, 197, 94, 0.10); }
+.td-soft-purple  { background: rgba(124, 58, 237, 0.10); }
+
+.td-ico {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.td-ico-primary { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+.td-ico-success { background: rgba(34, 197, 94, 0.14); color: #16a34a; }
+.td-ico-purple  { background: rgba(124, 58, 237, 0.14); color: #7c3aed; }
+.td-ico-warn    { background: rgba(245, 158, 11, 0.18); color: #f59e0b; }
+
+.td-pill-warn {
+  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
+.td-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #f59e0b;
+  box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.16);
+}
+
+.td-step {
+  border-color: rgba(37, 99, 235, 0.25) !important;
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.td-step-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.td-step-ico {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.td-note {
+  background: #fff3cd;
+  border: 1px solid #ffe69c;
+}

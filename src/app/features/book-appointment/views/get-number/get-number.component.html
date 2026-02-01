@@ -1,0 +1,51 @@
+<div class="gn-page">
+  <div class="gn-wrap">
+    <div class="gn-card">
+      <!-- icon tròn nổi -->
+      <div class="gn-badge">
+        <img src="assets/img/icons/coupon.png" alt="ticket" />
+      </div>
+
+      <h1 class="gn-title">HỆ THỐNG LẤY SỐ TỰ ĐỘNG</h1>
+      <div class="gn-subtitle">Nhanh chóng - Tiện lợi - Chính xác</div>
+
+      <!-- Field 1 -->
+      <label class="gn-label">Chọn lĩnh vực cần thực hiện:</label>
+      <div class="gn-select">
+        <select [(ngModel)]="selectedFieldId">
+          <option [ngValue]="undefined">-- Chọn lĩnh vực --</option>
+          <option *ngFor="let f of fields" [ngValue]="f.id">{{ f.name }}</option>
+        </select>
+
+      </div>
+
+      <!-- Field 2 -->
+      <label class="gn-label">Chọn thời gian đến:</label>
+      <div class="gn-select">
+        <select [(ngModel)]="selectedSlotId">
+          <option [ngValue]="undefined">-- Chọn thời gian --</option>
+          <option *ngFor="let s of slots" [ngValue]="s.id">
+            {{ s.start_time }} - {{ s.end_time }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Button -->
+      <button type="button" class="gn-btn" (click)="onTakeNumber()" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'ĐANG XỬ LÝ...' : 'LẤY SỐ' }}
+      </button>
+
+      <!-- result card -->
+      <div class="gn-result">
+        <div class="gn-result__head">
+          <img class="gn-result__icon" src="assets/img/icons/coupon.png" alt="" />
+          <span>SỐ CỦA BẠN</span>
+        </div>
+
+        <div class="gn-result__num">{{ ticketNo ?? '- - -' }}</div>
+      </div>
+
+      <div class="gn-foot">Vui lòng chờ đến lượt gọi số của bạn.</div>
+    </div>
+  </div>
+</div>

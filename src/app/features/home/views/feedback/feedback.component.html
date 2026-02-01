@@ -1,0 +1,54 @@
+<div class="fb-page">
+  <form class="fb-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+    <!-- Tiêu đề -->
+    <label class="fb-label">Tiêu đề*</label>
+    <input
+      class="fb-input"
+      type="text"
+      placeholder="Nhập tiêu đề"
+      formControlName="title"
+    />
+
+    <!-- Nội dung -->
+    <label class="fb-label mt-14">Nội dung phản ánh*</label>
+    <textarea
+      class="fb-textarea"
+      rows="6"
+      placeholder="Nhập nội dung"
+      formControlName="content"
+    ></textarea>
+
+    <div class="fb-divider"></div>
+
+    <!-- Ảnh đính kèm -->
+    <div class="fb-attach-title">Ảnh đính kèm</div>
+
+    <div class="fb-attach-row">
+      <button type="button" class="fb-attach-box" (click)="onPickFile(fileInput)">
+        @if (previewUrl) {
+          <img [src]="previewUrl" alt="preview" />
+        } @else {
+          <span class="fb-plus">+</span>
+        }
+      </button>
+
+      <input
+        #fileInput
+        type="file"
+        accept="image/*"
+        hidden
+        (change)="onFileChange($event)"
+      />
+    </div>
+
+    <div class="fb-divider"></div>
+
+    <!-- Submit -->
+    <button class="fb-submit" type="submit">
+      <span>Gửi phản ánh</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+  </form>
+</div>

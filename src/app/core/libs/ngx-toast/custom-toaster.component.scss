@@ -1,0 +1,27 @@
+.toast-container {
+  pointer-events: auto !important;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  //background: red !important;
+  .btn-close {
+    position: relative !important;
+    padding: .5rem !important;
+  }
+
+  .toast-item {
+    //min-width: 260px;
+    max-width: 350px;
+    font-size: 14px;
+  }
+
+  .ngx-toastr {
+    background-color: transparent;
+    box-shadow: unset;
+    padding: 0;
+  }
+
+  .mt-05 {
+    margin-top: 0.2rem !important;
+  }
+}

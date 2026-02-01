@@ -1,0 +1,48 @@
+/**
+    - File custom css theo project
+    - Nó sẽ ghi đè các css của các file css lib
+ */
+.mt-1_5 {
+    margin-top: 0.45rem !important;
+}
+.vh-50 {
+    height: 50vh !important
+}
+.fs-7 {
+    font-size: 0.75rem !important
+}
+
+.form-control-feedback-start:not(.filterBasicImportant.search-group) .form-control {
+    padding-left: calc(var(--input-padding-x) * 2 + var(--icon-font-size))
+}
+.autoComplete_wrapper > ul {
+    z-index: 106;
+}
+/* set height ckeditor product content */
+#cldetailPsContent .ck-editor__editable {
+   height: 22.3rem;
+}
+.autoComplete_wrapper > ul > li.active{
+    color: var(--ac-item-active-color);
+    background-color: var(--ac-item-active-bg)
+}
+
+/**
+* có class fakeInput thì ko dùng css này
+* do có trường hợp muốn dùng input
+* select2, date-range
+ */
+.form-control[readonly]:not(.fakeInput) {
+    background-color: #fafafa;
+    opacity: 1;
+}
+
+.bg-slate {
+    background-color: #607d8b;
+}
+
+@media (max-width: 768px) {
+    .overflow-auto-mb {
+        overflow: auto !important
+    }
+}

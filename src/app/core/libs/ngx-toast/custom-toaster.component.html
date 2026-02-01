@@ -1,0 +1,22 @@
+<div class="alert fade show d-flex toast-item p-1" [ngClass]="alertClass">
+<!--  @if (alertIcon) {-->
+<!--    <div class="d-flex align-items-start justify-content-center me-2 mt-05">-->
+<!--      <i class="fal" [ngClass]="alertIcon"></i>-->
+<!--    </div>-->
+<!--  }-->
+
+  <div class="toast-content text-wrap overflow-hidden flex-1">
+    @if (title) {
+      <div class="fw-semibold">{{ title }}</div>
+    }
+    <div [innerHTML]="message"></div>
+  </div>
+
+<!--  @if (!options.closeButton) {-->
+<!--    <div-->
+<!--      class="d-flex align-items-start justify-content-center ms-2 mt-05"-->
+<!--      (click)="remove()">-->
+<!--      <i class="fal fa-times"></i>-->
+<!--    </div>-->
+<!--  }-->
+</div>

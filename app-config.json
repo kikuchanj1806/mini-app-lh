@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "Smart Trường Tân",
+    "headerTitle": "Smart Trường Tân",
+    "headerColor": "#1843EF",
+    "textColor": "white",
+    "leftButton": "back",
+    "statusBar": "transparent",
+    "actionBarHidden": true,
+    "hideAndroidBottomNavigationBar": false,
+    "hideIOSSafeAreaBottom": true,
+    "selfControlLoading": true
+  },
+  "listCSS": [
+    "styles.css"
+  ],
+  "listSyncJS": [
+    "runtime.js",
+    "polyfills.js",
+    "main.js"
+  ],
+  "listAsyncJS": [
+    "269.js",
+    "502.js",
+    "607.js",
+    "common.js"
+  ]
+}

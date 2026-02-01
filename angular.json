@@ -15,9 +15,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular/build:application",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "browser": "src/main.ts",
+            "outputPath": "dist/zma-app",
+            "index": "src/index.html",
+            "main": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -26,11 +28,36 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "src/assets/img",
+                "output": "assets/img"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets/icons",
+                "output": "assets/icons"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets/css",
+                "output": "assets/css"
+              },
+              {
+                "glob": "**/*",
+                "input": "public",
+                "output": "/"
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/swiper/swiper-bundle.css",
+              "src/assets/fontawesome/all.min.css",
+              "src/assets/css/all.min.css"
+            ],
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "moment",
+              "qrcode",
+              "jsbarcode"
             ]
           },
           "configurations": {
@@ -38,16 +65,23 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "10mb",
+                  "maximumError": "10mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2mb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "none",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "index": "src/index-pro.html"
             },
             "development": {
               "optimization": false,
@@ -58,7 +92,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular/build:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "mini-app-STT:build:production"
@@ -94,5 +128,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
