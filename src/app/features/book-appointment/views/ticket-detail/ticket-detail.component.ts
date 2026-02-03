@@ -35,7 +35,7 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
   qrImageUrl = 'assets/img/qr-demo.png';
 
   ngOnInit() {
-    this.setHeader({ variant: 'title', show: true, back: true, title: 'QR Code số thứ tự' });
+    this.setHeader({variant: 'title', show: true, back: true, title: 'QR Code số thứ tự'});
     document.body.classList.add('page-book-appointment');
 
     const id = Number(this.route.snapshot.paramMap.get('id') ?? 0);
@@ -46,7 +46,6 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
     }
 
     const appId = String(environment.apiConfig?.appId ?? '');
-
     this.loading = true;
 
     this.userMs.getValidToken$(appId).pipe(
@@ -99,7 +98,7 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
 
     const ts = raw?.timeSlot ?? raw?.time_slot ?? null;
     const start = String(ts?.startTime ?? ts?.start_time ?? '').slice(0, 5);
-    const end   = String(ts?.endTime ?? ts?.end_time ?? '').slice(0, 5);
+    const end = String(ts?.endTime ?? ts?.end_time ?? '').slice(0, 5);
     this.timeRange = (start && end) ? `${start} - ${end}` : '--:-- - --:--';
 
     const apptDate = String(raw?.appointmentDate ?? raw?.appointment_date ?? '').slice(0, 10);
@@ -115,24 +114,49 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
     startHHmm: string | null | undefined,
     endHHmm: string | null | undefined
   ): string {
-    const start = (startHHmm ?? '').toString().slice(0, 5);
-    const end   = (endHHmm ?? '').toString().slice(0, 5);
-
-    if (!end) return 'Chưa tới giờ hẹn';
-
     const today = this.formatYmd(new Date());
-    const date = (appointmentDate ?? today).toString().slice(0, 10);
+    const dateStr = (appointmentDate ?? today).toString().slice(0, 10);
 
-    if (date !== today) {
-      return date < today ? 'Đã quá giờ hẹn' : 'Chưa tới giờ hẹn';
+    const start = (startHHmm ?? '').toString().slice(0, 5); // "HH:mm"
+    const end = (endHHmm ?? '').toString().slice(0, 5);
+
+    // Nếu không có ngày -> coi như hôm nay
+    const isValidYmd = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+    const ymd = isValidYmd ? dateStr : today;
+
+    // Nếu ngày khác hôm nay: chỉ phân loại theo quá khứ/tương lai
+    if (ymd !== today) {
+      const d = this.buildDateTime(ymd, '00:00');
+      const t = this.buildDateTime(today, '00:00');
+      return d.getTime() < t.getTime() ? 'Đã quá giờ hẹn' : 'Chưa tới giờ hẹn';
     }
 
-    const now = new Date();
-    const endAt = this.buildDateTime(today, end);
+    // Ngày = hôm nay
+    if (!start && !end) return 'Chưa tới giờ hẹn';
 
-    return now.getTime() >= endAt.getTime()
-      ? 'Đã quá giờ hẹn'
-      : 'Chưa tới giờ hẹn';
+    const now = new Date();
+
+    if (start && end) {
+      const startAt = this.buildDateTime(today, start);
+      const endAt = this.buildDateTime(today, end);
+
+      // phòng trường hợp data lỗi: end < start (qua ngày) -> tạm coi end cùng ngày nhưng nếu bé hơn start thì coi như end = start
+      const safeEndAt = endAt.getTime() < startAt.getTime() ? startAt : endAt;
+
+      if (now.getTime() < startAt.getTime()) return 'Chưa tới giờ hẹn';
+      if (now.getTime() >= safeEndAt.getTime()) return 'Đã quá giờ hẹn';
+      return 'Đã tới giờ hẹn';
+    }
+
+    // Chỉ có start
+    if (start) {
+      const startAt = this.buildDateTime(today, start);
+      return now.getTime() >= startAt.getTime() ? 'Đã tới giờ hẹn' : 'Chưa tới giờ hẹn';
+    }
+
+    // Chỉ có end
+    const endAt = this.buildDateTime(today, end);
+    return now.getTime() >= endAt.getTime() ? 'Đã quá giờ hẹn' : 'Chưa tới giờ hẹn';
   }
 
   private formatYmd(d: Date): string {

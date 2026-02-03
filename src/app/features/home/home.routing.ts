@@ -6,6 +6,7 @@ import {NewsLatestComponent} from './views/news/news-latest.component';
 import {AskedQuestionsComponent} from './views/asked-questions/asked-questions.component';
 import {ReviewComponent} from './views/review/review.component';
 import {MapsComponent} from './views/maps/maps.component';
+import {NewDetailComponent} from './views/news/new-detail.component';
 
 const routes: Routes = [
   {
@@ -31,7 +32,11 @@ const routes: Routes = [
   {
     path: 'map',
     component: MapsComponent
-  }
+  },
+  {
+    path: 'newdetail',
+    component: NewDetailComponent
+  },
 ];
 
 @NgModule({

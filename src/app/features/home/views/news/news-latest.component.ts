@@ -1,12 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { finalize, takeUntil } from 'rxjs/operators';
+import {IResNewsItem, NewApiService} from '../../../../shared/services/api/news/new-api.service';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
+import {NotifyService} from '../../../../core/services';
+import {environment} from '../../../../../environments';
 
-type LatestNewsItem = {
+export type NewsListItemVM = {
   id: number;
   title: string;
-  date: string;       // dd/MM/yyyy
-  imageUrl: string;
-  liked?: boolean;    // quan tâm
+  thumbnail: string | null;
+  publishedMs: number | null;
+  categoryName: string;
+  liked: boolean;
+  raw: IResNewsItem;
 };
 
 @Component({
@@ -16,64 +22,72 @@ type LatestNewsItem = {
   standalone: false
 })
 export class NewsLatestComponent extends AppCommonComponent implements OnInit, OnDestroy {
-  items: LatestNewsItem[] = [];
+  items: NewsListItemVM[] = [];
+  loading = false;
+
+  constructor(
+    private newsApi: NewApiService,
+    private notify: NotifyService,
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.setHeader({ variant: 'title', show: true, back: true, title: 'Tin tức mới nhất' });
-
-    this.items = [
-      {
-        id: 1,
-        title: 'Tập huấn kỹ năng phòng chống tai nạn thương tích, đuối nước và xâm hại trẻ em năm 2025',
-        date: '10/09/2025',
-        imageUrl: 'https://icdn.24h.com.vn/upload/1-2026/images/2026-01-19//1768825953-thu_truong_pham_the_tung-6-width800height532.jpg',
-        liked: false,
-      },
-      {
-        id: 2,
-        title: 'Thông báo về thời gian, địa điểm tiếp công dân phục vụ Đại hội Đại biểu Đảng bộ nhiệm kỳ 2025 - 2030',
-        date: '10/09/2025',
-        imageUrl: 'https://icdn.24h.com.vn/upload/1-2026/images/2026-01-19//1768825953-thu_truong_pham_the_tung-6-width800height532.jpg',
-        liked: false,
-      },
-      {
-        id: 3,
-        title: 'Tuyên truyền kỹ năng nhận diện tội phạm lừa đảo và bảo vệ dữ liệu cá nhân trên không gian mạng',
-        date: '10/06/2025',
-        imageUrl: 'https://icdn.24h.com.vn/upload/1-2026/images/2026-01-19//1768825953-thu_truong_pham_the_tung-6-width800height532.jpg',
-        liked: true,
-      },
-      {
-        id: 4,
-        title: 'Kế hoạch tổ chức ngày hội “Toàn dân bảo vệ an ninh Tổ quốc” năm 2025',
-        date: '05/06/2025',
-        imageUrl: 'https://icdn.24h.com.vn/upload/1-2026/images/2026-01-19//1768825953-thu_truong_pham_the_tung-6-width800height532.jpg',
-        liked: false,
-      },
-      {
-        id: 5,
-        title: 'Thông báo lịch làm việc và tiếp nhận hồ sơ dịch vụ công trực tuyến tuần này',
-        date: '01/06/2025',
-        imageUrl: 'https://icdn.24h.com.vn/upload/1-2026/images/2026-01-19//1768825953-thu_truong_pham_the_tung-6-width800height532.jpg',
-        liked: false,
-      },
-      {
-        id: 6,
-        title: 'Tuyên truyền phòng chống cháy nổ, đảm bảo an toàn điện trong mùa nắng nóng',
-        date: '28/05/2025',
-        imageUrl: 'https://icdn.24h.com.vn/upload/1-2026/images/2026-01-19//1768825953-thu_truong_pham_the_tung-6-width800height532.jpg',
-        liked: false,
-      },
-    ];
+    this.load();
   }
 
-  toggleLike(it: LatestNewsItem, ev: Event) {
+  load() {
+    const wardId = Number(environment.wardId);
+
+    this.loading = true;
+    this.newsApi.newsList({
+      ward_id: wardId,
+      page: 1,
+      perPage: 10,
+    })
+      .pipe(
+        takeUntil(this.destroyed),
+        finalize(() => (this.loading = false))
+      )
+      .subscribe({
+        next: (res) => {
+          const arr = (res?.data ?? []) as IResNewsItem[];
+
+          const sorted = [...arr].sort((a, b) => (b.published_at ?? 0) - (a.published_at ?? 0));
+
+          this.items = sorted.map((x) => ({
+            id: x.id,
+            title: x.title,
+            thumbnail: x.thumbnail ?? null,
+            publishedMs: this.toMs(x.published_at),
+            categoryName: x.category?.name ?? 'Tin tức',
+            liked: false,
+            raw: x,
+          }));
+        },
+        error: () => this.notify.error('Không tải được danh sách tin tức.'),
+      });
+  }
+
+  toggleLike(it: NewsListItemVM, ev: Event) {
     ev.stopPropagation();
     it.liked = !it.liked;
   }
 
-  openDetail(it: LatestNewsItem) {
-    console.log('open detail', it);
+  private toMs(ts: unknown): number | null {
+    if (ts === null || ts === undefined) return null;
+    const n = typeof ts === 'number' ? ts : Number(ts);
+    if (!Number.isFinite(n) || n <= 0) return null;
+    return n * 1000;
+  }
+
+  imgSrc(it: NewsListItemVM): string {
+    return it.thumbnail || '/assets/img/placeholder/news-thumb.png';
+  }
+
+  fallbackImg(ev: Event) {
+    (ev.target as HTMLImageElement).src = '/assets/img/placeholder/news-thumb.png';
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  HttpClient, HttpErrorResponse, HttpHeaders, HttpParams,
+  HttpClient, HttpErrorResponse, HttpEvent, HttpHeaders, HttpParams,
 } from '@angular/common/http';
 import {Observable, tap, throwError} from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -70,6 +70,22 @@ export class ApiService {
     return this.http.post<T>(this.getBaseUrlApi(endpoint, true), params, { headers: this.headers }).pipe(
       this.handleTapRes(),
     )
+  }
+
+  postFormDataRequestProgress<T>(
+    endpoint: string,
+    formData: FormData,
+    withAppId = true,
+  ): Observable<HttpEvent<T>> {
+
+    const options = {
+      reportProgress: true,
+      observe: 'events' as const,
+    };
+
+    const url = this.buildUrl(endpoint, withAppId);
+
+    return this.http.post<T>(url, formData, options);
   }
 
   private handleTapRes(): any {

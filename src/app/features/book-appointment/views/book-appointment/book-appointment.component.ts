@@ -50,18 +50,16 @@ export class BookAppointmentComponent extends AppCommonComponent implements OnIn
     document.body.classList.add('page-book-appointment');
 
     const appId = String(environment.apiConfig?.appId ?? '');
-
     this.userService.userInfo$
       .pipe(
         takeUntil(this.destroyed),
         switchMap((info) => {
-          if (!info) {
+          if (!(info && info.name)) {
             this.step = 1;
             return of(null);
           }
 
           this.userInfo = info;
-
           // 1) có token valid -> step 2 -> load tickets
           const token = this.userMsService.getTokenIfValid();
           if (token) {
@@ -108,8 +106,9 @@ export class BookAppointmentComponent extends AppCommonComponent implements OnIn
 
         this.userService.saveGrantAndUser(perms, userInfo);
 
+        const phone = (userInfo && userInfo.phoneNumber) ? userInfo.phoneNumber : '';
         //lấy token nội bộ
-        return this.userMsService.refresh$(appId).pipe(
+        return this.userMsService.refresh$(appId, phone).pipe(
           map(() => res),
           catchError(() => of(res))
         );
@@ -132,7 +131,6 @@ export class BookAppointmentComponent extends AppCommonComponent implements OnIn
             this.step = 2;
             this._notify.success('Đăng nhập thành công.');
           } else {
-            // userInfo có nhưng chưa có token => vẫn để step=1 hoặc step=2 tuỳ bạn
             this._notify.warning('Đã lấy thông tin, nhưng chưa tạo được token nội bộ. Vui lòng thử lại.');
           }
           return;

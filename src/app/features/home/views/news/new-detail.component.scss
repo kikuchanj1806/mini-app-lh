@@ -1,0 +1,132 @@
+.news-detail {
+  padding: 14px 14px 24px;
+}
+
+:host ::ng-deep .nd-html img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  object-fit: contain;
+}
+
+:host ::ng-deep .nd-html .image.image_resized {
+  width: 100% !important;
+}
+
+.nd-loading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  background: #fff;
+  border-radius: 16px;
+}
+
+.nd-empty {
+  padding: 16px;
+  background: #fff;
+  border-radius: 16px;
+
+  &__title {
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+}
+
+.nd-retry {
+  width: 100%;
+  border: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.nd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.nd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(2, 132, 199, 0.12);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.nd-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.nd-title {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 8px 0 10px;
+}
+
+.nd-excerpt {
+  margin: 0 0 12px;
+  padding: 12px 12px;
+  background: #fff;
+  border-radius: 16px;
+  color: #334155;
+  border: 1px solid #eef2f7;
+}
+
+.nd-thumb {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #eef2f7;
+  margin-bottom: 12px;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.nd-html {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #0f172a;
+
+  p {
+    margin: 0 0 10px;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    display: block;
+    margin: 10px 0;
+    object-fit: cover;
+  }
+
+  a {
+    color: #0284c7;
+    text-decoration: underline;
+    word-break: break-word;
+  }
+}
+
+.nd-no-content {
+  color: #64748b;
+  font-style: italic;
+}

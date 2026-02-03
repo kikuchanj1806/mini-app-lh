@@ -555,8 +555,8 @@
 }
 
 .stat-card__value {
-  font-size: 26px;
-  font-weight: 900;
+  font-size: 24px;
+  font-weight: 800;
   line-height: 1.05;
   letter-spacing: 0.2px;
 }
@@ -1053,7 +1053,7 @@
 }
 
 .li-all {
-  font-weight: 900;
+  font-weight: 600;
   color: #1767ff;
   text-decoration: none;
 }
@@ -1116,7 +1116,7 @@
 
 .li-tag__more {
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .li-tag__more--red {
@@ -1210,7 +1210,7 @@
   margin: 14px auto;
   padding: 14px 6px 16px;
   background: #fff;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
 }
 
 .em-head {
@@ -1252,12 +1252,12 @@
   justify-content: space-between;
   gap: 12px;
 
-  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 
   &:active {
     transform: translateY(1px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -1272,12 +1272,14 @@
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
   display: grid;
   place-items: center;
   flex: 0 0 auto;
 
-  i { font-size: 20px; }
+  i {
+    font-size: 20px;
+  }
 }
 
 .em-left__t1 {
@@ -1314,14 +1316,27 @@
   font-weight: 600;
   font-size: 14px;
 
-  i { font-size: 14px; }
+  i {
+    font-size: 14px;
+  }
 }
 
 /* gradients */
-.em-blue   { background: linear-gradient(135deg, #1f7bff 0%, #0b55ff 100%); }
-.em-red    { background: linear-gradient(135deg, #ff2b2b 0%, #e5002a 100%); }
-.em-green  { background: linear-gradient(135deg, #12cf52 0%, #07a83d 100%); }
-.em-orange { background: linear-gradient(135deg, #d98a00 0%, #b86a00 100%); }
+.em-blue {
+  background: linear-gradient(135deg, #1f7bff 0%, #0b55ff 100%);
+}
+
+.em-red {
+  background: linear-gradient(135deg, #ff2b2b 0%, #e5002a 100%);
+}
+
+.em-green {
+  background: linear-gradient(135deg, #12cf52 0%, #07a83d 100%);
+}
+
+.em-orange {
+  background: linear-gradient(135deg, #d98a00 0%, #b86a00 100%);
+}
 
 /* note */
 .em-note {
@@ -1338,11 +1353,21 @@
   justify-content: center;
   gap: 10px;
 
-  i { font-size: 16px; }
+  i {
+    font-size: 16px;
+  }
+
+  span {
+    font-size: 12px;
+  }
 }
 
 /* responsive */
 @media (max-width: 420px) {
-  .em-head__title { font-size: 16px; }
-  .em-right__num { font-size: 18px; }
+  .em-head__title {
+    font-size: 16px;
+  }
+  .em-right__num {
+    font-size: 18px;
+  }
 }

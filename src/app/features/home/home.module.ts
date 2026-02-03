@@ -10,6 +10,7 @@ import {NewsLatestComponent} from './views/news/news-latest.component';
 import {AskedQuestionsComponent} from './views/asked-questions/asked-questions.component';
 import {ReviewComponent} from './views/review/review.component';
 import {MapsComponent} from './views/maps/maps.component';
+import {NewDetailComponent} from './views/news/new-detail.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {MapsComponent} from './views/maps/maps.component';
     NewsLatestComponent,
     AskedQuestionsComponent,
     ReviewComponent,
-    MapsComponent
+    MapsComponent,
+    NewDetailComponent
   ],
   imports: [
     CommonModule,

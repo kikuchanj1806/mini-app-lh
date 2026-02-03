@@ -40,4 +40,8 @@ export class LayoutComponent implements OnInit {
     ref.componentInstance.url = location.href;
     ref.componentInstance.title = 'Chia sẻ Nhanh Shop';
   }
+
+  onAssistTap() {
+    console.log('aaaaa')
+  }
 }

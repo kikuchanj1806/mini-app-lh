@@ -15,6 +15,7 @@ import {AppService} from './core/services';
 import {LayoutComponent} from './layouts/layout.component';
 import {AppFooterComponent} from './shared/components/footer/footer.component';
 import {AppHeaderComponent} from './shared/components/header/header.component';
+import {FloatingAssistComponent} from "./shared/components/actions/floating-assist/floating-assist.component";
 
 
 @NgModule({
@@ -25,7 +26,7 @@ import {AppHeaderComponent} from './shared/components/header/header.component';
     AppHeaderComponent
   ],
 	 imports: [
-     CoreModule,
+		  CoreModule,
 		  BrowserModule,
 		  BrowserAnimationsModule,
 		  SharedCommonModule,
@@ -34,6 +35,7 @@ import {AppHeaderComponent} from './shared/components/header/header.component';
 				useHash: false,
 		  }),
 		  Select,
+		  FloatingAssistComponent,
 
 	 ],
   providers: [

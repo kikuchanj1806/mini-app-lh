@@ -61,7 +61,6 @@ export class UserService {
     granted: Record<string, boolean>,
     info: IResUserInfo
   ): Promise<void> {
-    // 1️⃣ Lưu scopes được cấp quyền
     const scopes = Object.keys(granted).filter(s => granted[s]);
     try {
       await nativeStorage.setItem(STORAGE_KEYS.GRANTED_SCOPES, JSON.stringify(scopes));
@@ -70,7 +69,6 @@ export class UserService {
       console.error('Failed to cache grantedScopes', e);
     }
 
-    // 2️⃣ Lưu thông tin user
     try {
       await nativeStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(info));
       this._userInfo$.next(info);

@@ -6,21 +6,21 @@ import {
   IUserFeedBackRequestParams,
   IUserPhoneRequestParams, IZaloSyncUserPayload
 } from '../../../models/global';
-import {IResponseApi} from '../../../../core/models';
+import {IResponseApi, IResponseApiZma} from '../../../../core/models';
 import {uriApiConst} from '../../../constants';
 
 @Injectable({providedIn: 'root'})
 export class UserApiService extends ApiService {
 
   getPhoneNumber = (params: IUserPhoneRequestParams) => {
-    return this.post<IResponseApi<IResPhoneNumber>>(uriApiConst.user.phone, {...params});
+    return this.post<IResponseApiZma<IResPhoneNumber>>(uriApiConst.user.phone, {...params});
   };
 
   syncZaloUser = (payload: IZaloSyncUserPayload) => {
     return this.post<IResponseApi<any>>('/api/zma/users/sync', payload);
   };
 
-  syncAuth = (payload: { appId: string; zaloAccessToken: string }) => {
+  syncAuth = (payload: { appId: string; zaloAccessToken: string, phone?: number }) => {
     return this.post<IResponseApi<any>>('/api/zma/auth/sync', payload);
   };
 

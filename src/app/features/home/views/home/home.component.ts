@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription, takeUntil} from 'rxjs';
+import {finalize, Subscription, takeUntil} from 'rxjs';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 import {IResBanner} from '../../../../shared/models/api';
 import {WeatherService} from '../../../../shared/services/weather.service';
-import { openPhone } from 'zmp-sdk/apis';
+import {openPhone, openWebview} from 'zmp-sdk/apis';
 import {NotifyService, UserService} from '../../../../core/services';
 import {ZmaShortcutService} from '../../../../shared/services/feature-specific/home/zm-shortcut.service';
 import {environment} from '../../../../../environments';
@@ -12,6 +12,7 @@ import {CreateShortcutComponent} from '../../../../shared/components/modals/crea
 import {OffcanvasCustomService} from '../../../../shared/services/modal-canvas-custom.service';
 import {Router} from '@angular/router';
 import {FollowOfficialService} from '../../../../shared/services/feature-specific/home/follow-official.service';
+import {IResNewsItem, NewApiService} from '../../../../shared/services/api/news/new-api.service';
 
 type UiTool = { key: string; label: string; iconUrl: string; route?: string };
 type ExtraService = { key: string; label: string; iconUrl: string; colorClass: string; route?: string };
@@ -38,15 +39,19 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   weatherIconClass = 'wx-cloud';
 
   stats = {
-    population: 34432,
-    area: '19,94 km2',
+    population: 31736,
+    area: '24,56 km2',
     services: '25+',
     satisfaction: '98%',
     updatedMonth: '1/2026'
   };
-
   mainTools: UiTool[] = [
-    {key: 'calendar', label: 'Đăng ký lịch làm việc', iconUrl: '/assets/img/icons/lich_lam_viec.png', route: 'bookappointment'},
+    {
+      key: 'calendar',
+      label: 'Đăng ký lịch làm việc',
+      iconUrl: '/assets/img/icons/lich_lam_viec.png',
+      route: 'bookappointment'
+    },
     {key: 'map', label: 'Bản đồ', iconUrl: '/assets/img/icons/maps_icon.png', route: 'map'},
     {key: 'law', label: 'Thư viện pháp luật', iconUrl: '/assets/img/icons/phap_luat.png'},
     {key: 'security', label: 'Tin tức an ninh', iconUrl: '/assets/img/icons/news-paper.png'},
@@ -61,16 +66,16 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     {key: 'tv', label: 'Truyền hình Hải Phòng', iconUrl: '/assets/img/icons/radio.png'},
     {key: 'video', label: 'Video hướng dẫn', iconUrl: '/assets/img/icons/video.png'},
   ];
-
   extraServices: ExtraService[] = [
     {key: 'rate', label: 'Đánh giá', iconUrl: '/assets/img/icons/danh_gia.png', colorClass: 'extra-red'},
     {key: 'qa', label: 'Hỏi đáp', iconUrl: '/assets/img/icons/cau_hoi.png', colorClass: 'extra-blue'},
     {key: 'faq', label: 'Câu hỏi thường gặp', iconUrl: '/assets/img/icons/q&a.png', colorClass: 'extra-green'},
     {key: 'shortcut', label: 'Tạo phím tắt', iconUrl: '/assets/img/icons/phim_tat.png', colorClass: 'extra-purple'},
   ];
-
-
   private subs = new Subscription();
+
+  loadingNews = false;
+  newsItems: IResNewsItem[] = [];
 
   constructor(
     private weatherService: WeatherService,
@@ -80,7 +85,8 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     private offCanvasService: OffcanvasCustomService,
     private route: Router,
     private users: UserService,
-    ) {
+    private newsApi: NewApiService
+  ) {
     super();
   }
 
@@ -103,6 +109,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     ];
 
     this.loadWeather();
+    this.loadNews();
   }
 
   ngOnDestroy() {
@@ -110,9 +117,61 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     this.getDestroySubs();
   }
 
-  onToolClick(it: UiTool) {
-    console.log('tool click', it.key);
-    // TODO: this.router.navigate([it.route]) hoặc open modal...
+  loadNews() {
+    const wardId = environment.wardId;
+
+    this.loadingNews = true;
+    this.newsApi.newsList({
+      ward_id: wardId,
+      perPage: 2,
+      page: 1,
+    })
+      .pipe(finalize(() => (this.loadingNews = false)))
+      .subscribe({
+        next: (res) => {
+          this.newsItems = res?.data ?? [];
+        },
+        error: () => {
+          this.newsItems = [];
+        },
+      });
+  }
+
+  async onToolClick(it: UiTool, ev?: Event) {
+    const externalMap: Record<string, string> = {
+      online:
+        'https://dichvucong.gov.vn/p/home/dvc-dich-vu-cong-truc-tuyen-ds.html?pCoQuanId=387628&typeInapp=1',
+      penalty:
+        'https://www.csgt.vn/m/tra-cuu-phuong-tien-vi-pham.html',
+      tv:
+        'https://thhp.vn/truyen-hinh?channel=THPONLINE&typeInapp=1&zarsrc=1303&utm_source=zalo&utm_medium=zalo&utm_campaign=zalo'
+    };
+
+    const url = externalMap[it.key];
+    if (!url) {
+      console.log('tool click', it.key);
+      return;
+    }
+
+    ev?.preventDefault();
+    ev?.stopPropagation();
+
+    const isBrowser = typeof (window as any).ZaloMiniAppSDK === 'undefined';
+    if (isBrowser) {
+      window.open(url, '_blank');
+      return;
+    }
+
+    try {
+      await openWebview({
+        url,
+        config: {
+          style: 'normal',
+        },
+      });
+    } catch (e) {
+      window.open(url, '_blank');
+    }
   }
 
   async onExtraClick(it: ExtraService) {
@@ -152,24 +211,24 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
       // }
       //
       // this._notify.success('Đã gửi yêu cầu tạo phím tắt. Vui lòng xác nhận trên Zalo.');
-        const opts: NgbOffcanvasOptions = {
-          position: 'bottom',
-          backdrop: true,
-          keyboard: true,
-          scroll: false,
-          container: 'body',
-          panelClass: 'offcanvas-bottom-sheet',
-        };
+      const opts: NgbOffcanvasOptions = {
+        position: 'bottom',
+        backdrop: true,
+        keyboard: true,
+        scroll: false,
+        container: 'body',
+        panelClass: 'offcanvas-bottom-sheet',
+      };
 
-        const ref = this.offCanvasService.open(CreateShortcutComponent, opts);
-        ref.componentInstance.shortcutUrl = res.url;
+      const ref = this.offCanvasService.open(CreateShortcutComponent, opts);
+      ref.componentInstance.shortcutUrl = res.url;
     }
 
-    if(it.key === 'faq') {
+    if (it.key === 'faq') {
       this.route.navigate(['/asked'])
     }
 
-    if(it.key === 'rate') {
+    if (it.key === 'rate') {
       this.route.navigate(['/review'])
     }
   }
@@ -229,13 +288,16 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     console.log('View all news');
   }
 
-  onOpenNews(type: 'law' | 'security' | '') {
-    console.log('Open news', type);
+  onOpenNews(item: any) {
+    if (!item?.id) return;
+    // route tuỳ bạn: /news/:id
+    this.route.navigate(['news', item.id]);
   }
 
   callNow(phone: string) {
     const phoneNumber = phone.replace(/\./g, '').trim();
-    openPhone({ phoneNumber }).catch(() => {});
+    openPhone({phoneNumber}).catch(() => {
+    });
   }
 
   private setToday() {
@@ -294,4 +356,6 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     if ([95, 96, 99].includes(code)) return 'wx-thunder';
     return 'wx-cloud';
   }
+
+  trackByNewsId = (_: number, it: IResNewsItem) => it.id;
 }

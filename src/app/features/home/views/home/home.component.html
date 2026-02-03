@@ -11,7 +11,7 @@
 
     <div class="banner-actions-like">
       <!-- Button 1 -->
-      <button type="button" class="pill-btn" (click)="onOpenNews('')">
+      <button type="button" class="pill-btn" [routerLink]="'/news'">
     <span class="pill-icon">
       <i class="fa-solid fa-newspaper"></i>
     </span>
@@ -23,14 +23,14 @@
       </button>
 
       <!-- Button 2 -->
-      <button type="button" class="pill-btn" (click)="onHotline()">
+      <button type="button" class="pill-btn" (click)="callNow('0938540999')">
     <span class="pill-icon">
       <i class="fa-solid fa-phone"></i>
     </span>
 
         <span class="pill-text">
       <span class="pill-title">Đường dây nóng</span>
-      <span class="pill-sub">0982.008.655</span>
+      <span class="pill-sub">0938.540.999</span>
     </span>
       </button>
     </div>
@@ -98,6 +98,69 @@
       </div>
     </div>
   </div>
+
+  <section class="p-2 pt-0">
+    <div class="official-channel">
+      <div class="oc-head">
+        <div class="oc-head__title">
+          <i class="fa-light fa-star"></i>
+          <div>
+            <div class="oc-head__t1">Kênh chính thức</div>
+            <div class="oc-head__t2">Nhận thông báo và cập nhật mới nhất từ cơ quan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="oc-body">
+        <!-- Org row -->
+        <div class="oc-org">
+          <div class="oc-org__left">
+            <div class="oc-logo">
+              <img width="30" height="30" src="../../../../../assets/img/banners/Quoc_Huy_Viet_Nam_Chuan.png" alt=""/>
+            </div>
+
+            <div class="oc-org__text">
+              <div class="oc-org__name">UBND xã Trường Tân</div>
+              <div class="oc-org__sub">Cổng dịch vụ hành chính công số</div>
+              <div class="oc-org__badge">
+                <span class="tick">✓</span>
+                <span>Kênh chính thức</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="oc-follow"
+            [class.is-followed]="hasFollowed"
+            [disabled]="hasFollowed"
+            (click)="onFollowOfficial()"
+          >
+            {{ hasFollowed ? 'Đã quan tâm' : 'Quan tâm' }}
+          </button>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="oc-actions">
+          <button type="button" class="oc-action oc-action--blue" (click)="onQuickNotify()">
+            <i class="fa-light fa-bell-ring"></i>
+            <span>Thông báo nhanh</span>
+          </button>
+
+          <button type="button" class="oc-action oc-action--green" (click)="onUpdate247()">
+            <i class="fa-light fa-calendar-days"></i>
+            <span>Cập nhật 24/7</span>
+          </button>
+        </div>
+
+        <!-- Banner -->
+        <a class="oc-banner" href="javascript:void(0)" (click)="onOpenBanner()">
+          <img src="https://dongnamajsc.vn/wp-content/uploads/2025/04/nghiquyet57-nqtw-1736735560184290766350-42903497373204048292592-64882587803620768853750.webp" alt="banner" />
+        </a>
+      </div>
+    </div>
+  </section>
 
   <!-- Thống kê phường -->
   <section class="ward-stats p-2">
@@ -170,7 +233,12 @@
 
     <div class="tools-grid">
       @for (it of mainTools; track it.key) {
-        <button type="button" class="tool-item" [routerLink]="it.route" (click)="onToolClick(it)">
+        <button
+          type="button"
+          class="tool-item"
+          [routerLink]="it.route || null"
+          (click)="onToolClick(it, $event)"
+        >
           <div class="tool-item__icon">
             <img class="tool-item__img" [src]="it.iconUrl" [alt]="it.label" loading="lazy" />
           </div>
@@ -210,69 +278,6 @@
     </div>
   </section>
 
-  <section class="p-2 pt-0">
-    <div class="official-channel">
-      <div class="oc-head">
-        <div class="oc-head__title">
-          <i class="fa-light fa-star"></i>
-          <div>
-            <div class="oc-head__t1">Kênh chính thức</div>
-            <div class="oc-head__t2">Nhận thông báo và cập nhật mới nhất từ cơ quan</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Body -->
-      <div class="oc-body">
-        <!-- Org row -->
-        <div class="oc-org">
-          <div class="oc-org__left">
-            <div class="oc-logo">
-              <img width="30" height="30" src="../../../../../assets/img/banners/Quoc_Huy_Viet_Nam_Chuan.png" alt=""/>
-            </div>
-
-            <div class="oc-org__text">
-              <div class="oc-org__name">UBND xã Trường Tân</div>
-              <div class="oc-org__sub">Cổng dịch vụ hành chính công số</div>
-              <div class="oc-org__badge">
-                <span class="tick">✓</span>
-                <span>Kênh chính thức</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            class="oc-follow"
-            [class.is-followed]="hasFollowed"
-            [disabled]="hasFollowed"
-            (click)="onFollowOfficial()"
-          >
-            {{ hasFollowed ? 'Đã quan tâm' : 'Quan tâm' }}
-          </button>
-        </div>
-
-        <!-- Quick actions -->
-        <div class="oc-actions">
-          <button type="button" class="oc-action oc-action--blue" (click)="onQuickNotify()">
-            <i class="fa-light fa-bell-ring"></i>
-            <span>Thông báo nhanh</span>
-          </button>
-
-          <button type="button" class="oc-action oc-action--green" (click)="onUpdate247()">
-            <i class="fa-light fa-calendar-days"></i>
-            <span>Cập nhật 24/7</span>
-          </button>
-        </div>
-
-        <!-- Banner -->
-        <a class="oc-banner" href="javascript:void(0)" (click)="onOpenBanner()">
-          <img src="https://dongnamajsc.vn/wp-content/uploads/2025/04/nghiquyet57-nqtw-1736735560184290766350-42903497373204048292592-64882587803620768853750.webp" alt="banner" />
-        </a>
-      </div>
-    </div>
-  </section>
-
   <section class="latest-info">
     <div class="li-head">
       <div class="li-title">
@@ -283,55 +288,47 @@
       <a class="li-all" href="javascript:void(0)" (click)="onViewAllNews()">Xem tất cả</a>
     </div>
 
-    <!-- card 1 -->
-    <article class="li-card li-card--pink" (click)="onOpenNews('law')">
-      <div class="li-tag">
-        <div class="li-tag__left">
-          <i class="fa-solid fa-triangle-exclamation li-fa li-fa--red"></i>
-          <span class="li-tag__name li-tag__name--red">Tin pháp luật</span>
+    @if (newsItems && newsItems.length) {
+      @for (it of newsItems; track trackByNewsId($index, it)) {
+        <article class="li-card" [routerLink]="'/newdetail'" [queryParams]="{id: it.id }">
+          <div class="li-tag">
+            <div class="li-tag__left">
+              <i class="fa-regular fa-file-lines li-fa"></i>
+              <span class="li-tag__name">
+              {{ it?.category?.name || 'Tin tức' }}
+            </span>
+            </div>
+            <span class="li-tag__more">Xem thêm</span>
+          </div>
+
+          <h3 class="li-h3">
+            {{ it?.title || 'Chưa có dữ liệu' }}
+          </h3>
+
+          <div class="li-img">
+            <img
+              [src]="it?.thumbnail || '/assets/img/placeholder/news-thumb.png'"
+              alt="news"
+              loading="lazy"
+            />
+          </div>
+
+          <div class="li-date">
+            <i class="fa-regular fa-calendar li-fa li-fa--muted"></i>
+            <span>
+            {{ it?.published_at ? ((it.published_at * 1000) | date:'dd/MM/yyyy') : '' }}
+          </span>
+          </div>
+        </article>
+      }
+    } @else {
+      <article class="li-card">
+        <h3 class="li-h3">Chưa có dữ liệu</h3>
+        <div class="li-img">
+          <img src="/assets/img/placeholder/news-thumb.png" alt="news" />
         </div>
-
-        <span class="li-tag__more li-tag__more--red">Xem thêm</span>
-      </div>
-
-      <h3 class="li-h3">
-        Tuyên truyền kỹ năng nhận diện tội phạm lừa đảo và bảo vệ dữ liệu cá nhân trên không gian mạng
-      </h3>
-
-      <div class="li-img">
-        <img src="https://icdn.24h.com.vn/upload/1-2026/images/2026-01-19//1768825953-thu_truong_pham_the_tung-6-width800height532.jpg" alt="news" />
-      </div>
-
-      <div class="li-date">
-        <i class="fa-regular fa-calendar li-fa li-fa--muted"></i>
-        <span>10/06/2025</span>
-      </div>
-    </article>
-
-    <!-- card 2 -->
-    <article class="li-card li-card--blue" (click)="onOpenNews('security')">
-      <div class="li-tag">
-        <div class="li-tag__left">
-          <i class="fa-regular fa-file-lines li-fa li-fa--blue"></i>
-          <span class="li-tag__name li-tag__name--blue">Tin an ninh</span>
-        </div>
-
-        <span class="li-tag__more li-tag__more--blue">Xem thêm</span>
-      </div>
-
-      <h3 class="li-h3">
-        Tập huấn kỹ năng phòng chống tai nạn thương tích, đuối nước và xâm hại trẻ em năm 2025
-      </h3>
-
-      <div class="li-img">
-        <img src="https://icdn.24h.com.vn/upload/1-2026/images/2026-01-19//1768825953-thu_truong_pham_the_tung-6-width800height532.jpg" alt="news" />
-      </div>
-
-      <div class="li-date">
-        <i class="fa-regular fa-calendar li-fa li-fa--muted"></i>
-        <span>10/09/2025</span>
-      </div>
-    </article>
+      </article>
+    }
 
     <div class="li-footnote">
       <i class="fa-regular fa-newspaper li-fa li-fa--muted"></i>
@@ -347,7 +344,7 @@
 
     <div class="em-list">
       <!-- 1) Công an xã -->
-      <button type="button" class="em-card em-blue" (click)="callNow('0787288113')">
+      <button type="button" class="em-card em-blue" (click)="callNow('02203900021')">
         <div class="em-left">
           <div class="em-left__icon">
             <i class="fa-solid fa-shield"></i>
@@ -359,7 +356,7 @@
         </div>
 
         <div class="em-right">
-          <div class="em-right__num">0787.288.113</div>
+          <div class="em-right__num">02203900021</div>
           <div class="em-right__call">
             <i class="fa-solid fa-phone"></i>
             <span>Gọi ngay</span>

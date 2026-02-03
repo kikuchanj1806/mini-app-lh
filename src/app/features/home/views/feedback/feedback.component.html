@@ -1,53 +1,108 @@
 <div class="fb-page">
-  <form class="fb-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form class="fb-form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
 
-    <!-- Tiêu đề -->
-    <label class="fb-label">Tiêu đề*</label>
-    <input
-      class="fb-input"
-      type="text"
-      placeholder="Nhập tiêu đề"
-      formControlName="title"
-    />
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Tiêu đề <span class="text-danger">*</span></label>
 
-    <!-- Nội dung -->
-    <label class="fb-label mt-14">Nội dung phản ánh*</label>
-    <textarea
-      class="fb-textarea"
-      rows="6"
-      placeholder="Nhập nội dung"
-      formControlName="content"
-    ></textarea>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Nhập tiêu đề"
+        formControlName="title"
+        [class.is-invalid]="form.get('title')?.touched && form.get('title')?.invalid"
+      />
 
-    <div class="fb-divider"></div>
+      <div class="invalid-feedback">
+        Vui lòng nhập tiêu đề
+      </div>
+    </div>
 
-    <!-- Ảnh đính kèm -->
-    <div class="fb-attach-title">Ảnh đính kèm</div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Nội dung phản ánh <span class="text-danger">*</span></label>
 
-    <div class="fb-attach-row">
-      <button type="button" class="fb-attach-box" (click)="onPickFile(fileInput)">
-        @if (previewUrl) {
-          <img [src]="previewUrl" alt="preview" />
-        } @else {
-          <span class="fb-plus">+</span>
-        }
-      </button>
+      <textarea
+        rows="6"
+        class="form-control"
+        placeholder="Nhập nội dung"
+        formControlName="content"
+        [class.is-invalid]="form.get('content')?.touched && form.get('content')?.invalid"
+      ></textarea>
+
+      <div class="invalid-feedback">
+        Vui lòng nhập nội dung
+      </div>
+    </div>
+
+    <hr class="my-3"/>
+
+    <div class="mb-2">
+      <label class="form-label fw-semibold mb-2">Ảnh đính kèm</label>
+
+      <div class="d-flex align-items-center gap-3">
+        <button
+          type="button"
+          class="btn btn-outline-secondary p-0 overflow-hidden"
+          style="width:84px;height:84px;border-radius:14px;"
+          (click)="onPickFile(fileInput)"
+          [disabled]="uploading"
+        >
+          @if (previewUrl) {
+            <img
+              [src]="previewUrl"
+              alt="preview"
+              style="width:100%;height:100%;object-fit:cover;display:block;"
+            />
+          } @else {
+            <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 text-muted">
+              <i class="fa-solid fa-plus"></i>
+              <small class="mt-1">Chọn ảnh</small>
+            </div>
+          }
+        </button>
+
+        <div class="flex-grow-1">
+          <div class="small text-muted">
+            Chỉ nhận ảnh (jpg/png). Dung lượng nên &lt; 5MB.
+          </div>
+
+          @if (uploading) {
+            <div class="d-flex align-items-center gap-2 mt-2">
+              <div class="spinner-border spinner-border-sm" role="status"></div>
+              <span class="small">Đang upload ảnh...</span>
+            </div>
+          } @else if (previewUrl && !imagePath) {
+            <div class="text-danger small mt-2">
+              Ảnh chưa upload thành công.
+            </div>
+          } @else if (imagePath) {
+            <div class="text-success small mt-2 d-flex align-items-center gap-2">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Ảnh đã upload</span>
+            </div>
+          }
+        </div>
+      </div>
 
       <input
         #fileInput
         type="file"
         accept="image/*"
         hidden
+        (click)="fileInput.value=''"
         (change)="onFileChange($event)"
       />
     </div>
 
-    <div class="fb-divider"></div>
+    <hr class="my-3"/>
 
-    <!-- Submit -->
-    <button class="fb-submit" type="submit">
-      <span>Gửi phản ánh</span>
-      <i class="fa-solid fa-chevron-right"></i>
+    <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2"
+            type="submit"
+            [disabled]="loading || uploading">
+      <span>{{ loading ? 'Đang gửi...' : 'Gửi phản ánh' }}</span>
+      <i class="fa-solid"
+         [class.fa-chevron-right]="!loading"
+         [class.fa-circle-notch]="loading"
+         [class.fa-spin]="loading"></i>
     </button>
 
   </form>

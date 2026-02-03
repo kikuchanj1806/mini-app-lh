@@ -12,3 +12,9 @@ export interface IResponseApi<T = IResDataDefault, TMess = any[]> {
   messages: TMess,
   data: T,
 }
+
+export interface IResponseApiZma<T = IResDataDefault, TMess = any[]> {
+  status: string,
+  data: T,
+  http_code: number
+}

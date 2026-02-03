@@ -1,0 +1,23 @@
+<section class="news-detail">
+  @if (item) {
+    <div class="nd-header">
+      <div class="nd-badge">
+        <i class="fa-regular fa-file-lines"></i>
+        <span>Tin tức</span>
+      </div>
+
+      <div class="nd-date">
+        <i class="fa-regular fa-calendar"></i>
+        <span>{{ toMs(item.published_at) ? (toMs(item.published_at) | date:'dd/MM/yyyy') : '' }}</span>
+      </div>
+    </div>
+
+    <div class="nd-content">
+      @if (safeContent) {
+        <div class="nd-html" [innerHTML]="safeContent"></div>
+      } @else {
+        <div class="nd-no-content">Bài viết chưa có nội dung.</div>
+      }
+    </div>
+  }
+</section>

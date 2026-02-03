@@ -6,7 +6,7 @@ import {map, shareReplay, switchMap} from 'rxjs/operators';
 import {GetSettingReturn} from 'zmp-sdk/';
 import {ZmpService} from '../../../../core/services';
 import {UserApiService} from '../../api/user/user-api.service';
-import {IResponseApi} from '../../../../core/models';
+import {IResponseApi, IResponseApiZma} from '../../../../core/models';
 import {ZmaTokenStorage} from './zma-token-storage.service';
 
 @Injectable({providedIn: 'root'})
@@ -32,7 +32,7 @@ export class UserManageService {
   }
 
   /** Refresh token: gọi /api/zma/auth/sync */
-  refresh$(appId: string): Observable<string> {
+  refresh$(appId: string, phone?: number): Observable<string> {
     if (this.refreshing) return this.refreshing;
 
     this.refreshing = from(getAccessToken()).pipe(
@@ -40,7 +40,7 @@ export class UserManageService {
       map((x: any) => (typeof x === 'string' ? x : (x?.accessToken ?? ''))),
       switchMap((zaloAccessToken: string) => {
         if (!zaloAccessToken) throw new Error('Cannot get zaloAccessToken');
-        return this.userApi.syncAuth({ appId, zaloAccessToken });
+        return this.userApi.syncAuth({ appId, zaloAccessToken, phone });
       }),
       map((res: any) => {
         const token = res?.data?.token;
@@ -136,8 +136,9 @@ export class UserManageService {
                 this.userApi
                   .getPhoneNumber({ access_token: accessToken, code: token } as IUserPhoneRequestParams)
                   .pipe(
-                    map((res: IResponseApi<IResPhoneNumber>) => {
-                      if (!res?.code) return { perms, userInfo };
+                    map((res: IResponseApiZma<IResPhoneNumber>) => {
+                      if(res.status !== 'success') return { perms, userInfo };
+
                       const phone = res?.data?.phone;
                       if (!phone) return { perms, userInfo };
                       const updatedUser = { ...userInfo, phoneNumber: phone };
