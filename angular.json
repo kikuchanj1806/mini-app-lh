@@ -101,6 +101,10 @@
               "buildTarget": "mini-app-STT:build:development"
             }
           },
+          "options": {
+            "port": 4206,
+            "liveReload": true
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

@@ -155,9 +155,18 @@
         </div>
 
         <!-- Banner -->
-        <a class="oc-banner" href="javascript:void(0)" (click)="onOpenBanner()">
-          <img src="https://dongnamajsc.vn/wp-content/uploads/2025/04/nghiquyet57-nqtw-1736735560184290766350-42903497373204048292592-64882587803620768853750.webp" alt="banner" />
-        </a>
+<!--        <a class="oc-banner" href="javascript:void(0)" (click)="onOpenBanner()">-->
+<!--          <img src="https://dongnamajsc.vn/wp-content/uploads/2025/04/nghiquyet57-nqtw-1736735560184290766350-42903497373204048292592-64882587803620768853750.webp" alt="banner" />-->
+<!--        </a>-->
+        @if (bannerMiddle) {
+          <a class="oc-banner" href="javascript:void(0)" (click)="onOpenBanner()">
+            <img
+              [src]="getBannerImgUrl(bannerMiddle)"
+              alt="banner"
+              loading="lazy"
+            />
+          </a>
+        }
       </div>
     </div>
   </section>

@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {finalize, Subscription, takeUntil} from 'rxjs';
+import {finalize, Observable, of, Subscription, takeUntil} from 'rxjs';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
-import {IResBanner} from '../../../../shared/models/api';
 import {WeatherService} from '../../../../shared/services/weather.service';
 import {openPhone, openWebview} from 'zmp-sdk/apis';
 import {NotifyService, UserService} from '../../../../core/services';
@@ -13,6 +12,10 @@ import {OffcanvasCustomService} from '../../../../shared/services/modal-canvas-c
 import {Router} from '@angular/router';
 import {FollowOfficialService} from '../../../../shared/services/feature-specific/home/follow-official.service';
 import {IResNewsItem, NewApiService} from '../../../../shared/services/api/news/new-api.service';
+import {BannerApiService} from '../../../../shared/services/api/banners/banner-api.service';
+import {BannerPositionKey, IResBanner, IResBannerT} from '../../../../shared/models/api';
+import {catchError, map, shareReplay} from 'rxjs/operators';
+import {BannerCacheService} from '../../../../shared/models/feature-specific/banner/banner-cache.service';
 
 type UiTool = { key: string; label: string; iconUrl: string; route?: string };
 type ExtraService = { key: string; label: string; iconUrl: string; colorClass: string; route?: string };
@@ -24,7 +27,9 @@ type ExtraService = { key: string; label: string; iconUrl: string; colorClass: s
   standalone: false,
 })
 export class HomeComponent extends AppCommonComponent implements OnInit, OnDestroy {
-  slides: IResBanner[] = [];
+  bannerMiddle: IResBanner | null = null;
+  slides: IResBannerT[] = [];
+
   hasFollowed = false;
   private oaId = environment.OAId;
 
@@ -85,7 +90,9 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     private offCanvasService: OffcanvasCustomService,
     private route: Router,
     private users: UserService,
-    private newsApi: NewApiService
+    private newsApi: NewApiService,
+    private bannerApi: BannerApiService,
+    private bannerCache: BannerCacheService,
   ) {
     super();
   }
@@ -97,24 +104,77 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     const stored = this.users.userInfoValue ?? this.appService.getUserInfo;
     this.hasFollowed = !!stored?.followedOA;
 
-    this.slides = [
-      {
-        id: 1,
-        name: '',
-        image: 'assets/img/banners/banner_main_zma_STT.jpg',
-        intro: '',
-        description: '',
-        typeVideo: false
-      },
-    ];
-
     this.loadWeather();
     this.loadNews();
+
+    this.loadBannerTop();
+    this.loadBannerMiddle();
   }
 
   ngOnDestroy() {
     this.subs.unsubscribe();
     this.getDestroySubs();
+  }
+
+  private loadBannerTop(): void {
+    const wardId = Number(environment.wardId || 0);
+    if (!wardId) return;
+
+    this.bannerCache.getFirstBannerOnce({
+      ward_id: wardId,
+      position_key: 'HOME_TOP',
+    }).pipe(
+      catchError(() => of(null)),
+      takeUntil(this.destroyed),
+    ).subscribe((b) => {
+      const image = b?.image_url ?? '';
+      this.slides = image
+        ? [{
+          id: b!.id,
+          name: b?.title ?? '',
+          image,
+          intro: '',
+          description: '',
+          typeVideo: false,
+        }]
+        : [];
+    });
+  }
+
+  private loadBannerMiddle(): void {
+    const wardId = Number(environment.wardId || 0);
+    if (!wardId) return;
+
+    this.bannerCache.getFirstBannerOnce({
+      ward_id: wardId,
+      position_key: 'HOME_MIDDLE',
+    }).pipe(
+      catchError(() => of(null)),
+      takeUntil(this.destroyed),
+    ).subscribe((b) => {
+      this.bannerMiddle = b;
+    });
+  }
+
+  async onOpenBanner() {
+    const url = this.bannerMiddle?.link_url;
+    if (!url) return;
+
+    try {
+      await openWebview({
+        url,
+        config: {
+          style: 'normal',
+        },
+      });
+    } catch (e) {
+      window.open(url, '_blank');
+    }
+  }
+
+  getBannerImgUrl(b: IResBanner | null): string {
+    if (!b) return '';
+    return (b.image_url || b.image || '').trim();
   }
 
   loadNews() {
@@ -138,6 +198,18 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   async onToolClick(it: UiTool, ev?: Event) {
+    const categoryByKey: Record<string, number> = {
+      law: 14,
+      security: 15,
+      directive: 16,
+      culture: 17,
+    };
+
+    const categoryId = categoryByKey[it.key];
+    if (categoryId) {
+      return this.navService.redirect(['/news'], { queryParams: { categoryId } });
+    }
+
     const externalMap: Record<string, string> = {
       online:
         'https://dichvucong.gov.vn/p/home/dvc-dich-vu-cong-truc-tuyen-ds.html?pCoQuanId=387628&typeInapp=1',
@@ -278,10 +350,6 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
 
   onUpdate247() {
     console.log('Update 24/7');
-  }
-
-  onOpenBanner() {
-    console.log('Open banner detail');
   }
 
   onViewAllNews() {

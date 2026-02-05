@@ -50,6 +50,7 @@ export class ApiInterceptor implements HttpInterceptor {
     if (u.includes('/api/questions')) return req.method !== 'GET';
     if (u.includes('/api/timeslot')) return req.method !== 'GET';
     if (u.includes('/api/appointmentfield')) return req.method !== 'GET';
+    if (u.includes('/api/public/banners')) return req.method !== 'GET';
 
     return false;
   }

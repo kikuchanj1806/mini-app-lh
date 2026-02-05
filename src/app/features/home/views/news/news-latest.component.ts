@@ -41,11 +41,19 @@ export class NewsLatestComponent extends AppCommonComponent implements OnInit, O
     const wardId = Number(environment.wardId);
 
     this.loading = true;
-    this.newsApi.newsList({
+
+    const params: any = {
       ward_id: wardId,
       page: 1,
-      perPage: 10,
-    })
+      perPage: 20,
+    };
+
+    const categoryId = this.navService.getParam('categoryId') ?? null;
+    if (categoryId != null) {
+      params.categoryId = categoryId;
+    }
+
+    this.newsApi.newsList(params)
       .pipe(
         takeUntil(this.destroyed),
         finalize(() => (this.loading = false))
