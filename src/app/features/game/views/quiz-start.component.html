@@ -1,0 +1,18 @@
+<div class="quiz-start">
+  <div class="quiz-hero">
+    <div class="quiz-title">TRẮC NGHIỆM</div>
+    <div class="quiz-sub">TÌM HIỂU PHÁP LUẬT</div>
+
+    <div class="quiz-count">
+      Số câu hỏi: <b>{{ questionsCount }}</b>
+    </div>
+
+    <button class="btn-primary" type="button" [disabled]="loading || questionsCount === 0" (click)="onStartClick()">
+      {{ authLoading ? 'Đang xác thực...' : (loading ? 'Đang tải...' : 'THAM GIA CUỘC THI') }}
+    </button>
+
+    <button class="btn-secondary" type="button" [disabled]="loading" (click)="onOpenRanking()">
+      {{ authLoading ? 'Đang xác thực...' : 'XEM BẢNG XẾP HẠNG' }}
+    </button>
+  </div>
+</div>

@@ -14,6 +14,7 @@
         (click)="setRate(i + 1)"
         [attr.aria-checked]="displayRate >= (i + 1)"
         role="radio"
+        [disabled]="submitting"
       >
         <svg viewBox="0 0 24 24" class="star" [class.filled]="displayRate >= (i + 1)">
           <path
@@ -29,6 +30,7 @@
         [(ngModel)]="comment"
         rows="5"
         placeholder="Nhập nội dung đánh giá..."
+        [disabled]="submitting"
       ></textarea>
     </div>
 
@@ -36,10 +38,10 @@
     <button
       type="button"
       class="btn-submit"
-      [disabled]="!rating"
+      [disabled]="!rating || submitting"
       (click)="submit()"
     >
-      Gửi đánh giá
+      {{ submitting ? 'Đang gửi...' : 'Gửi đánh giá' }}
     </button>
   </div>
 </div>

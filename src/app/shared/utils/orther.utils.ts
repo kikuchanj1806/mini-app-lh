@@ -1,6 +1,7 @@
 import {IAddressLocation} from '../models/global';
 import {IResProduct, IResProductChild, IResProductDetail} from '../models/api';
 import {HttpErrorResponse} from '@angular/common/http';
+import {IResQuestion, OptionKey} from '../models/feature-specific/game/question.model';
 type TicketConflictCode = 'SLOT_FULL'|'FIELD_DAILY_LIMIT_REACHED'|'DUPLICATE_BOOKING';
 
 export function parse409(err: unknown): { code?: TicketConflictCode; message?: string } | null {
@@ -97,4 +98,13 @@ export function toProductDetail(p: IResProduct): IResProductDetail {
 
     childs: children,
   };
+}
+
+export function calcCorrectCount(questions: IResQuestion[], answers: Record<number, OptionKey | null>): number {
+  let c = 0;
+  for (const q of questions) {
+    const chosen = answers[q.id] ?? null;
+    if (chosen && chosen === q.correct_option) c++;
+  }
+  return c;
 }

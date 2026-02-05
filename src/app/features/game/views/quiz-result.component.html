@@ -1,0 +1,60 @@
+<div class="qr-page">
+  <div class="qr-summary card">
+    <div class="card-body">
+      <div class="qr-title">Bạn đã hoàn thành bài thi</div>
+
+      <div class="qr-stats">
+        <div class="qr-stat">
+          <div class="qr-stat__label">Số câu đúng</div>
+          <div class="qr-stat__value">{{ correctCount }}/{{ total }}</div>
+        </div>
+
+        <div class="qr-stat">
+          <div class="qr-stat__label">Thời gian</div>
+          <div class="qr-stat__value">{{ durationSeconds }}s</div>
+        </div>
+      </div>
+
+      <div class="qr-actions">
+        <button type="button" class="btn btn-outline-secondary" (click)="toPlay()">
+          Xem lại
+        </button>
+        <button type="button" class="btn btn-primary" (click)="toStartNew()">
+          Làm lại
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="qr-list">
+    @for (row of rows; track row.q.id) {
+      <div class="qr-item card">
+        <div class="card-body">
+          <div class="qr-q">
+            <span class="qr-q__no">Câu {{ $index + 1 }}.</span>
+            <span class="qr-q__text">{{ row.q.content }}</span>
+          </div>
+
+          <div class="qr-opts">
+            @for (k of optionKeys; track k) {
+              <div
+                class="qr-opt"
+                [class.is-picked]="row.picked === k"
+                [class.is-correct]="row.correct === k"
+              >
+                <div class="qr-opt__key">{{ k }}</div>
+                <div class="qr-opt__text">{{ row.q.options[k] }}</div>
+
+                @if (row.correct === k) {
+                  <span class="qr-badge qr-badge--ok">Đúng</span>
+                } @else if (row.picked === k) {
+                  <span class="qr-badge qr-badge--bad">Bạn chọn</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

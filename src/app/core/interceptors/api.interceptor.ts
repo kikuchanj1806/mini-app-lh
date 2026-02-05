@@ -44,6 +44,8 @@ export class ApiInterceptor implements HttpInterceptor {
     if (u.includes('/api/newscategories')) return true;
     if (u.includes('/api/zma/upload')) return true;
     if (u.includes('/api/zma/feedbacks')) return true;
+    if (u.includes('/api/zma/quiz-results-zma')) return true;
+    if (u.includes('/api/zma/quiz-results-zma/ranking')) return true;
 
     // mixed endpoints: GET public list/show but CRUD protected
     if (u.includes('/api/news')) return req.method !== 'GET';

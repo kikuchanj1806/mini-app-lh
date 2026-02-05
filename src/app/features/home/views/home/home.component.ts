@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {finalize, Observable, of, Subscription, takeUntil} from 'rxjs';
+import {finalize, of, Subscription, takeUntil} from 'rxjs';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 import {WeatherService} from '../../../../shared/services/weather.service';
 import {openPhone, openWebview} from 'zmp-sdk/apis';
@@ -12,9 +12,8 @@ import {OffcanvasCustomService} from '../../../../shared/services/modal-canvas-c
 import {Router} from '@angular/router';
 import {FollowOfficialService} from '../../../../shared/services/feature-specific/home/follow-official.service';
 import {IResNewsItem, NewApiService} from '../../../../shared/services/api/news/new-api.service';
-import {BannerApiService} from '../../../../shared/services/api/banners/banner-api.service';
-import {BannerPositionKey, IResBanner, IResBannerT} from '../../../../shared/models/api';
-import {catchError, map, shareReplay} from 'rxjs/operators';
+import {IResBanner, IResBannerT} from '../../../../shared/models/api';
+import {catchError} from 'rxjs/operators';
 import {BannerCacheService} from '../../../../shared/models/feature-specific/banner/banner-cache.service';
 
 type UiTool = { key: string; label: string; iconUrl: string; route?: string };
@@ -66,7 +65,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     {key: 'feedback', label: 'Phản ánh', iconUrl: '/assets/img/icons/phan_hoi.png', route: 'feedback'},
     {key: 'online', label: 'Công dịch vụ công trực tuyến', iconUrl: '/assets/img/icons/dich_vu_cong.png'},
 
-    {key: 'quiz', label: 'Trắc nghiệm pháp luật', iconUrl: '/assets/img/icons/testing.png'},
+    {key: 'quiz', label: 'Trắc nghiệm pháp luật', iconUrl: '/assets/img/icons/testing.png', route: 'quiz'},
     {key: 'penalty', label: 'Tra cứu phạt nguội', iconUrl: '/assets/img/icons/smart-car.png'},
     {key: 'tv', label: 'Truyền hình Hải Phòng', iconUrl: '/assets/img/icons/radio.png'},
     {key: 'video', label: 'Video hướng dẫn', iconUrl: '/assets/img/icons/video.png'},
@@ -91,7 +90,6 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     private route: Router,
     private users: UserService,
     private newsApi: NewApiService,
-    private bannerApi: BannerApiService,
     private bannerCache: BannerCacheService,
   ) {
     super();
@@ -207,7 +205,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
 
     const categoryId = categoryByKey[it.key];
     if (categoryId) {
-      return this.navService.redirect(['/news'], { queryParams: { categoryId } });
+      return this.navService.redirect(['/news'], {queryParams: {categoryId}});
     }
 
     const externalMap: Record<string, string> = {

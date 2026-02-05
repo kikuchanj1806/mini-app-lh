@@ -1,5 +1,6 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { showToast } from 'zmp-sdk/apis';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-review',
@@ -12,6 +13,9 @@ export class ReviewComponent extends AppCommonComponent implements OnInit, OnDes
   hoverRating = 0;
   comment = '';
 
+  submitting = false;
+  showSuccess = false;
+
   ngOnInit() {
     this.setHeader({ variant: 'title', show: true, back: true, title: 'Đánh giá dịch vụ' });
   }
@@ -20,22 +24,32 @@ export class ReviewComponent extends AppCommonComponent implements OnInit, OnDes
     this.getDestroySubs();
   }
 
-  setRate(v: number) {
-    this.rating = v;
-  }
-
-  setHover(v: number) {
-    this.hoverRating = v;
-  }
-
-  clearHover() {
-    this.hoverRating = 0;
-  }
+  setRate(v: number) { this.rating = v; }
+  setHover(v: number) { this.hoverRating = v; }
+  clearHover() { this.hoverRating = 0; }
 
   submit() {
-    // UI demo
-    if (!this.rating) return;
-    console.log('submit review', { rating: this.rating, comment: this.comment });
+    if (!this.rating || this.submitting) return;
+
+    this.submitting = true;
+
+    // fake API delay
+    setTimeout(() => {
+      console.log('submit review', { rating: this.rating, comment: this.comment });
+
+      this.submitting = false;
+
+      showToast({ message: 'Gửi đánh giá thành công!' });
+      this.showSuccess = true;
+
+      this.rating = 0;
+      this.hoverRating = 0;
+      this.comment = '';
+    }, 700);
+  }
+
+  closeSuccess(): void {
+    this.showSuccess = false;
   }
 
   get displayRate(): number {

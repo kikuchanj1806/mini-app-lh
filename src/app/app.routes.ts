@@ -16,6 +16,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/book-appointment/book-appointment.module').then(m => m.BookAppointmentModule)
       },
+      {
+        path: 'quiz',
+        loadChildren: () =>
+          import('./features/game/quiz.module').then(m => m.QuizModule)
+      },
     ]
   },
   // Redirect bất kỳ đường dẫn không khớp nào về trang chủ
