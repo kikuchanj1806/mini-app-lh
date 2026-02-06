@@ -9,6 +9,25 @@ import {
 import {IResponseApi, IResponseApiZma} from '../../../../core/models';
 import {uriApiConst} from '../../../constants';
 
+export interface IResTthcVideoItem {
+  id: number;
+  title: string;
+  excerpt?: string | null;      // mô tả ngắn
+  thumbnail?: string | null;    // ảnh đại diện
+  video_url?: string | null;    // link video (youtube/mp4)
+  published_at?: number | null; // unix seconds (nếu có)
+  created_at?: number | null;   // unix seconds (nếu có)
+}
+
+export type TthcVideoListItemVM = {
+  id: number;
+  title: string;
+  subtitle: string;
+  thumbnail: string | null;
+  publishedMs: number | null;
+  raw: IResTthcVideoItem;
+};
+
 @Injectable({providedIn: 'root'})
 export class UserApiService extends ApiService {
 
@@ -31,4 +50,12 @@ export class UserApiService extends ApiService {
   sendMessageZma = (params: ISendMessageZmaParams) => {
     return this.post<IResponseApi>(uriApiConst.user.sendMessageZma, params)
   }
+
+  getWardDetail(params: { ward_id: number }) {
+    return this.get<any>(`/api/wards/${params.ward_id}`, {});
+  }
+
+  list = (params: any) => {
+    return this.get<IResponseApiZma<IResTthcVideoItem[]>>('', params);
+  };
 }

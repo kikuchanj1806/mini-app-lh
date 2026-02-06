@@ -7,6 +7,8 @@ import {AskedQuestionsComponent} from './views/asked-questions/asked-questions.c
 import {ReviewComponent} from './views/review/review.component';
 import {MapsComponent} from './views/maps/maps.component';
 import {NewDetailComponent} from './views/news/new-detail.component';
+import {TthcVideoListComponent} from './views/tthc-video/tthc-video-list.component';
+import {TthcVideoPlayerComponent} from './views/tthc-video/tthc-video-player.component';
 
 const routes: Routes = [
   {
@@ -37,10 +39,13 @@ const routes: Routes = [
     path: 'newdetail',
     component: NewDetailComponent
   },
+  {path: 'tthc/videos', component: TthcVideoListComponent},
+  {path: 'tthc/videos/player', component: TthcVideoPlayerComponent}
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class HomeRoutingModule {}
+export class HomeRoutingModule {
+}

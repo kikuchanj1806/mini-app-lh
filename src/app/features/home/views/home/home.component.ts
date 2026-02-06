@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {finalize, of, Subscription, takeUntil} from 'rxjs';
+import {finalize, of, Subscription, takeUntil, tap} from 'rxjs';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 import {WeatherService} from '../../../../shared/services/weather.service';
 import {openPhone, openWebview} from 'zmp-sdk/apis';
@@ -13,8 +13,9 @@ import {Router} from '@angular/router';
 import {FollowOfficialService} from '../../../../shared/services/feature-specific/home/follow-official.service';
 import {IResNewsItem, NewApiService} from '../../../../shared/services/api/news/new-api.service';
 import {IResBanner, IResBannerT} from '../../../../shared/models/api';
-import {catchError} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {BannerCacheService} from '../../../../shared/models/feature-specific/banner/banner-cache.service';
+import {UserApiService} from '../../../../shared/services/api/user/user-api.service';
 
 type UiTool = { key: string; label: string; iconUrl: string; route?: string };
 type ExtraService = { key: string; label: string; iconUrl: string; colorClass: string; route?: string };
@@ -43,11 +44,11 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   weatherIconClass = 'wx-cloud';
 
   stats = {
-    population: 31736,
-    area: '24,56 km2',
-    services: '25+',
-    satisfaction: '98%',
-    updatedMonth: '1/2026'
+    population: 0,
+    area: '--',
+    services: '--',
+    satisfaction: '--',
+    updatedMonth: ''
   };
   mainTools: UiTool[] = [
     {
@@ -63,13 +64,14 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     {key: 'directive', label: 'Tin chỉ đạo - điều hành', iconUrl: '/assets/img/icons/canh_bao.png'},
     {key: 'culture', label: 'Văn hóa – Xã hội – Du lịch', iconUrl: '/assets/img/icons/du_lich.png'},
     {key: 'feedback', label: 'Phản ánh', iconUrl: '/assets/img/icons/phan_hoi.png', route: 'feedback'},
-    {key: 'online', label: 'Công dịch vụ công trực tuyến', iconUrl: '/assets/img/icons/dich_vu_cong.png'},
+    {key: 'online', label: 'Cổng dịch vụ công trực tuyến', iconUrl: '/assets/img/icons/dich_vu_cong.png'},
 
     {key: 'quiz', label: 'Trắc nghiệm pháp luật', iconUrl: '/assets/img/icons/testing.png', route: 'quiz'},
     {key: 'penalty', label: 'Tra cứu phạt nguội', iconUrl: '/assets/img/icons/smart-car.png'},
     {key: 'tv', label: 'Truyền hình Hải Phòng', iconUrl: '/assets/img/icons/radio.png'},
-    {key: 'video', label: 'Video hướng dẫn', iconUrl: '/assets/img/icons/video.png'},
+    {key: 'video', label: 'Video hướng dẫn', iconUrl: '/assets/img/icons/video.png', route: 'tthc/videos'},
   ];
+
   extraServices: ExtraService[] = [
     {key: 'rate', label: 'Đánh giá', iconUrl: '/assets/img/icons/danh_gia.png', colorClass: 'extra-red'},
     {key: 'qa', label: 'Hỏi đáp', iconUrl: '/assets/img/icons/cau_hoi.png', colorClass: 'extra-blue'},
@@ -91,6 +93,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     private users: UserService,
     private newsApi: NewApiService,
     private bannerCache: BannerCacheService,
+    private userApiService: UserApiService,
   ) {
     super();
   }
@@ -98,9 +101,11 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   ngOnInit() {
     this.setHeader({variant: 'title', title: '', show: false})
     this.setToday();
-
+    const wardId = Number(environment.wardId || 0);
     const stored = this.users.userInfoValue ?? this.appService.getUserInfo;
     this.hasFollowed = !!stored?.followedOA;
+
+    this.loadWardStats(wardId);
 
     this.loadWeather();
     this.loadNews();
@@ -112,6 +117,52 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   ngOnDestroy() {
     this.subs.unsubscribe();
     this.getDestroySubs();
+  }
+
+  private loadWardStats(wardId: number): void {
+    this.userApiService.getWardDetail({ward_id: wardId}).pipe(
+      map((res: any) => res?.data ?? null),
+      tap((w) => {
+        if (!w) return;
+
+        const population = Number(w.population ?? 0);
+
+        const areaKm2 = Number(w.area_km2 ?? 0);
+        const areaText = areaKm2 > 0 ? this.formatKm2(areaKm2) : '--';
+
+        const servicesCount = Number(w.services_count ?? 0);
+        const servicesText = servicesCount > 0 ? `${servicesCount}+` : '--';
+
+        const avg = Number(w.satisfaction_avg ?? 0);
+        const percent = avg > 0 ? Math.round((avg / 5) * 100) : 0;
+        const satisfactionText = avg > 0 ? `${percent}%` : '--';
+
+        const updatedAt = Number(w.updated_at ?? 0);
+        const updatedMonth = updatedAt ? this.formatMonthYearFromUnix(updatedAt) : '';
+
+        this.stats = {
+          population,
+          area: areaText,
+          services: servicesText,
+          satisfaction: satisfactionText,
+          updatedMonth
+        };
+      }),
+      catchError(() => of(null)),
+      takeUntil(this.destroyed)
+    ).subscribe();
+  }
+
+  private formatKm2(v: number): string {
+    const s = v.toFixed(2).replace('.', ',');
+    return `${s} km2`;
+  }
+
+  private formatMonthYearFromUnix(unixSeconds: number): string {
+    const d = new Date(unixSeconds * 1000);
+    const m = d.getMonth() + 1;
+    const y = d.getFullYear();
+    return `${m}/${y}`;
   }
 
   private loadBannerTop(): void {
@@ -303,10 +354,6 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     }
   }
 
-  onHotline() {
-    console.log('Call hotline');
-  }
-
   onFollowOfficial() {
     if (this.hasFollowed) return;
 
@@ -342,22 +389,8 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
       });
   }
 
-  onQuickNotify() {
-    console.log('Quick notify');
-  }
-
-  onUpdate247() {
-    console.log('Update 24/7');
-  }
-
   onViewAllNews() {
     console.log('View all news');
-  }
-
-  onOpenNews(item: any) {
-    if (!item?.id) return;
-    // route tuỳ bạn: /news/:id
-    this.route.navigate(['news', item.id]);
   }
 
   callNow(phone: string) {

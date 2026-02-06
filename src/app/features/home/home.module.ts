@@ -11,6 +11,8 @@ import {AskedQuestionsComponent} from './views/asked-questions/asked-questions.c
 import {ReviewComponent} from './views/review/review.component';
 import {MapsComponent} from './views/maps/maps.component';
 import {NewDetailComponent} from './views/news/new-detail.component';
+import {TthcVideoListComponent} from './views/tthc-video/tthc-video-list.component';
+import {TthcVideoPlayerComponent} from './views/tthc-video/tthc-video-player.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import {NewDetailComponent} from './views/news/new-detail.component';
     AskedQuestionsComponent,
     ReviewComponent,
     MapsComponent,
-    NewDetailComponent
+    NewDetailComponent,
+    TthcVideoListComponent,
+    TthcVideoPlayerComponent
   ],
   imports: [
     CommonModule,
