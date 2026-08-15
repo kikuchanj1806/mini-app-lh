@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100%;
-  background: #f3f7fc;
+  background: #f4f7fb;
 }
 
 button {
@@ -11,21 +11,21 @@ button {
 .home-screen {
   min-height: 100%;
   background:
-    linear-gradient(180deg, #eef7ff 0%, #f8fbff 34%, #ffffff 100%);
+    linear-gradient(180deg, #f0f7ff 0%, #f7f9fc 36%, #f4f7fb 100%);
 }
 
 .home-hero {
   position: relative;
   width: 100%;
   max-width: 430px;
-  min-height: 314px;
+  min-height: 306px;
   margin: 0 auto;
-  padding: calc(max(22px, var(--zaui-safe-area-inset-top)) + 8px) 16px 88px;
+  padding: calc(max(18px, var(--zaui-safe-area-inset-top)) + 8px) 16px 82px;
   overflow: hidden;
   color: #ffffff;
   background:
-    radial-gradient(circle at 74% 26%, rgba(84, 231, 255, 0.62), transparent 31%),
-    linear-gradient(135deg, #075eea 0%, #009af5 50%, #27cfdd 100%);
+    linear-gradient(90deg, rgba(0, 67, 193, 0.36) 0%, rgba(0, 127, 227, 0.14) 55%, rgba(0, 153, 203, 0.08) 100%),
+    url('/assets/img/banners/home-hero-building-bg.png') center 72% / cover no-repeat;
 }
 
 .home-hero::before {
@@ -35,7 +35,7 @@ button {
   background:
     radial-gradient(circle at 72% 42%, rgba(255, 255, 255, 0.22), transparent 26%),
     radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.16), transparent 28%),
-    linear-gradient(90deg, rgba(0, 85, 218, 0.78) 0%, rgba(0, 125, 230, 0.48) 52%, rgba(0, 183, 221, 0.18) 100%);
+    linear-gradient(90deg, rgba(0, 70, 196, 0.82) 0%, rgba(0, 117, 224, 0.52) 52%, rgba(0, 183, 221, 0.16) 100%);
   opacity: 1;
 }
 
@@ -45,8 +45,8 @@ button {
   left: 0;
   right: 0;
   bottom: -1px;
-  height: 84px;
-  background: linear-gradient(180deg, rgba(243, 247, 252, 0) 0%, #f3f7fc 88%);
+  height: 78px;
+  background: linear-gradient(180deg, rgba(244, 247, 251, 0) 0%, #f4f7fb 88%);
 }
 
 .hero-brand,
@@ -65,14 +65,14 @@ button {
 .hero-lockup {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   min-width: 0;
-  padding-top: 24px;
+  padding-top: 26px;
 }
 
 .hero-logo {
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   object-fit: contain;
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.25));
   flex: 0 0 auto;
@@ -86,7 +86,7 @@ button {
 .hero-eyebrow,
 .hero-province {
   overflow: hidden;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: 0;
@@ -102,7 +102,7 @@ button {
 
 .hero-title h1 {
   margin: 2px 0 0;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 900;
   line-height: 1.06;
   letter-spacing: 0;
@@ -181,21 +181,42 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 34px;
+  margin-top: 31px;
 }
 
 .weather-symbol {
+  position: relative;
   width: 35px;
   height: 35px;
   flex: 0 0 auto;
-  background: #ffffff;
+  background: transparent;
   filter: drop-shadow(0 7px 13px rgba(0, 51, 114, 0.28));
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
+  mask: none;
+  -webkit-mask: none;
+}
+
+.weather-symbol::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #ffd447;
+  box-shadow: 0 0 0 2px rgba(255, 212, 71, 0.12);
+}
+
+.weather-symbol::after {
+  content: "";
+  position: absolute;
+  right: 1px;
+  bottom: 5px;
+  width: 29px;
+  height: 15px;
+  border-radius: 12px 12px 8px 8px;
+  background: #ffffff;
+  box-shadow: -9px -5px 0 -2px #ffffff;
 }
 
 .weather-line {
@@ -228,20 +249,11 @@ button {
 }
 
 .hero-building {
-  position: absolute;
-  right: -18px;
-  bottom: 51px;
-  z-index: 1;
-  width: 198px;
-  height: 118px;
-  display: grid;
-  place-items: center;
-  color: rgba(255, 255, 255, 0.28);
-  transform: rotate(-2deg);
+  display: none;
 }
 
 .hero-building i {
-  font-size: 116px;
+  font-size: 122px;
   filter: drop-shadow(0 20px 24px rgba(0, 55, 110, 0.18));
 }
 
@@ -290,17 +302,17 @@ button {
   z-index: 3;
   width: 100%;
   max-width: 430px;
-  margin: -65px auto 0;
-  padding: 0 16px 20px;
+  margin: -59px auto 0;
+  padding: 0 16px 22px;
 }
 
 .quick-panel {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  min-height: 101px;
-  padding: 16px 8px;
+  min-height: 103px;
+  padding: 15px 8px;
   border: 1px solid rgba(219, 231, 245, 0.8);
-  border-radius: 20px;
+  border-radius: 21px;
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 16px 36px rgba(0, 80, 150, 0.14);
 }
@@ -368,11 +380,11 @@ button {
   display: grid;
   grid-template-columns: 58px minmax(0, 1fr) 116px;
   align-items: center;
-  min-height: 112px;
-  margin-top: 20px;
+  min-height: 111px;
+  margin-top: 19px;
   overflow: hidden;
-  border-radius: 11px;
-  padding: 18px;
+  border-radius: 12px;
+  padding: 17px;
   color: #ffffff;
   background:
     radial-gradient(circle at 83% 28%, rgba(44, 220, 255, 0.56), transparent 29%),
@@ -455,7 +467,7 @@ button {
 
 .feature-section,
 .news-section {
-  margin-top: 18px;
+  margin-top: 17px;
 }
 
 .section-heading {
@@ -471,18 +483,18 @@ button {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 11px;
 }
 
 .feature-tile {
   display: grid;
   min-width: 0;
-  min-height: 98px;
+  min-height: 99px;
   align-content: center;
   justify-items: center;
   border: 0;
-  border-radius: 8px;
-  padding: 10px 6px;
+  border-radius: 13px;
+  padding: 8px 4px;
   color: #ffffff;
   cursor: pointer;
   text-align: center;
@@ -499,7 +511,7 @@ button {
 .feature-tile strong {
   display: -webkit-box;
   width: 100%;
-  min-height: 27px;
+  // min-height: 27px;
   margin-top: 9px;
   overflow: hidden;
   font-size: 11px;
@@ -510,17 +522,17 @@ button {
 }
 
 .feature-tile span {
-  display: -webkit-box;
+  display: block;
   width: 100%;
-  min-height: 23px;
+  min-height: 0;
   margin-top: 3px;
   overflow: hidden;
   font-size: 10px;
   font-weight: 500;
   line-height: 1.18;
   opacity: 0.9;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tile-blue {
@@ -582,7 +594,7 @@ button {
 .news-list {
   display: grid;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 11px;
 }
 
 .news-item {
@@ -590,10 +602,10 @@ button {
   grid-template-columns: 132px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
-  min-height: 92px;
+  min-height: 94px;
   border: 1px solid rgba(224, 232, 243, 0.86);
-  border-radius: 8px;
-  padding: 9px;
+  border-radius: 11px;
+  padding: 8px 9px;
   background: #ffffff;
   box-shadow: 0 7px 20px rgba(25, 64, 122, 0.06);
   cursor: pointer;
@@ -602,7 +614,7 @@ button {
 .news-thumb {
   width: 100%;
   height: 76px;
-  border-radius: 7px;
+  border-radius: 8px;
   object-fit: cover;
   background: #dce6f2;
 }
@@ -735,8 +747,7 @@ button {
 
   .feature-tile {
     min-height: 88px;
-    padding-right: 4px;
-    padding-left: 4px;
+    padding: 7px 3px;
   }
 
   .feature-tile strong {

@@ -108,9 +108,9 @@
 .home-footer .footer-nav {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: end;
-  min-height: 74px;
+  min-height: 66px;
   overflow: visible;
-  padding: 8px 6px max(10px, env(safe-area-inset-bottom)) !important;
+  padding: 1px 6px max(5px, env(safe-area-inset-bottom)) !important;
   box-shadow: none !important;
 }
 
@@ -151,25 +151,25 @@
 }
 
 .home-footer .footer-tab--center {
-  transform: translateY(-17px);
+  transform: translateY(3px);
 }
 
 .home-footer .footer-tab--center i {
-  width: 58px;
-  height: 58px;
-  margin-bottom: 0;
-  border: 4px solid #ffffff;
+  width: 52px;
+  height: 52px;
+  margin-bottom: -1px;
+  border: 3px solid #ffffff;
   border-radius: 50%;
   background:
     radial-gradient(circle at 35% 28%, rgba(74, 231, 255, 0.55), transparent 31%),
     linear-gradient(135deg, #1aa3ff 0%, #0064e6 100%);
   color: #ffffff;
-  font-size: 25px;
+  font-size: 23px;
   box-shadow: 0 12px 24px rgba(0, 104, 226, 0.32);
 }
 
 .home-footer .footer-tab--center span {
-  margin-top: -3px;
+  margin-top: -1px;
   color: #182230;
   font-weight: 700;
 }

@@ -55,8 +55,8 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
 
   // Weather UI bindings
   locationLabel = 'Long Hưng, Hưng Yên';
-  weatherText = '';
-  temperatureText = '--°C';
+  weatherText = 'Mây rải rác';
+  temperatureText = '25.6°C';
   weatherIconClass = 'wx-cloud';
 
   stats = {
@@ -99,8 +99,8 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   featuredTools: HomeFeature[] = [
     {
       key: 'tthc',
-      label: 'Thủ tục hành chính',
-      sub: 'Tra cứu, nộp hồ sơ',
+      label: 'Thủ tục HC',
+      sub: 'Tra cứu & nộp hồ sơ',
       iconClass: 'fa-solid fa-file-circle-check',
       colorClass: 'tile-blue',
       externalUrl: 'https://dichvucong.gov.vn/tra-cuu-ho-so',
@@ -108,15 +108,15 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     {
       key: 'online',
       label: 'Tra cứu hồ sơ',
-      sub: 'Theo dõi tiến độ',
+      sub: 'Theo dõi hồ sơ',
       iconClass: 'fa-solid fa-folder-open',
       colorClass: 'tile-green',
       externalUrl: 'https://dichvucong.gov.vn/tra-cuu-ho-so',
     },
     {
       key: 'feedback',
-      label: 'Phản ánh kiến nghị',
-      sub: 'Gửi phản ánh',
+      label: 'Gửi phản ánh',
+      sub: 'Ý kiến của bạn',
       iconClass: 'fa-solid fa-comments',
       colorClass: 'tile-orange',
       route: '/feedback',
@@ -124,14 +124,14 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     {
       key: 'schedule',
       label: 'Lịch công tác',
-      sub: 'Theo dõi lịch',
+      sub: 'Xem lịch làm việc',
       iconClass: 'fa-solid fa-calendar-check',
       colorClass: 'tile-purple',
     },
     {
       key: 'documents',
-      label: 'Văn bản - Công văn',
-      sub: 'Tra cứu, tải về',
+      label: 'Văn bản',
+      sub: 'Tra cứu & tải về',
       iconClass: 'fa-solid fa-file-lines',
       colorClass: 'tile-teal',
       categoryId: 23,
@@ -139,7 +139,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     {
       key: 'qa',
       label: 'Hỏi đáp',
-      sub: 'Chatbot hỗ trợ',
+      sub: 'Hỗ trợ trực tuyến',
       iconClass: 'fa-solid fa-user-group',
       colorClass: 'tile-pink',
       route: '/asked',
@@ -147,7 +147,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     {
       key: 'survey',
       label: 'Khảo sát',
-      sub: 'Lấy ý kiến người dân',
+      sub: 'Gửi ý kiến',
       iconClass: 'fa-solid fa-chart-simple',
       colorClass: 'tile-cyan',
       externalUrl: 'https://forms.gle/BPyScAuL13n9da486',
@@ -155,7 +155,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     {
       key: 'map',
       label: 'Bản đồ số',
-      sub: 'Cơ sở dữ liệu đất đai',
+      sub: 'Dữ liệu đất đai',
       iconClass: 'fa-solid fa-location-dot',
       colorClass: 'tile-sky',
       route: '/map',
