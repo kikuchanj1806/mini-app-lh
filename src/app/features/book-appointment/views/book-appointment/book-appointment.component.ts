@@ -13,6 +13,7 @@ import {
   ZmaTicketApiService
 } from '../../../../shared/services/api/ticket/ticket-api.service';
 import {Router} from '@angular/router';
+import {formatTicketNumber, normalizeTicketDateYmd} from '../../../../shared/utils';
 
 @Component({
   selector: 'app-book-appointment',
@@ -38,6 +39,7 @@ export class BookAppointmentComponent extends AppCommonComponent implements OnIn
 
   loadingTickets = false;
   readonly maxTicketsPerDay = 2;
+
   constructor(
     private userMsService: UserManageService,
     private _notify: NotifyService,
@@ -79,6 +81,8 @@ export class BookAppointmentComponent extends AppCommonComponent implements OnIn
         })
       )
       .subscribe();
+
+    // this.step = 2 // Dùng để test màn đã login
   }
 
   ngOnDestroy() {
@@ -174,6 +178,10 @@ export class BookAppointmentComponent extends AppCommonComponent implements OnIn
   private normalizeTicket(x: IZmaTicketApi): IZmaTicket {
     const orderNumber = Number(x.orderNumber ?? 0);
     const status = Number(x.status ?? 0);
+    const appointmentDate = normalizeTicketDateYmd(
+      x.appointmentDate ?? x.appointment_date ?? x.createdAt ?? x.created_at
+    );
+    const createdAt = Number(x.createdAt ?? x.created_at ?? 0) || undefined;
 
     // timeSlot có thể trả startTime/endTime hoặc start_time/end_time
     const start = (x.timeSlot?.startTime ?? x.timeSlot?.start_time ?? '') as string;
@@ -192,11 +200,13 @@ export class BookAppointmentComponent extends AppCommonComponent implements OnIn
       serviceName,
       startTime: start ? start.toString().slice(0, 5) : undefined,
       endTime: end ? end.toString().slice(0, 5) : undefined,
+      appointmentDate,
+      createdAt,
     };
   }
 
   displayTicketNo(t: IZmaTicket): string {
-    return String(t.orderNumber ?? 0).padStart(3, '0');
+    return formatTicketNumber(t.orderNumber, t.appointmentDate ?? t.createdAt);
   }
 
   displayTimeRange(t: IZmaTicket): string {
@@ -266,7 +276,8 @@ export class BookAppointmentComponent extends AppCommonComponent implements OnIn
     const today = this.todayYmd();
 
     return (this.tickets ?? []).filter(t => {
-      return !('appointmentDate' in (t as any)) ? true : (t as any).appointmentDate === today;
+      const ticketDate = t.appointmentDate ?? normalizeTicketDateYmd(t.createdAt);
+      return !ticketDate || ticketDate === today;
     }).length;
   }
 

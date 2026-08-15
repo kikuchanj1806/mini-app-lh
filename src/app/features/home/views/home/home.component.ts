@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {finalize, of, Subscription, takeUntil, tap} from 'rxjs';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 import {WeatherService} from '../../../../shared/services/weather.service';
-import {openPhone, openWebview} from 'zmp-sdk/apis';
+import {createShortcut, openPhone, openWebview} from 'zmp-sdk/apis';
 import {NotifyService, UserService} from '../../../../core/services';
 import {ZmaShortcutService} from '../../../../shared/services/feature-specific/home/zm-shortcut.service';
 import {environment} from '../../../../../environments';
@@ -12,10 +12,26 @@ import {OffcanvasCustomService} from '../../../../shared/services/modal-canvas-c
 import {Router} from '@angular/router';
 import {FollowOfficialService} from '../../../../shared/services/feature-specific/home/follow-official.service';
 import {IResNewsItem, NewApiService} from '../../../../shared/services/api/news/new-api.service';
+import {MOCK_NEWS} from '../../../../shared/mock/news-mock.data';
 import {IResBanner, IResBannerT} from '../../../../shared/models/api';
 import {catchError, map} from 'rxjs/operators';
 import {BannerCacheService} from '../../../../shared/models/feature-specific/banner/banner-cache.service';
 import {UserApiService} from '../../../../shared/services/api/user/user-api.service';
+
+type HomeAction = {
+  key: string;
+  label: string;
+  sub: string;
+  iconClass: string;
+  route?: string;
+  externalUrl?: string;
+  phone?: string;
+  categoryId?: number;
+};
+
+type HomeFeature = HomeAction & {
+  colorClass: string;
+};
 
 type UiTool = { key: string; label: string; iconUrl: string; route?: string };
 type ExtraService = { key: string; label: string; iconUrl: string; colorClass: string; route?: string };
@@ -38,7 +54,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   todayDate = '';
 
   // Weather UI bindings
-  locationLabel = 'Trường Tân, Hải Phòng';
+  locationLabel = 'Long Hưng, Hưng Yên';
   weatherText = '';
   temperatureText = '--°C';
   weatherIconClass = 'wx-cloud';
@@ -50,33 +66,100 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     satisfaction: '--',
     updatedMonth: ''
   };
-  mainTools: UiTool[] = [
+  quickActions: HomeAction[] = [
     {
-      key: 'calendar',
-      label: 'Đăng ký lịch làm việc',
-      iconUrl: '/assets/img/icons/lich_lam_viec.png',
-      route: 'bookappointment'
+      key: 'news',
+      label: 'Tin tức',
+      sub: 'mới nhất',
+      iconClass: 'fa-regular fa-newspaper',
+      route: '/news',
     },
-    {key: 'map', label: 'Bản đồ', iconUrl: '/assets/img/icons/maps_icon.png', route: 'map'},
-    {key: 'law', label: 'Thư viện pháp luật', iconUrl: '/assets/img/icons/phap_luat.png'},
-    {key: 'security', label: 'Tin tức an ninh', iconUrl: '/assets/img/icons/news-paper.png'},
-
-    {key: 'directive', label: 'Tin chỉ đạo - điều hành', iconUrl: '/assets/img/icons/canh_bao.png'},
-    {key: 'culture', label: 'Văn hóa – Xã hội – Du lịch', iconUrl: '/assets/img/icons/du_lich.png'},
-    {key: 'feedback', label: 'Phản ánh', iconUrl: '/assets/img/icons/phan_hoi.png', route: 'feedback'},
-    {key: 'online', label: 'Cổng dịch vụ công trực tuyến', iconUrl: '/assets/img/icons/dich_vu_cong.png'},
-
-    {key: 'quiz', label: 'Trắc nghiệm pháp luật', iconUrl: '/assets/img/icons/testing.png', route: 'quiz'},
-    {key: 'penalty', label: 'Tra cứu phạt nguội', iconUrl: '/assets/img/icons/smart-car.png'},
-    {key: 'tv', label: 'Truyền hình Hải Phòng', iconUrl: '/assets/img/icons/radio.png'},
-    {key: 'video', label: 'Video hướng dẫn', iconUrl: '/assets/img/icons/video.png', route: 'tthc/videos'},
+    {
+      key: 'schedule',
+      label: 'Lịch công tác',
+      sub: 'hôm nay',
+      iconClass: 'fa-regular fa-calendar-days',
+    },
+    {
+      key: 'service',
+      label: 'Dịch vụ công',
+      sub: 'trực tuyến',
+      iconClass: 'fa-regular fa-desktop',
+      externalUrl: 'https://dichvucong.gov.vn/tra-cuu-ho-so',
+    },
+    {
+      key: 'feedback',
+      label: 'Phản ánh',
+      sub: 'hiện trường',
+      iconClass: 'fa-regular fa-camera',
+      route: '/feedback',
+    },
   ];
 
-  extraServices: ExtraService[] = [
-    {key: 'rate', label: 'Đánh giá', iconUrl: '/assets/img/icons/danh_gia.png', colorClass: 'extra-red'},
-    {key: 'qa', label: 'Hỏi đáp', iconUrl: '/assets/img/icons/cau_hoi.png', colorClass: 'extra-blue'},
-    {key: 'faq', label: 'Câu hỏi thường gặp', iconUrl: '/assets/img/icons/q&a.png', colorClass: 'extra-green'},
-    {key: 'shortcut', label: 'Tạo phím tắt', iconUrl: '/assets/img/icons/phim_tat.png', colorClass: 'extra-purple'},
+  featuredTools: HomeFeature[] = [
+    {
+      key: 'tthc',
+      label: 'Thủ tục hành chính',
+      sub: 'Tra cứu, nộp hồ sơ',
+      iconClass: 'fa-solid fa-file-circle-check',
+      colorClass: 'tile-blue',
+      externalUrl: 'https://dichvucong.gov.vn/tra-cuu-ho-so',
+    },
+    {
+      key: 'online',
+      label: 'Tra cứu hồ sơ',
+      sub: 'Theo dõi tiến độ',
+      iconClass: 'fa-solid fa-folder-open',
+      colorClass: 'tile-green',
+      externalUrl: 'https://dichvucong.gov.vn/tra-cuu-ho-so',
+    },
+    {
+      key: 'feedback',
+      label: 'Phản ánh kiến nghị',
+      sub: 'Gửi phản ánh',
+      iconClass: 'fa-solid fa-comments',
+      colorClass: 'tile-orange',
+      route: '/feedback',
+    },
+    {
+      key: 'schedule',
+      label: 'Lịch công tác',
+      sub: 'Theo dõi lịch',
+      iconClass: 'fa-solid fa-calendar-check',
+      colorClass: 'tile-purple',
+    },
+    {
+      key: 'documents',
+      label: 'Văn bản - Công văn',
+      sub: 'Tra cứu, tải về',
+      iconClass: 'fa-solid fa-file-lines',
+      colorClass: 'tile-teal',
+      categoryId: 23,
+    },
+    {
+      key: 'qa',
+      label: 'Hỏi đáp',
+      sub: 'Chatbot hỗ trợ',
+      iconClass: 'fa-solid fa-user-group',
+      colorClass: 'tile-pink',
+      route: '/asked',
+    },
+    {
+      key: 'survey',
+      label: 'Khảo sát',
+      sub: 'Lấy ý kiến người dân',
+      iconClass: 'fa-solid fa-chart-simple',
+      colorClass: 'tile-cyan',
+      externalUrl: 'https://forms.gle/BPyScAuL13n9da486',
+    },
+    {
+      key: 'map',
+      label: 'Bản đồ số',
+      sub: 'Cơ sở dữ liệu đất đai',
+      iconClass: 'fa-solid fa-location-dot',
+      colorClass: 'tile-sky',
+      route: '/map',
+    },
   ];
   private subs = new Subscription();
 
@@ -100,6 +183,18 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
 
   ngOnInit() {
     this.setHeader({variant: 'title', title: '', show: false})
+    this.setFooter({
+      variant: 'tabs',
+      show: true,
+      className: 'footer home-footer',
+      items: [
+        {path: '/', iconClass: 'fa-solid fa-house', label: 'Trang chủ', exact: true},
+        {path: '/feedback', iconClass: 'fa-light fa-pen-to-square', label: 'Phản ánh'},
+        {path: '__scan_qr__', iconClass: 'fa-solid fa-qrcode', label: 'Quét QR'},
+        {path: '/news', iconClass: 'fa-light fa-newspaper', label: 'Tin tức'},
+        {path: '__profile__', iconClass: 'fa-light fa-circle-user', label: 'Cá nhân'},
+      ],
+    });
     this.setToday();
     const wardId = Number(environment.wardId || 0);
     const stored = this.users.userInfoValue ?? this.appService.getUserInfo;
@@ -166,28 +261,39 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   private loadBannerTop(): void {
-    const wardId = Number(environment.wardId || 0);
-    if (!wardId) return;
+    // FAKE DATA (demo) — dùng ảnh banner local thay vì gọi API.
+    // Khi có API thật, bỏ đoạn dưới và mở lại đoạn gọi BannerCacheService bên dưới.
+    this.slides = [{
+      id: 0,
+      name: '',
+      image: '/assets/img/banners/93f5685b-e172-4c80-9941-b2c167bbbc45.png',
+      intro: '',
+      description: '',
+      typeVideo: false,
+    }];
 
-    this.bannerCache.getFirstBannerOnce({
-      ward_id: wardId,
-      position_key: 'HOME_TOP',
-    }).pipe(
-      catchError(() => of(null)),
-      takeUntil(this.destroyed),
-    ).subscribe((b) => {
-      const image = b?.image_url ?? '';
-      this.slides = image
-        ? [{
-          id: b!.id,
-          name: b?.title ?? '',
-          image,
-          intro: '',
-          description: '',
-          typeVideo: false,
-        }]
-        : [];
-    });
+    // const wardId = Number(environment.wardId || 0);
+    // if (!wardId) return;
+    //
+    // this.bannerCache.getFirstBannerOnce({
+    //   ward_id: wardId,
+    //   position_key: 'HOME_TOP',
+    // }).pipe(
+    //   catchError(() => of(null)),
+    //   takeUntil(this.destroyed),
+    // ).subscribe((b) => {
+    //   const image = b?.image_url ?? '';
+    //   this.slides = image
+    //     ? [{
+    //       id: b!.id,
+    //       name: b?.title ?? '',
+    //       image,
+    //       intro: '',
+    //       description: '',
+    //       typeVideo: false,
+    //     }]
+    //     : [];
+    // });
   }
 
   private loadBannerMiddle(): void {
@@ -227,31 +333,103 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   loadNews() {
-    const wardId = environment.wardId;
+    // FAKE DATA (demo) — backend /api/news chưa sẵn sàng.
+    // Khi có API thật, bỏ 2 dòng dưới và mở lại đoạn gọi NewApiService bên dưới.
+    this.loadingNews = false;
+    this.newsItems = MOCK_NEWS.slice(0, 2);
 
-    this.loadingNews = true;
-    this.newsApi.newsList({
-      ward_id: wardId,
-      perPage: 2,
-      page: 1,
-    })
-      .pipe(finalize(() => (this.loadingNews = false)))
-      .subscribe({
-        next: (res) => {
-          this.newsItems = res?.data ?? [];
-        },
-        error: () => {
-          this.newsItems = [];
+    // const wardId = environment.wardId;
+    //
+    // this.loadingNews = true;
+    // this.newsApi.newsList({
+    //   ward_id: wardId,
+    //   perPage: 2,
+    //   page: 1,
+    // })
+    //   .pipe(finalize(() => (this.loadingNews = false)))
+    //   .subscribe({
+    //     next: (res) => {
+    //       this.newsItems = res?.data ?? [];
+    //     },
+    //     error: () => {
+    //       this.newsItems = [];
+    //     },
+    //   });
+  }
+
+  async onQuickAction(it: HomeAction): Promise<void> {
+    if (it.phone) {
+      this.callNow(it.phone);
+      return;
+    }
+
+    if (it.route) {
+      this.route.navigateByUrl(it.route);
+      return;
+    }
+
+    if (it.externalUrl) {
+      await this.openExternalUrl(it.externalUrl);
+      return;
+    }
+
+    if (it.key === 'schedule') {
+      this._notify.info('Lịch công tác đang được cập nhật.');
+      return;
+    }
+  }
+
+  async onFeatureClick(it: HomeFeature): Promise<void> {
+    if (it.categoryId) {
+      this.route.navigate(['/news'], {queryParams: {categoryId: it.categoryId}});
+      return;
+    }
+
+    if (it.route) {
+      this.route.navigateByUrl(it.route);
+      return;
+    }
+
+    if (it.externalUrl) {
+      await this.openExternalUrl(it.externalUrl);
+      return;
+    }
+
+    if (it.key === 'schedule') {
+      this._notify.info('Lịch công tác đang được cập nhật.');
+      return;
+    }
+  }
+
+  onNotificationTap(): void {
+    this._notify.info('Bạn có 3 thông báo mới.');
+  }
+
+  private async openExternalUrl(url: string): Promise<void> {
+    const isBrowser = typeof (window as any).ZaloMiniAppSDK === 'undefined';
+    if (isBrowser) {
+      window.open(url, '_blank');
+      return;
+    }
+
+    try {
+      await openWebview({
+        url,
+        config: {
+          style: 'normal',
         },
       });
+    } catch (e) {
+      window.open(url, '_blank');
+    }
   }
 
   async onToolClick(it: UiTool, ev?: Event) {
     const categoryByKey: Record<string, number> = {
-      law: 14,
-      security: 15,
-      directive: 16,
-      culture: 17,
+      law: 23,
+      security: 24,
+      directive: 25,
+      culture: 26,
     };
 
     const categoryId = categoryByKey[it.key];
@@ -260,12 +438,13 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     }
 
     const externalMap: Record<string, string> = {
+      survey: 'https://forms.gle/BPyScAuL13n9da486',
       online:
-        'https://dichvucong.gov.vn/p/home/dvc-dich-vu-cong-truc-tuyen-ds.html?pCoQuanId=387628&typeInapp=1',
-      penalty:
-        'https://www.csgt.vn/m/tra-cuu-phuong-tien-vi-pham.html',
-      tv:
-        'https://thhp.vn/truyen-hinh?channel=THPONLINE&typeInapp=1&zarsrc=1303&utm_source=zalo&utm_medium=zalo&utm_campaign=zalo'
+        'https://dichvucong.gov.vn/tra-cuu-ho-so',
+      // penalty:
+      //   'https://www.csgt.vn/m/tra-cuu-phuong-tien-vi-pham.html',
+      // tv:
+      //   'https://thhp.vn/truyen-hinh?channel=THPONLINE&typeInapp=1&zarsrc=1303&utm_source=zalo&utm_medium=zalo&utm_campaign=zalo'
     };
 
     const url = externalMap[it.key];
@@ -299,7 +478,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     if (it.key === 'shortcut') {
 
       const appId = environment.apiConfig.appId;
-      const appName = 'UBND xã Trường Tân';
+      const appName = 'UBND xã Long Hưng';
       const appIcon = 'https://smartzalo.io.vn/assets/img/Quoc_Huy_Viet_Nam_Chuan.png';
 
       const res = await this.zmaShortcut.createShortcutSafe({
@@ -332,17 +511,24 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
       // }
       //
       // this._notify.success('Đã gửi yêu cầu tạo phím tắt. Vui lòng xác nhận trên Zalo.');
-      const opts: NgbOffcanvasOptions = {
-        position: 'bottom',
-        backdrop: true,
-        keyboard: true,
-        scroll: false,
-        container: 'body',
-        panelClass: 'offcanvas-bottom-sheet',
-      };
+      // const opts: NgbOffcanvasOptions = {
+      //   position: 'bottom',
+      //   backdrop: true,
+      //   keyboard: true,
+      //   scroll: false,
+      //   container: 'body',
+      //   panelClass: 'offcanvas-bottom-sheet',
+      // };
+      //
+      // const ref = this.offCanvasService.open(CreateShortcutComponent, opts);
+      // ref.componentInstance.shortcutUrl = res.url;
 
-      const ref = this.offCanvasService.open(CreateShortcutComponent, opts);
-      ref.componentInstance.shortcutUrl = res.url;
+
+      await createShortcut({
+        params: {
+          utm_source: "shortcut",
+        },
+      });
     }
 
     if (it.key === 'faq') {
@@ -390,7 +576,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   onViewAllNews() {
-    console.log('View all news');
+    this.route.navigateByUrl('/news');
   }
 
   callNow(phone: string) {
@@ -410,7 +596,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     this.subs.add(
       this.weatherService.getCurrentFixed().subscribe({
         next: (res) => {
-          // label đã được service set sẵn (Trường Tân, Hải Phòng)
+          // label đã được service set sẵn (Long Hưng, Hưng Yên)
           this.locationLabel = res.label;
 
           this.temperatureText =
@@ -423,7 +609,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
           this.weatherText = 'Không lấy được thời tiết';
           this.temperatureText = '--°C';
           this.weatherIconClass = 'wx-cloud';
-          this.locationLabel = 'Trường Tân, Hải Phòng';
+          this.locationLabel = 'Long Hưng, Hưng Yên';
         },
       })
     );

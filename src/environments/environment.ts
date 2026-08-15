@@ -6,8 +6,8 @@ export const environment = {
   zaloBaseHref: '',     // dev: load từ root
   apiUrl: 'http://127.0.0.1:8000/',
   apiConfig: {
-    appId: '3115106723961764982'
+    appId: '3702118187570639533'
   },
-  OAId: '3092562594083719724',
-  wardId: 1
+  OAId: '1256206394473517476',
+  wardId: 4
 };

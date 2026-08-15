@@ -38,19 +38,12 @@ export type CurrentWeatherVM = {
 export class WeatherService {
   constructor(private http: HttpClient) {}
 
-  /**
-   * ✅ Cấu hình địa điểm cố định
-   * - Nếu bạn đã biết lat/lon của "Trường Tân, Hải Phòng" => điền vào đây và set USE_GEO_FALLBACK=false
-   * - Nếu chưa biết => để LAT/LON = null và service sẽ tự geocode 1 lần rồi cache
-   */
   private readonly LOCATION = {
-    nameForGeocode: 'Trường Tân, Hải Phòng, Việt Nam',
-    label: 'Trường Tân, Hải Phòng',
-    // ✅ Nếu đã có tọa độ chính xác thì điền vào:
-    LAT: null as number | null,
-    LON: null as number | null,
-    // nếu LAT/LON null thì service tự geocode:
-    USE_GEO_FALLBACK: true
+    nameForGeocode: 'Long Hưng, Hưng Yên, Việt Nam',
+    label: 'Long Hưng, Hưng Yên',
+    LAT: 20.8756152 as number | null,
+    LON: 106.1690703 as number | null,
+    USE_GEO_FALLBACK: false
   };
 
   /** Cache geocode (để không gọi lại nhiều lần) */
@@ -71,9 +64,8 @@ export class WeatherService {
         }))
       )),
       catchError(() => {
-        // fallback cuối cùng (để UI không crash)
-        const fallbackLat = 20.8449;   // bạn có thể thay nếu muốn
-        const fallbackLon = 106.6881;  // bạn có thể thay nếu muốn
+        const fallbackLat = 20.8756152;
+        const fallbackLon = 106.1690703;
         return of({
           label: this.LOCATION.label,
           lat: fallbackLat,
@@ -105,8 +97,8 @@ export class WeatherService {
     // 2) Nếu không có LAT/LON mà không cho phép fallback => trả “tạm”
     if (!this.LOCATION.USE_GEO_FALLBACK) {
       return of({
-        lat: 20.8449,
-        lon: 106.6881,
+        lat: 20.8756152,
+        lon: 106.1690703,
         label: this.LOCATION.label
       });
     }

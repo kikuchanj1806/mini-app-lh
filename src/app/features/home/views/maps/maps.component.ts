@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { openWebview } from 'zmp-sdk/apis';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 
 @Component({
@@ -9,37 +9,30 @@ import {AppCommonComponent} from '../../../../shared/components/app-common.servi
   standalone: false
 })
 export class MapsComponent extends AppCommonComponent implements OnInit, OnDestroy {
-  mapUrlRaw = '';
-  mapUrlSafe!: SafeResourceUrl;
-
-  private lat = 20.8055;
-  private lng = 106.2690;
-  private zoom = 16;
-
-  constructor(private sanitizer: DomSanitizer) {
-    super();
-  }
+  lat = 20.8756613;
+  lng = 106.169283;
+  zoom = 17;
 
   ngOnInit() {
     this.setHeader({ variant: 'title', show: true, back: true, title: 'Bản đồ' });
-
-    const delta = 0.01;
-    const left = this.lng - delta;
-    const right = this.lng + delta;
-    const top = this.lat + delta;
-    const bottom = this.lat - delta;
-
-    this.mapUrlRaw =
-      `https://www.openstreetmap.org/export/embed.html` +
-      `?bbox=${left}%2C${bottom}%2C${right}%2C${top}` +
-      `&layer=mapnik&marker=${this.lat}%2C${this.lng}`;
-
-    this.mapUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.mapUrlRaw);
   }
 
-  openInMap() {
-    const url = `https://www.google.com/maps?q=${this.lat},${this.lng}`;
-    window.open(url, '_blank');
+  openInMap(): void {
+    // Link Google Maps (ổn định, mở được trong webview)
+    const url = `https://www.google.com/maps/search/?api=1&query=${this.lat},${this.lng}`;
+
+    openWebview({
+      url,
+      // optional (nếu SDK bạn đang >= 2.30.0):
+      // config: { style: 'normal' }
+    });
+  }
+
+  openDirection(): void {
+    // Điều hướng (Directions)
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${this.lat},${this.lng}`;
+
+    openWebview({ url });
   }
 
   ngOnDestroy() {

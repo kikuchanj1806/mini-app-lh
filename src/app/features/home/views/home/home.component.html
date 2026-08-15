@@ -1,445 +1,141 @@
-<div class="min-h-full bg-section">
-  <div class="banner-search position-relative">
-    <div class="slide-banner">
-      <app-universal-slide
-        [items]="slides"
-        [config]="{ showNavigation: false,
-        showPagination: true,
-        autoplay: false, slidesPerView: 1, showName: false }">
-      </app-universal-slide>
-    </div>
-
-    <div class="banner-actions-like">
-      <!-- Button 1 -->
-      <button type="button" class="pill-btn" [routerLink]="'/news'">
-    <span class="pill-icon">
-      <i class="fa-solid fa-newspaper"></i>
-    </span>
-
-        <span class="pill-text">
-      <span class="pill-title">Tin tức nổi bật</span>
-      <span class="pill-sub">Cập nhật mới nhất</span>
-    </span>
-      </button>
-
-      <!-- Button 2 -->
-      <button type="button" class="pill-btn" (click)="callNow('0938540999')">
-    <span class="pill-icon">
-      <i class="fa-solid fa-phone"></i>
-    </span>
-
-        <span class="pill-text">
-      <span class="pill-title">Đường dây nóng</span>
-      <span class="pill-sub">0938.540.999</span>
-    </span>
-      </button>
-    </div>
-  </div>
-  <div class="p-2">
-    <div class="home-card">
-      <div class="home-header">
-        <div class="brand">
-          <div class="brand-logo">
-            <img width="30" height="30" src="../../../../../assets/img/banners/Quoc_Huy_Viet_Nam_Chuan.png" alt=""/>
-          </div>
-
-          <div class="brand-text">
-            <div class="brand-title">UBND xã Trường Tân</div>
-            <div class="brand-sub">Cổng dịch vụ hành chính công số</div>
-          </div>
-        </div>
-
-        <div class="date-box">
-          <div class="weekday">{{ todayWeekday }}</div>
-          <div class="date">{{ todayDate }}</div>
+<div class="home-screen">
+  <section class="home-hero">
+    <div class="hero-brand">
+      <div class="hero-lockup">
+        <img
+          class="hero-logo"
+          src="/assets/img/banners/Quoc_Huy_Viet_Nam_Chuan.png"
+          alt="Quốc huy Việt Nam"
+        />
+        <div class="hero-title">
+          <div class="hero-eyebrow">CHÍNH QUYỀN SỐ</div>
+          <h1>XÃ LONG HƯNG</h1>
+          <div class="hero-province">TỈNH HƯNG YÊN</div>
         </div>
       </div>
 
-      <!-- Greeting -->
-      <div class="home-row">
-        <div class="row-icon">
-          <span class="icon">
-            <i class="fa-light fa-user"></i>
-          </span>
-        </div>
-        <div class="row-content">
-          <div class="row-title">Xin chào, bạn!</div>
-          <div class="row-sub">Chào mừng bạn đến với cổng dịch vụ công</div>
-        </div>
-      </div>
-
-      <!-- Weather -->
-      <div class="home-row weather-row">
-        <div class="row-icon">
-          <span class="icon">
-            <i class="fa-light fa-location-dot"></i>
-          </span>
-        </div>
-
-        <div class="row-content">
-          <div class="row-title">{{ locationLabel }}</div>
-          <div class="row-sub">
-            {{ weatherText || 'Đang tải thời tiết...' }}
-          </div>
-        </div>
-
-        <div class="weather-right">
-          <div class="temp">{{ temperatureText }}</div>
-
-          <!-- icon đơn giản (tuỳ weatherCode) -->
-          <div class="wx-icon" [ngClass]="weatherIconClass"></div>
-        </div>
-      </div>
-
-      <!-- Status -->
-      <div class="status-row">
-        <span class="dot"></span>
-        <span>Hệ thống hoạt động bình thường</span>
+      <div class="hero-actions">
+        <button type="button" class="hero-pill hero-pill--light" (click)="callNow('0973540769')">
+          <i class="fa-solid fa-phone"></i>
+          <span>Đường dây nóng</span>
+        </button>
+        <button type="button" class="hero-pill hero-pill--blue" (click)="onNotificationTap()">
+          <i class="fa-regular fa-bell"></i>
+          <span>Thông báo</span>
+          <b>3</b>
+        </button>
       </div>
     </div>
-  </div>
 
-  <section class="p-2 pt-0">
-    <div class="official-channel">
-      <div class="oc-head">
-        <div class="oc-head__title">
-          <i class="fa-light fa-star"></i>
-          <div>
-            <div class="oc-head__t1">Kênh chính thức</div>
-            <div class="oc-head__t2">Nhận thông báo và cập nhật mới nhất từ cơ quan</div>
-          </div>
+    <div class="hero-weather">
+      <div class="weather-symbol" [ngClass]="weatherIconClass"></div>
+      <div>
+        <div class="weather-line">
+          <strong>{{ temperatureText }}</strong>
+          <span></span>
+          <span>{{ weatherText || 'Đang tải thời tiết...' }}</span>
         </div>
+        <div class="weather-place">{{ locationLabel }}</div>
       </div>
+    </div>
 
-      <!-- Body -->
-      <div class="oc-body">
-        <!-- Org row -->
-        <div class="oc-org">
-          <div class="oc-org__left">
-            <div class="oc-logo">
-              <img width="30" height="30" src="../../../../../assets/img/banners/Quoc_Huy_Viet_Nam_Chuan.png" alt=""/>
-            </div>
-
-            <div class="oc-org__text">
-              <div class="oc-org__name">UBND xã Trường Tân</div>
-              <div class="oc-org__sub">Cổng dịch vụ hành chính công số</div>
-              <div class="oc-org__badge">
-                <span class="tick">✓</span>
-                <span>Kênh chính thức</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            class="oc-follow"
-            [class.is-followed]="hasFollowed"
-            [disabled]="hasFollowed"
-            (click)="onFollowOfficial()"
-          >
-            {{ hasFollowed ? 'Đã quan tâm' : 'Quan tâm' }}
-          </button>
-        </div>
-
-        <!-- Quick actions -->
-<!--        <div class="oc-actions">-->
-<!--          <button type="button" class="oc-action oc-action&#45;&#45;blue" (click)="onQuickNotify()">-->
-<!--            <i class="fa-light fa-bell-ring"></i>-->
-<!--            <span>Thông báo nhanh</span>-->
-<!--          </button>-->
-
-<!--          <button type="button" class="oc-action oc-action&#45;&#45;green" (click)="onUpdate247()">-->
-<!--            <i class="fa-light fa-calendar-days"></i>-->
-<!--            <span>Cập nhật 24/7</span>-->
-<!--          </button>-->
-<!--        </div>-->
-
-        <!-- Banner -->
-<!--        <a class="oc-banner" href="javascript:void(0)" (click)="onOpenBanner()">-->
-<!--          <img src="https://dongnamajsc.vn/wp-content/uploads/2025/04/nghiquyet57-nqtw-1736735560184290766350-42903497373204048292592-64882587803620768853750.webp" alt="banner" />-->
-<!--        </a>-->
-        @if (bannerMiddle) {
-          <a class="oc-banner" href="javascript:void(0)" (click)="onOpenBanner()">
-            <img
-              [src]="getBannerImgUrl(bannerMiddle)"
-              alt="banner"
-              loading="lazy"
-            />
-          </a>
-        }
-      </div>
+    <div class="hero-building" aria-hidden="true">
+      <i class="fa-light fa-landmark"></i>
     </div>
   </section>
 
-  <!-- Thống kê phường -->
-  <section class="ward-stats p-2">
-    <div class="ward-stats__header">
-    <span class="ward-stats__header-icon">
-      <i class="fa-regular fa-rectangle-list"></i>
-    </span>
-      <div class="ward-stats__header-title">Thống kê xã</div>
-    </div>
-
-    <div class="ward-stats__grid">
-      <!-- Card 1 -->
-      <div class="stat-card stat-blue">
-        <div class="stat-card__top">
-          <i class="fa-regular fa-user stat-card__icon"></i>
-          <div class="stat-card__tag">Người dân</div>
-        </div>
-
-        <div class="stat-card__value">{{ stats.population | number:'1.0-0' }}</div>
-        <div class="stat-card__label">Dân số</div>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="stat-card stat-green">
-        <div class="stat-card__top">
-          <i class="fa-solid fa-house stat-card__icon"></i>
-          <div class="stat-card__tag">Diện tích</div>
-        </div>
-
-        <div class="stat-card__value">{{ stats.area }}</div>
-        <div class="stat-card__label">Diện tích</div>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="stat-card stat-purple">
-        <div class="stat-card__top">
-          <i class="fa-solid fa-gear stat-card__icon"></i>
-          <div class="stat-card__tag">Dịch vụ công</div>
-        </div>
-
-        <div class="stat-card__value">{{ stats.services }}</div>
-        <div class="stat-card__label">Dịch vụ</div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="stat-card stat-red">
-        <div class="stat-card__top">
-          <i class="fa-regular fa-heart stat-card__icon"></i>
-          <div class="stat-card__tag">Đánh giá</div>
-        </div>
-
-        <div class="stat-card__value">{{ stats.satisfaction }}</div>
-        <div class="stat-card__label">Hài lòng</div>
-      </div>
-    </div>
-
-    <div class="ward-stats__footnote">
-      Số liệu cập nhật tháng {{ stats.updatedMonth }}
-    </div>
-  </section>
-
-  <!-- Tiện ích chính -->
-  <section class="main-tools">
-    <div class="section-title">
-    <span class="section-title__icon">
-      <i class="fa-solid fa-gear"></i>
-    </span>
-      <span class="section-title__text">Tiện ích chính</span>
-    </div>
-
-    <div class="tools-grid">
-      @for (it of mainTools; track it.key) {
-        <button
-          type="button"
-          class="tool-item"
-          [routerLink]="it.route || null"
-          (click)="onToolClick(it, $event)"
-        >
-          <div class="tool-item__icon">
-            <img class="tool-item__img" [src]="it.iconUrl" [alt]="it.label" loading="lazy" />
-          </div>
-          <div class="tool-item__label">{{ it.label }}</div>
+  <main class="home-main">
+    <section class="quick-panel" aria-label="Lối tắt">
+      @for (item of quickActions; track item.key) {
+        <button type="button" class="quick-item" (click)="onQuickAction(item)">
+          <i [class]="item.iconClass"></i>
+          <strong>{{ item.label }}</strong>
+          <span>{{ item.sub }}</span>
         </button>
       }
-    </div>
+    </section>
 
-    <div class="ui-divider"></div>
-
-    <!-- Dịch vụ bổ sung -->
-    <div class="extra-services">
-      <div class="section-title section-title--plain">
-        <span class="section-title__text">Dịch vụ bổ sung</span>
+    <section class="welcome-card">
+      <div class="welcome-avatar">
+        <i class="fa-solid fa-user"></i>
       </div>
+      <div class="welcome-copy">
+        <h2>Xin chào, bạn!</h2>
+        <p>Chào mừng bạn đến với Chính quyền số xã Long Hưng</p>
+      </div>
+      <div class="welcome-art" aria-hidden="true">
+        <i class="fa-light fa-building-columns"></i>
+        <span></span>
+      </div>
+    </section>
 
-      <div class="extra-grid">
-        @for (it of extraServices; track it.key) {
+    <section class="feature-section">
+      <h2 class="section-heading">Tiện ích nổi bật</h2>
+      <div class="feature-grid">
+        @for (item of featuredTools; track item.key) {
           <button
             type="button"
-            class="extra-card"
-            [ngClass]="it.colorClass"
-            (click)="onExtraClick(it)"
+            class="feature-tile"
+            [ngClass]="item.colorClass"
+            (click)="onFeatureClick(item)"
           >
-            <div class="extra-card__icon">
-              <img class="extra-card__img" [src]="it.iconUrl" [alt]="it.label" loading="lazy" />
-            </div>
-            <div class="extra-card__text">{{ it.label }}</div>
+            <i [class]="item.iconClass"></i>
+            <strong>{{ item.label }}</strong>
+            <span>{{ item.sub }}</span>
           </button>
         }
       </div>
+    </section>
 
-      <div class="extra-footnote">
-        <i class="fa-regular fa-lightbulb"></i>
-        <span>Chọn tiện ích bạn cần để sử dụng dịch vụ công trực tuyến</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="latest-info">
-    <div class="li-head">
-      <div class="li-title">
-        <i class="fa-regular fa-file-lines li-fa li-fa--title"></i>
-        <span>Thông tin mới nhất</span>
+    <section class="news-section">
+      <div class="section-bar">
+        <h2 class="section-heading">Tin tức nổi bật</h2>
+        <button type="button" class="view-all" (click)="onViewAllNews()">
+          <span>Xem tất cả</span>
+          <i class="fa-regular fa-chevron-right"></i>
+        </button>
       </div>
 
-      <a class="li-all" href="javascript:void(0)" (click)="onViewAllNews()">Xem tất cả</a>
-    </div>
-
-    @if (newsItems && newsItems.length) {
-      @for (it of newsItems; track trackByNewsId($index, it)) {
-        <article class="li-card" [routerLink]="'/newdetail'" [queryParams]="{id: it.id }">
-          <div class="li-tag">
-            <div class="li-tag__left">
-              <i class="fa-regular fa-file-lines li-fa"></i>
-              <span class="li-tag__name">
-              {{ it?.category?.name || 'Tin tức' }}
-            </span>
+      <div class="news-list">
+        @if (newsItems && newsItems.length) {
+          @for (item of newsItems; track trackByNewsId($index, item)) {
+            <article
+              class="news-item"
+              [routerLink]="'/newdetail'"
+              [queryParams]="{ id: item.id }"
+            >
+              <img
+                class="news-thumb"
+                [src]="item.thumbnail || '/assets/img/tin_tuc_img_default.jpg'"
+                [alt]="item.title || 'Tin tức'"
+                loading="lazy"
+              />
+              <div class="news-copy">
+                <h3>{{ item.title || 'Chưa có dữ liệu' }}</h3>
+                <div class="news-meta">
+                  <span>
+                    {{ item.published_at ? ((item.published_at * 1000) | date:'dd/MM/yyyy') : '' }}
+                  </span>
+                  <i></i>
+                  <span>
+                    {{ item.published_at ? ((item.published_at * 1000) | date:'HH:mm') : '' }}
+                  </span>
+                </div>
+              </div>
+            </article>
+          }
+        } @else {
+          <article class="news-item news-item--empty">
+            <img class="news-thumb" src="/assets/img/tin_tuc_img_default.jpg" alt="Tin tức" />
+            <div class="news-copy">
+              <h3>Chưa có dữ liệu</h3>
+              <div class="news-meta">
+                <span>Đang cập nhật</span>
+              </div>
             </div>
-            <span class="li-tag__more">Xem thêm</span>
-          </div>
-
-          <h3 class="li-h3">
-            {{ it?.title || 'Chưa có dữ liệu' }}
-          </h3>
-
-          <div class="li-img">
-            <img
-              [src]="it?.thumbnail || '/assets/img/placeholder/news-thumb.png'"
-              alt="news"
-              loading="lazy"
-            />
-          </div>
-
-          <div class="li-date">
-            <i class="fa-regular fa-calendar li-fa li-fa--muted"></i>
-            <span>
-            {{ it?.published_at ? ((it.published_at * 1000) | date:'dd/MM/yyyy') : '' }}
-          </span>
-          </div>
-        </article>
-      }
-    } @else {
-      <article class="li-card">
-        <h3 class="li-h3">Chưa có dữ liệu</h3>
-        <div class="li-img">
-          <img src="/assets/img/placeholder/news-thumb.png" alt="news" />
-        </div>
-      </article>
-    }
-
-    <div class="li-footnote">
-      <i class="fa-regular fa-newspaper li-fa li-fa--muted"></i>
-      <span>Cập nhật thông tin mới nhất về pháp luật và an ninh trật tự</span>
-    </div>
-  </section>
-
-  <section class="emergency">
-    <div class="em-head">
-      <i class="fa-solid fa-phone-volume em-head__icon"></i>
-      <span class="em-head__title">Liên hệ khẩn cấp</span>
-    </div>
-
-    <div class="em-list">
-      <!-- 1) Công an xã -->
-      <button type="button" class="em-card em-blue" (click)="callNow('02203900021')">
-        <div class="em-left">
-          <div class="em-left__icon">
-            <i class="fa-solid fa-shield"></i>
-          </div>
-          <div class="em-left__text">
-            <div class="em-left__t1">Công an xã</div>
-            <div class="em-left__t2">Báo cáo tội phạm</div>
-          </div>
-        </div>
-
-        <div class="em-right">
-          <div class="em-right__num">02203900021</div>
-          <div class="em-right__call">
-            <i class="fa-solid fa-phone"></i>
-            <span>Gọi ngay</span>
-          </div>
-        </div>
-      </button>
-
-      <!-- 2) PCCC -->
-      <button type="button" class="em-card em-red" (click)="callNow('114')">
-        <div class="em-left">
-          <div class="em-left__icon">
-            <i class="fa-solid fa-fire-flame-curved"></i>
-          </div>
-          <div class="em-left__text">
-            <div class="em-left__t1">PCCC</div>
-            <div class="em-left__t2">Chữa cháy &amp; cứu nạn</div>
-          </div>
-        </div>
-
-        <div class="em-right">
-          <div class="em-right__num">114</div>
-          <div class="em-right__call">
-            <i class="fa-solid fa-phone"></i>
-            <span>Gọi ngay</span>
-          </div>
-        </div>
-      </button>
-
-      <!-- 3) Cấp cứu -->
-      <button type="button" class="em-card em-green" (click)="callNow('115')">
-        <div class="em-left">
-          <div class="em-left__icon">
-            <i class="fa-solid fa-heart"></i>
-          </div>
-          <div class="em-left__text">
-            <div class="em-left__t1">Cấp cứu</div>
-            <div class="em-left__t2">Y tế khẩn cấp</div>
-          </div>
-        </div>
-
-        <div class="em-right">
-          <div class="em-right__num">115</div>
-          <div class="em-right__call">
-            <i class="fa-solid fa-phone"></i>
-            <span>Gọi ngay</span>
-          </div>
-        </div>
-      </button>
-
-      <!-- 4) Điện lực -->
-      <button type="button" class="em-card em-orange" (click)="callNow('19001006')">
-        <div class="em-left">
-          <div class="em-left__icon">
-            <i class="fa-solid fa-bolt"></i>
-          </div>
-          <div class="em-left__text">
-            <div class="em-left__t1">Điện lực</div>
-            <div class="em-left__t2">Sự cố điện</div>
-          </div>
-        </div>
-
-        <div class="em-right">
-          <div class="em-right__num">1900.1006</div>
-          <div class="em-right__call">
-            <i class="fa-solid fa-phone"></i>
-            <span>Gọi ngay</span>
-          </div>
-        </div>
-      </button>
-    </div>
-
-    <div class="em-note">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-      <span>Chỉ sử dụng cho các trường hợp khẩn cấp thực sự</span>
-    </div>
-  </section>
+          </article>
+        }
+      </div>
+    </section>
+  </main>
 </div>

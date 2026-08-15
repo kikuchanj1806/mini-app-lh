@@ -1,10 +1,8 @@
 {
   "app": {
-    "title": "Smart Trường Tân",
-    "headerTitle": "Smart Trường Tân",
+    "title": "Long Hưng Số",
+    "headerTitle": "Long Hưng Số",
     "headerColor": "#1843EF",
-    "textColor": "white",
-    "leftButton": "back",
     "statusBar": "transparent",
     "actionBarHidden": true,
     "hideAndroidBottomNavigationBar": false,
@@ -20,7 +18,7 @@
     "main.js"
   ],
   "listAsyncJS": [
-    "185.js",
+    "327.js",
     "502.js",
     "607.js",
     "860.js",

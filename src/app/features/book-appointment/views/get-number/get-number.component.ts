@@ -4,7 +4,7 @@ import {AppointmentApiService} from '../../../../shared/services/api/appointment
 import {NotifyService} from '../../../../core/services';
 import {finalize, forkJoin, takeUntil, timer} from 'rxjs';
 import {ZmaTicketApiService} from '../../../../shared/services/api/ticket/ticket-api.service';
-import {parse409} from '../../../../shared/utils';
+import {formatTicketNumber, parse409} from '../../../../shared/utils';
 import {environment} from '../../../../../environments';
 import {switchMap} from 'rxjs/operators';
 import {Router} from '@angular/router';
@@ -38,12 +38,11 @@ export class GetNumberComponent extends AppCommonComponent implements OnInit, On
   ngOnInit() {
     this.setHeader({ variant: 'title', show: true, back: true, title: 'Lấy số thứ tự' });
     document.body.classList.add('page-book-appointment');
-
     this.loadDropdowns();
   }
 
   ngOnDestroy() {
-    this.getDestroySubs()
+    this.getDestroySubs();
   }
 
   loadDropdowns() {
@@ -80,8 +79,8 @@ export class GetNumberComponent extends AppCommonComponent implements OnInit, On
 
     const payload = {
       ward_id: this.wardId,
-      service_field_id: this.selectedFieldId,
-      time_slot_id: this.selectedSlotId,
+      service_field_id: this.selectedFieldId!,
+      time_slot_id: this.selectedSlotId!,
     };
 
     this.ticketApi.createTicket$(payload).pipe(
@@ -89,7 +88,12 @@ export class GetNumberComponent extends AppCommonComponent implements OnInit, On
       finalize(() => (this.isSubmitting = false)),
       switchMap((res) => {
         const orderNumber = res?.data?.order_number ?? res?.data?.orderNumber;
-        this.ticketNo = orderNumber ? String(orderNumber).padStart(3, '0') : '---';
+        const ticketDate =
+          res?.data?.appointment_date ??
+          res?.data?.appointmentDate ??
+          res?.data?.created_at ??
+          res?.data?.createdAt;
+        this.ticketNo = formatTicketNumber(orderNumber, ticketDate);
 
         this.notify.success(`Lấy số thành công. Số của bạn: ${this.ticketNo}`);
 

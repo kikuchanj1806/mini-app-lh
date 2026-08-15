@@ -1,11 +1,11 @@
 {
-  "name": "mini-app-stt",
+  "name": "mini-app-lh",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration=production",
-    "update-config": "node update-app-config.js mini-app-STT",
+    "update-config": "node update-app-config.js mini-app-LH",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

@@ -1,6 +1,44 @@
-<div class="map-wrap">
-  <iframe class="map-iframe" [src]="mapUrlSafe" loading="lazy"></iframe>
-  <button type="button" class="map-open" (click)="openInMap()">
-    Mở trong Google Maps
-  </button>
+<div class="page">
+  <div class="card">
+    <div class="head">
+      <div class="icon">
+        <i class="fa-solid fa-location-dot"></i>
+      </div>
+
+      <div class="info">
+        <div class="title">Bản đồ</div>
+        <div class="subtitle">
+          Nhấn để mở bản đồ và xem chỉ đường.
+        </div>
+      </div>
+    </div>
+
+    <div class="coords">
+      <div class="row">
+        <span class="label">Tọa độ</span>
+        <span class="value">{{ lat }}, {{ lng }}</span>
+      </div>
+      <div class="row">
+        <span class="label">Zoom</span>
+        <span class="value">{{ zoom }}</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn primary" (click)="openInMap()">
+        <i class="fa-solid fa-map-location-dot me-2"></i>
+        Mở bản đồ
+      </button>
+
+      <button type="button" class="btn ghost" (click)="openDirection()">
+        <i class="fa-solid fa-route me-2"></i>
+        Chỉ đường
+      </button>
+    </div>
+
+    <div class="hint">
+      <i class="fa-regular fa-circle-info me-2"></i>
+      Bản đồ sẽ mở trong Webview của Zalo để đảm bảo tương thích Android.
+    </div>
+  </div>
 </div>

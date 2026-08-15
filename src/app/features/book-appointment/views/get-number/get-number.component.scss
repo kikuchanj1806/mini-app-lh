@@ -170,6 +170,21 @@
   opacity: 0.9;
 }
 
+/* Zalo FunctionButtonWidget container — iframe fill 100% bên trong */
+.gn-btn--widget {
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+}
+
 /* responsive */
 @media (max-width: 420px) {
   .gn-title { font-size: 20px; }

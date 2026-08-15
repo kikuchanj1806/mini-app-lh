@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mini-app-STT": {
+    "mini-app-LH": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -48,10 +48,11 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
+              "src/assets/css/font-inter.css",
               "node_modules/swiper/swiper-bundle.css",
               "src/assets/fontawesome/all.min.css",
-              "src/assets/css/all.min.css"
+              "src/assets/css/all.min.css",
+              "src/styles.scss"
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
@@ -95,10 +96,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "mini-app-STT:build:production"
+              "buildTarget": "mini-app-LH:build:production"
             },
             "development": {
-              "buildTarget": "mini-app-STT:build:development"
+              "buildTarget": "mini-app-LH:build:development"
             }
           },
           "options": {

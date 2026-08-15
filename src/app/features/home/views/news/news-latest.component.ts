@@ -4,6 +4,7 @@ import {IResNewsItem, NewApiService} from '../../../../shared/services/api/news/
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 import {NotifyService} from '../../../../core/services';
 import {environment} from '../../../../../environments';
+import {MOCK_NEWS} from '../../../../shared/mock/news-mock.data';
 
 export type NewsListItemVM = {
   id: number;
@@ -38,44 +39,65 @@ export class NewsLatestComponent extends AppCommonComponent implements OnInit, O
   }
 
   load() {
-    const wardId = Number(environment.wardId);
-
-    this.loading = true;
-
-    const params: any = {
-      ward_id: wardId,
-      page: 1,
-      perPage: 20,
-    };
-
     const categoryId = this.navService.getParam('categoryId') ?? null;
-    if (categoryId != null) {
-      params.categoryId = categoryId;
-    }
 
-    this.newsApi.newsList(params)
-      .pipe(
-        takeUntil(this.destroyed),
-        finalize(() => (this.loading = false))
-      )
-      .subscribe({
-        next: (res) => {
-          const arr = (res?.data ?? []) as IResNewsItem[];
+    // FAKE DATA (demo) — backend /api/news chưa sẵn sàng.
+    // Khi có API thật, bỏ đoạn dưới và mở lại đoạn gọi NewApiService bên dưới.
+    this.loading = false;
 
-          const sorted = [...arr].sort((a, b) => (b.published_at ?? 0) - (a.published_at ?? 0));
+    const arr = categoryId != null
+      ? MOCK_NEWS.filter((x) => x.category?.id === Number(categoryId))
+      : MOCK_NEWS;
 
-          this.items = sorted.map((x) => ({
-            id: x.id,
-            title: x.title,
-            thumbnail: x.thumbnail ?? null,
-            publishedMs: this.toMs(x.published_at),
-            categoryName: x.category?.name ?? 'Tin tức',
-            liked: false,
-            raw: x,
-          }));
-        },
-        error: () => this.notify.error('Không tải được danh sách tin tức.'),
-      });
+    const sorted = [...arr].sort((a, b) => (b.published_at ?? 0) - (a.published_at ?? 0));
+
+    this.items = sorted.map((x) => ({
+      id: x.id,
+      title: x.title,
+      thumbnail: x.thumbnail ?? null,
+      publishedMs: this.toMs(x.published_at),
+      categoryName: x.category?.name ?? 'Tin tức',
+      liked: false,
+      raw: x,
+    }));
+
+    // const wardId = Number(environment.wardId);
+    //
+    // this.loading = true;
+    //
+    // const params: any = {
+    //   ward_id: wardId,
+    //   page: 1,
+    //   perPage: 20,
+    // };
+    //
+    // if (categoryId != null) {
+    //   params.categoryId = categoryId;
+    // }
+    //
+    // this.newsApi.newsList(params)
+    //   .pipe(
+    //     takeUntil(this.destroyed),
+    //     finalize(() => (this.loading = false))
+    //   )
+    //   .subscribe({
+    //     next: (res) => {
+    //       const arr = (res?.data ?? []) as IResNewsItem[];
+    //
+    //       const sorted = [...arr].sort((a, b) => (b.published_at ?? 0) - (a.published_at ?? 0));
+    //
+    //       this.items = sorted.map((x) => ({
+    //         id: x.id,
+    //         title: x.title,
+    //         thumbnail: x.thumbnail ?? null,
+    //         publishedMs: this.toMs(x.published_at),
+    //         categoryName: x.category?.name ?? 'Tin tức',
+    //         liked: false,
+    //         raw: x,
+    //       }));
+    //     },
+    //     error: () => this.notify.error('Không tải được danh sách tin tức.'),
+    //   });
   }
 
   toggleLike(it: NewsListItemVM, ev: Event) {

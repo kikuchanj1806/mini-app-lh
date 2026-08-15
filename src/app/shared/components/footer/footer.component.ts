@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {DEFAULT_FOOTER, IFooterCartConfig, IFooterConfig, IFooterItem, IFooterTabsConfig} from '../../models/global';
 import {uriFeConst} from '../../constants';
-import {openChat} from 'zmp-sdk/apis'
+import {openChat, scanQRCode} from 'zmp-sdk/apis'
 import {OffcanvasCustomService} from '../../services/modal-canvas-custom.service';
 import {Subject, takeUntil} from 'rxjs';
 import {environment} from '../../../../environments';
@@ -30,7 +30,7 @@ import {HeaderFooterFacadeService} from '../../services/repository/layout-servic
                style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
             @for (item of itemsToRender; track (item?.path ?? $index)) {
 
-              @if (!!item.path && !item.badge) {
+              @if (!!item.path && !isCommandPath(item.path) && !item.badge) {
                 <a
                   [routerLink]="item.path"
                   [queryParams]="item.queryParams"
@@ -52,6 +52,7 @@ import {HeaderFooterFacadeService} from '../../services/repository/layout-servic
                 <button
                   type="button"
                   (click)="onNavClick(item, $event)"
+                  [class.footer-tab--center]="item.path === '__scan_qr__'"
                   class="footer-tab no-active as-button d-flex flex-col align-items-center space-y-0.5 p-1 pb-0.5 position-relative cursor-pointer">
                   <i [class]="(item.iconClass || '') + ' f-6'"></i>
                   <span class="text-2xs mt-1">{{ item.label }}</span>
@@ -122,7 +123,22 @@ export class AppFooterComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.complete();
   }
 
-  onNavClick(item: IFooterItem, ev: MouseEvent) {
+  async onNavClick(item: IFooterItem, ev: MouseEvent): Promise<void> {
+    if (item.path === '__scan_qr__') {
+      ev.preventDefault();
+      try {
+        await scanQRCode();
+      } catch (e) {
+        console.warn('scan qr failed', e);
+      }
+      return;
+    }
+
+    if (item.path === '__profile__') {
+      ev.preventDefault();
+      return;
+    }
+
     if (!item.path) {
       ev.preventDefault();
       openChat({type: 'oa', id: environment.OAId, message: 'Xin chào'});
@@ -134,6 +150,9 @@ export class AppFooterComponent implements OnInit, OnChanges, OnDestroy {
     return c?.variant === 'tabs';
   }
 
+  isCommandPath(path: string): boolean {
+    return path.startsWith('__');
+  }
 
   openChat() {
     openChat({type: 'user', id: environment.OAId, message: 'Xin chào'});

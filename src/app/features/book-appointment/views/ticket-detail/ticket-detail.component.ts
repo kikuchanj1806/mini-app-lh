@@ -7,6 +7,7 @@ import {UserManageService} from '../../../../shared/services/feature-specific/us
 import {NotifyService} from '../../../../core/services';
 import {environment} from '../../../../../environments';
 import {finalize, of, takeUntil, tap} from 'rxjs';
+import {formatTicketNumber, normalizeTicketDateYmd} from '../../../../shared/utils';
 
 @Component({
   selector: 'app-ticket-detail',
@@ -90,7 +91,10 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
     if (!raw) return;
 
     const order = Number(raw?.orderNumber ?? raw?.order_number ?? 0);
-    this.ticketNo = order ? String(order).padStart(3, '0') : '---';
+    const appointmentDate = normalizeTicketDateYmd(
+      raw?.appointmentDate ?? raw?.appointment_date ?? raw?.createdAt ?? raw?.created_at
+    );
+    this.ticketNo = formatTicketNumber(order, appointmentDate ?? raw?.createdAt ?? raw?.created_at);
 
     const sf = raw?.serviceField ?? raw?.service_field ?? null;
     this.fieldIndex = Number(sf?.id ?? 0);
@@ -101,7 +105,7 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
     const end = String(ts?.endTime ?? ts?.end_time ?? '').slice(0, 5);
     this.timeRange = (start && end) ? `${start} - ${end}` : '--:-- - --:--';
 
-    const apptDate = String(raw?.appointmentDate ?? raw?.appointment_date ?? '').slice(0, 10);
+    const apptDate = appointmentDate ?? '';
 
     this.statusText = this.mapScheduleStatus(apptDate, start, end);
 

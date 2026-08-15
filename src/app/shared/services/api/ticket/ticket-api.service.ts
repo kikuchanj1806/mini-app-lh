@@ -13,6 +13,8 @@ export interface IZmaTicket {
   serviceName?: string;
   startTime?: string; // "07:00"
   endTime?: string;   // "08:30"
+  appointmentDate?: string; // "2026-04-02"
+  createdAt?: number;
 }
 
 export interface IZmaTicketApi {
@@ -23,8 +25,11 @@ export interface IZmaTicketApi {
   status: string | number;
 
   createdAt?: number;
+  created_at?: number;
   updatedAt?: number;
   updatedById?: number | null;
+  appointmentDate?: string;
+  appointment_date?: string;
 
   ward?: { id: number; name: string };
   user?: { id: number; name: string };
@@ -49,7 +54,7 @@ export type ITicketDetailUI = {
 export class ZmaTicketApiService {
   constructor(private api: ApiService) {}
 
-  createTicket$(payload: { ward_id: number; service_field_id: number; time_slot_id: number }) {
+  createTicket$(payload: { ward_id: number; service_field_id: number; time_slot_id: number; message_token?: string }) {
     return this.api.post<any>('/api/zma/tickets', payload);
   }
 
