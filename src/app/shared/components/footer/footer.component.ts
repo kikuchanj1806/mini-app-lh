@@ -15,6 +15,7 @@ import {OffcanvasCustomService} from '../../services/modal-canvas-custom.service
 import {Subject, takeUntil} from 'rxjs';
 import {environment} from '../../../../environments';
 import {HeaderFooterFacadeService} from '../../services/repository/layout-service/header-footer-facade.service';
+import {NotifyService} from '../../../core/services';
 
 
 @Component({
@@ -98,6 +99,7 @@ export class AppFooterComponent implements OnInit, OnChanges, OnDestroy {
   readonly hf = inject(HeaderFooterFacadeService);
   private readonly cd = inject(ChangeDetectorRef);
   private readonly offcanvasSvc = inject(OffcanvasCustomService);
+  private readonly notify = inject(NotifyService);
 
   private destroy$ = new Subject<void>();
 
@@ -127,9 +129,18 @@ export class AppFooterComponent implements OnInit, OnChanges, OnDestroy {
     if (item.path === '__scan_qr__') {
       ev.preventDefault();
       try {
-        await scanQRCode();
+        const result = await scanQRCode();
+        if (!result?.content) {
+          this.notify.info('Quét QR chỉ hoạt động khi mở ứng dụng trong Zalo.');
+        }
       } catch (e) {
         console.warn('scan qr failed', e);
+        const errorCode = (e as { code?: number })?.code;
+        if (errorCode === -1403) {
+          this.notify.error('Mini App chưa được cấp quyền Quét mã QR. Hãy bật quyền này trong trang quản trị Zalo Mini App.');
+        } else {
+          this.notify.warning('Không thể mở trình quét QR. Vui lòng kiểm tra quyền camera và cấu hình Mini App.');
+        }
       }
       return;
     }
