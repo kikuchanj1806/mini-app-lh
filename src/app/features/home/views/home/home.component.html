@@ -4,40 +4,47 @@
       <div class="hero-lockup">
         <img
           class="hero-logo"
-          src="/assets/img/banners/Quoc_Huy_Viet_Nam_Chuan.png"
+          src="/assets/img/ChatGPT Image Aug 16, 2026, 11_04_49 PM.png"
           alt="Quốc huy Việt Nam"
         />
         <div class="hero-title">
-          <div class="hero-eyebrow">CHÍNH QUYỀN SỐ</div>
-          <h1>XÃ LONG HƯNG</h1>
-          <div class="hero-province">TỈNH HƯNG YÊN</div>
+          @if (heroEyebrow) {
+            <div class="hero-eyebrow">{{ heroEyebrow }}</div>
+          }
+          <h1>{{ heroTitle }}</h1>
+          @if (heroSubtitle) {
+            <div class="hero-province">{{ heroSubtitle }}</div>
+          }
         </div>
       </div>
 
       <div class="hero-actions">
-        <button type="button" class="hero-pill hero-pill--light" (click)="callNow('0973540769')">
-          <i class="fa-solid fa-phone"></i>
-          <span>Đường dây nóng</span>
-        </button>
+        @if (hotline) {
+          <button type="button" class="hero-pill hero-pill--light" (click)="callNow(hotline)">
+            <i class="fa-solid fa-phone"></i>
+            <span>Đường dây nóng</span>
+          </button>
+        }
         <button type="button" class="hero-pill hero-pill--blue" (click)="onNotificationTap()">
           <i class="fa-regular fa-bell"></i>
           <span>Thông báo</span>
-          <b>3</b>
         </button>
       </div>
     </div>
 
-    <div class="hero-weather">
-      <div class="weather-symbol" [ngClass]="weatherIconClass"></div>
-      <div>
-        <div class="weather-line">
-          <strong>{{ temperatureText }}</strong>
-          <span></span>
-          <span>{{ weatherText || 'Đang tải thời tiết...' }}</span>
+    @if (showWeather) {
+      <div class="hero-weather">
+        <div class="weather-symbol" [ngClass]="weatherIconClass"></div>
+        <div>
+          <div class="weather-line">
+            <strong>{{ temperatureText }}</strong>
+            <span></span>
+            <span>{{ weatherText || 'Đang tải thời tiết...' }}</span>
+          </div>
+          <div class="weather-place">{{ locationLabel }}</div>
         </div>
-        <div class="weather-place">{{ locationLabel }}</div>
       </div>
-    </div>
+    }
 
     <div class="hero-building" aria-hidden="true">
       <i class="fa-light fa-landmark"></i>
@@ -45,23 +52,42 @@
   </section>
 
   <main class="home-main">
-    <section class="quick-panel" aria-label="Lối tắt">
-      @for (item of quickActions; track item.key) {
-        <button type="button" class="quick-item" (click)="onQuickAction(item)">
-          <i [class]="item.iconClass"></i>
-          <strong>{{ item.label }}</strong>
-          <span>{{ item.sub }}</span>
-        </button>
-      }
-    </section>
+    @if (loadingQuickActions) {
+      <!-- Khung xám giữ đúng chỗ hàng nút trong lúc chờ API — tránh nội dung bên dưới nhảy lên
+           rồi bị đẩy xuống khi dữ liệu về. -->
+      <section class="quick-panel quick-panel--skeleton" aria-hidden="true">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="quick-item quick-item--skeleton">
+            <span class="sk-circle"></span>
+            <span class="sk-line"></span>
+          </div>
+        }
+      </section>
+    } @else if (quickActions.length) {
+      <section class="quick-panel" aria-label="Lối tắt">
+        @for (item of quickActions; track item.key) {
+          <button type="button" class="quick-item" (click)="onQuickAction(item)">
+            @if (item.iconUrl) {
+              <img class="quick-icon-img" [src]="item.iconUrl" [alt]="item.label" />
+            } @else {
+              <i [class]="item.iconClass"></i>
+            }
+            <strong>{{ item.label }}</strong>
+            <span>{{ item.sub }}</span>
+          </button>
+        }
+      </section>
+    }
 
     <section class="welcome-card">
       <div class="welcome-avatar">
         <i class="fa-solid fa-user"></i>
       </div>
       <div class="welcome-copy">
-        <h2>Xin chào, bạn!</h2>
-        <p>Chào mừng bạn đến với Chính quyền số xã Long Hưng</p>
+        <h2>{{ welcomeTitle }}</h2>
+        @if (welcomeText) {
+          <p>{{ welcomeText }}</p>
+        }
       </div>
       <div class="welcome-art" aria-hidden="true">
         <i class="fa-light fa-building-columns"></i>
@@ -69,27 +95,64 @@
       </div>
     </section>
 
-    <section class="feature-section">
-      <h2 class="section-heading">Tiện ích nổi bật</h2>
-      <div class="feature-grid">
-        @for (item of featuredTools; track item.key) {
-          <button
-            type="button"
-            class="feature-tile"
-            [ngClass]="item.colorClass"
-            (click)="onFeatureClick(item)"
-          >
-            <i [class]="item.iconClass"></i>
-            <strong>{{ item.label }}</strong>
-            <!-- <span>{{ item.sub }}</span> -->
-          </button>
-        }
-      </div>
-    </section>
+    @if (!hasFollowed) {
+      <section class="follow-oa-card">
+        <div class="follow-oa-icon">
+          @if (followOaIconUrl) {
+            <img [src]="followOaIconUrl" alt="" />
+          } @else {
+            <i class="fa-solid fa-bell"></i>
+          }
+        </div>
+        <div class="follow-oa-copy">
+          <h3>Quan tâm {{ oaDisplayName }}</h3>
+          <p>Nhận thông báo mới nhất  về thủ tục hành chính, tin tức và lịch làm việc.</p>
+        </div>
+        <button type="button" class="follow-oa-btn" [disabled]="isFollowingOA" (click)="onFollowOfficial()">
+          {{ isFollowingOA ? 'Đang xử lý...' : 'Quan tâm' }}
+        </button>
+      </section>
+    }
+
+    @if (loadingFeaturedTools) {
+      <section class="feature-section" aria-hidden="true">
+        <h2 class="section-heading">Tiện ích nổi bật</h2>
+        <div class="feature-grid">
+          @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+            <div class="feature-tile feature-tile--skeleton">
+              <span class="sk-circle"></span>
+              <span class="sk-line"></span>
+            </div>
+          }
+        </div>
+      </section>
+    } @else if (featuredTools.length) {
+      <section class="feature-section">
+        <h2 class="section-heading">Tiện ích nổi bật</h2>
+        <div class="feature-grid">
+          @for (item of featuredTools; track item.key) {
+            <button
+              type="button"
+              class="feature-tile"
+              [ngClass]="item.colorClass"
+              (click)="onFeatureClick(item)"
+            >
+              @if (item.iconUrl) {
+                <img class="feature-icon-img" [src]="item.iconUrl" [alt]="item.label" />
+              } @else {
+                <i [class]="item.iconClass"></i>
+              }
+              <strong>{{ item.label }}</strong>
+              <!-- <span>{{ item.sub }}</span> -->
+            </button>
+          }
+        </div>
+      </section>
+    }
 
     <section class="news-section">
       <div class="section-bar">
-        <h2 class="section-heading">Tin tức nổi bật</h2>
+        <h2 class="section-heading">{{ newsSectionTitle }}</h2>
         <button type="button" class="view-all" (click)="onViewAllNews()">
           <span>Xem tất cả</span>
           <i class="fa-regular fa-chevron-right"></i>
@@ -106,7 +169,7 @@
             >
               <img
                 class="news-thumb"
-                [src]="item.thumbnail || '/assets/img/tin_tuc_img_default.jpg'"
+                [src]="item.thumbnailUrl || '/assets/img/tin_tuc_img_default.jpg'"
                 [alt]="item.title || 'Tin tức'"
                 loading="lazy"
               />
@@ -114,11 +177,11 @@
                 <h3>{{ item.title || 'Chưa có dữ liệu' }}</h3>
                 <div class="news-meta">
                   <span>
-                    {{ item.published_at ? ((item.published_at * 1000) | date:'dd/MM/yyyy') : '' }}
+                    {{ item.publishedAt ? (item.publishedAt | date:'dd/MM/yyyy') : '' }}
                   </span>
                   <i></i>
                   <span>
-                    {{ item.published_at ? ((item.published_at * 1000) | date:'HH:mm') : '' }}
+                    {{ item.publishedAt ? (item.publishedAt | date:'HH:mm') : '' }}
                   </span>
                 </div>
               </div>

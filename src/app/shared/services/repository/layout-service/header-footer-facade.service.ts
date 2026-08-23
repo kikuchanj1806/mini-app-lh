@@ -24,7 +24,6 @@ export class HeaderFooterFacadeService {
     map(v => v ?? DEFAULT_FOOTER)
   );
 
-  // Get/Set
   setHeader(cfg?: IHeaderConfig): void {
     this.headerSub.next(cfg);
   }

@@ -82,7 +82,6 @@ export class TthcVideoListComponent extends AppCommonComponent implements OnInit
       return;
     }
 
-    // mở inline bằng màn player
     this.router.navigate(['/tthc/videos/player'], {
       queryParams: {
         title: it.title,

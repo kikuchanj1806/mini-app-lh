@@ -56,7 +56,6 @@ export class TthcVideoPlayerComponent extends AppCommonComponent implements OnIn
           return;
         }
 
-        // loại link khác: vẫn có thể nhúng iframe nếu bạn muốn (nhưng phải whitelisting domain)
         this.notify.warning('Định dạng video chưa hỗ trợ (chỉ hỗ trợ YouTube / mp4).');
         this.iframeUrl = null;
       });

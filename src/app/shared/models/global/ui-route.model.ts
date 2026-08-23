@@ -1,4 +1,4 @@
-// ====================== HEADER ======================
+// Header
 export type HeaderVariant = 'greeting' | 'title' | 'search';
 
 export interface IHeaderBaseConfig {
@@ -10,7 +10,6 @@ export interface IHeaderBaseConfig {
   back?: boolean;
 }
 
-/** Greeting */
 export interface IHeaderGreetingConfig extends IHeaderBaseConfig {
   variant: 'greeting';
   /** Link ảnh fallback nếu không có avatar */
@@ -18,7 +17,6 @@ export interface IHeaderGreetingConfig extends IHeaderBaseConfig {
   showGreetingText?: boolean;               // default: true
 }
 
-/** Title */
 export interface IHeaderTitleConfig extends IHeaderBaseConfig {
   variant: 'title';
   title: string;
@@ -35,13 +33,11 @@ export interface IHeaderSearchConfig extends IHeaderBaseConfig {
   showScan?: boolean;
 }
 
-/** Union chính */
 export type IHeaderConfig =
   | IHeaderGreetingConfig
   | IHeaderTitleConfig
   | IHeaderSearchConfig;
 
-/** Mặc định */
 export const DEFAULT_HEADER: IHeaderConfig = {
   variant: 'greeting',
   show: true,
@@ -49,7 +45,6 @@ export const DEFAULT_HEADER: IHeaderConfig = {
   back: false,
 };
 
-/** Type guards */
 export const isHeaderGreeting = (c: IHeaderConfig): c is IHeaderGreetingConfig =>
   c.variant === 'greeting';
 export const isHeaderTitle = (c: IHeaderConfig): c is IHeaderTitleConfig =>
@@ -58,7 +53,7 @@ export const isHeaderSearch = (c: IHeaderConfig): c is IHeaderSearchConfig =>
   c.variant === 'search';
 
 
-// ====================== FOOTER ======================
+// Footer
 
 export type FooterVariant = 'tabs' | 'cart';
 
@@ -77,7 +72,6 @@ export interface IFooterItem {
   badge?: number | 'dot';
 }
 
-/** Footer dạng Tabs */
 export interface IFooterTabsConfig extends IFooterBaseConfig {
   variant: 'tabs';
   items?: IFooterItem[];
@@ -93,14 +87,12 @@ export interface IFooterCartConfig extends IFooterBaseConfig {
 
 export type IFooterConfig = IFooterTabsConfig | IFooterCartConfig;
 
-/** Mặc định */
 export const DEFAULT_FOOTER: IFooterConfig = {
   variant: 'tabs',
   show: true,
   className: 'footer',
 };
 
-/** Type guards */
 export const isFooterTabs = (c: IFooterConfig): c is IFooterTabsConfig =>
   c.variant === 'tabs';
 export const isFooterCart = (c: IFooterConfig): c is IFooterCartConfig =>

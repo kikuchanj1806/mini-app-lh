@@ -37,25 +37,14 @@ export class BusinessI18nService {
       this.initialize();
    }
 
-   /**
-    * ------------------------------------------------------------------------------------------------------------
-    * Init ------------------------------------------------------------------------------------------------------
-    * ------------------------------------------------------------------------------------------------------------
-    * */
    private initialize() {
       let langDefault = this.zmaStorage.getPure('languageDefault');
 
-      // Sử dụng giá trị mặc định nếu `langDefault` không hợp lệ
       const language = langDefault && typeof langDefault === 'string' ? langDefault : environment.language.code;
 
       this.setLanguage(language, true);
    }
 
-   /**
-    * ------------------------------------------------------------------------------------------------------------
-    * Locale ---------------------------------------------------------------------------------------------------
-    * ------------------------------------------------------------------------------------------------------------
-    * */
    getLocaleConfigs(): IBusinessI18nConfig {
       return this.configsSubject.value;
    }
@@ -85,50 +74,14 @@ export class BusinessI18nService {
       return LOCALE_TO_MAPPING_SERVER[locale.toLowerCase()] as LOCALE_CODE;
    }
 
-   /**
-    * ------------------------------------------------------------------------------------------------------------
-    * API ---------------------------------------------------------------------------------------------------
-    * ------------------------------------------------------------------------------------------------------------
-    * */
-   // Load cài đặt locale DN
+   // TODO: gọi API lấy cài đặt locale của đơn vị, hiện chưa implement.
    loadBusinessLocaleSettings() {
       if (this.isLoadLocaleConfig) {
          return;
       }
-      // @TODO NVN Example xử lý call API tại đây
-
-      // const params = {
-      //    tab: 'getBusinessLocaleSettings',
-      //    businessId: this._apiService.appService.getBusinessId,
-      // }
-      // const uri = `${ uriConsts.store.MANAGE_LOAD }?tab=getBusinessLocaleSettings`
-      // this._apiService.postRequest<IResponseApi<IBusinessLocaleSettings>>(uri, params).subscribe({
-      //    next: res => {
-      //       if (res.code) {
-      //          const setting = res.data;
-      //
-      //          this.setLocaleConfigs({
-      //             locale: this._getLocaleCodeMapping(setting.country),
-      //             currency: {
-      //                code: setting.currency.code,
-      //                display: setting.currency.display,
-      //             },
-      //             timezone: setting.timezone
-      //          })
-      //       }
-      //    },
-      //    complete: () => {
-      //       this.isLoadLocaleConfig = true;
-      //    }
-      // })
    }
 
 
-   /**
-    * ------------------------------------------------------------------------------------------------------------
-    * Language ---------------------------------------------------------------------------------------------------
-    * ------------------------------------------------------------------------------------------------------------
-    * */
    setLanguage(code: string, isDefault = false) {
       if (!code){
          code = environment.language.code;

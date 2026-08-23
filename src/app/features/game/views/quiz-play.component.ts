@@ -25,7 +25,6 @@ export class QuizPlayComponent extends AppCommonComponent implements OnInit, OnD
   questions: IResQuestion[] = [];
   index = 0;
 
-  // timer
   elapsedSeconds = 20;
 
   submitting = false;
@@ -41,7 +40,6 @@ export class QuizPlayComponent extends AppCommonComponent implements OnInit, OnD
     this.questions = shuffle(s.questions);
     this.index = 0;
 
-    // reset + start timer
     this.quizState.startTimer();
     interval(1000)
       .pipe(
@@ -73,7 +71,6 @@ export class QuizPlayComponent extends AppCommonComponent implements OnInit, OnD
     return this.index < this.total - 1;
   }
 
-  // tuỳ bạn: bắt buộc trả lời hết mới cho nộp
   get canSubmit(): boolean {
     return this.total > 0 && this.answeredCount === this.total;
   }
@@ -109,7 +106,6 @@ export class QuizPlayComponent extends AppCommonComponent implements OnInit, OnD
       return;
     }
 
-    // stop timer
     this.quizState.stopTimer();
 
     const wardId = Number(environment.wardId || 0);

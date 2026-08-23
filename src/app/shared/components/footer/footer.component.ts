@@ -16,6 +16,7 @@ import {Subject, takeUntil} from 'rxjs';
 import {environment} from '../../../../environments';
 import {HeaderFooterFacadeService} from '../../services/repository/layout-service/header-footer-facade.service';
 import {NotifyService} from '../../../core/services';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -91,15 +92,14 @@ export class AppFooterComponent implements OnInit, OnChanges, OnDestroy {
     {path: '', iconClass: 'fa-light fa-message-dots', label: 'Liên hệ'},
   ];
 
-  // state
   cfg: IFooterConfig = DEFAULT_FOOTER;
   itemsToRender: IFooterItem[] = this.items;
 
-  // services
   readonly hf = inject(HeaderFooterFacadeService);
   private readonly cd = inject(ChangeDetectorRef);
   private readonly offcanvasSvc = inject(OffcanvasCustomService);
   private readonly notify = inject(NotifyService);
+  private readonly router = inject(Router);
 
   private destroy$ = new Subject<void>();
 
@@ -147,6 +147,7 @@ export class AppFooterComponent implements OnInit, OnChanges, OnDestroy {
 
     if (item.path === '__profile__') {
       ev.preventDefault();
+      this.router.navigateByUrl('/profile');
       return;
     }
 

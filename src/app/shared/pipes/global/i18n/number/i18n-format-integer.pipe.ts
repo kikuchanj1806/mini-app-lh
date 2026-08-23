@@ -24,9 +24,6 @@ export class I18nFormatIntegerPipe extends BaseNumberImpureI18nPipe<IntegerOpts>
       this.destroy()
    }
 
-   /**
-    * Logic format riêng cho integer
-    */
    protected formatValue(value: any, opts: IntegerOpts = {}): string | null {
       if (castFloat(value) == 0 && !opts.showZeroValue) {
          return null;
@@ -35,12 +32,10 @@ export class I18nFormatIntegerPipe extends BaseNumberImpureI18nPipe<IntegerOpts>
          return null;
       }
 
-      // 2. abs
       if (opts.abs) {
          value = Math.abs(value);
       }
 
-      // 4. Dùng decimalPipe để hiển thị số nguyên
       // digitsInfo = '1.0-0' => không có phần thập phân
       const digitsInfo = '1.0-0';
       const result = this.decimalPipe.transform(
@@ -51,10 +46,6 @@ export class I18nFormatIntegerPipe extends BaseNumberImpureI18nPipe<IntegerOpts>
       return result ??  null;
    }
 
-   /**
-    * Optional: So sánh opts cũ - mới (shallow check)
-    * để biết có cần re-format hay không
-    */
    protected override isSameOpts(oldOpts?: IntegerOpts, newOpts?: IntegerOpts): boolean {
       if (oldOpts === newOpts) return true;
       if (!oldOpts || !newOpts) return false;

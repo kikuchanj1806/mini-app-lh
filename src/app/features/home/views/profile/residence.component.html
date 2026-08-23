@@ -1,0 +1,98 @@
+<div class="rs-page">
+  @if (needsLogin) {
+    <div class="rs-login">
+      <i class="fa-regular fa-circle-user"></i>
+      <h2>Đăng nhập để khai báo thông tin cư trú</h2>
+      <p>Bạn cần đăng nhập bằng Zalo để khai báo hoặc xem thông tin cư trú của mình.</p>
+      <button type="button" class="rs-login-btn" [disabled]="isLoggingIn" (click)="onLogin()">
+        {{ isLoggingIn ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+      </button>
+    </div>
+  } @else if (loading) {
+    <div class="rs-loading">Đang tải...</div>
+  } @else {
+    <div class="rs-content">
+      @if (isLocked) {
+        <div class="rs-locked-banner">
+          <i class="fa-regular fa-clock"></i>
+          Yêu cầu chỉnh sửa đang chờ cán bộ duyệt. Bạn không thể gửi thêm yêu cầu cho tới khi được xử lý xong.
+        </div>
+      }
+
+      @if (isDeclareMode) {
+        <p class="rs-hint">Bạn chưa khai báo thông tin cư trú. Điền đầy đủ thông tin bên dưới để gửi khai báo.</p>
+      } @else {
+        <div class="rs-status-row">
+          <span class="rs-status-badge" [attr.data-status]="resident?.verificationStatus">
+            {{ statusLabel(resident?.verificationStatus) }}
+          </span>
+          @if (resident?.verificationStatus === 'rejected' && resident?.rejectReason) {
+            <span class="rs-reject-reason">Lý do: {{ resident?.rejectReason }}</span>
+          }
+        </div>
+
+        @if (isReadOnly) {
+          <button type="button" class="rs-btn-outline rs-edit-btn" (click)="onRequestEdit()">
+            <i class="fa-regular fa-pen"></i> Yêu cầu chỉnh sửa
+          </button>
+        }
+      }
+
+      @if (isReadOnly) {
+        <div class="rs-readonly">
+          <div class="rs-field"><span>Họ và tên</span><b>{{ resident?.fullName }}</b></div>
+          <div class="rs-field"><span>Giới tính</span><b>{{ genderLabel(resident?.gender) }}</b></div>
+          <div class="rs-field"><span>Ngày sinh</span><b>{{ resident?.dateOfBirth || 'Chưa cập nhật' }}</b></div>
+          <div class="rs-field"><span>Số CCCD/CMND</span><b>{{ resident?.idCardNo || 'Chưa cập nhật' }}</b></div>
+          <div class="rs-field"><span>Quan hệ với chủ hộ</span><b>{{ resident?.relationshipToHead || 'Chưa cập nhật' }}</b></div>
+          <div class="rs-field"><span>Địa chỉ thường trú</span><b>{{ resident?.permanentAddress || 'Chưa cập nhật' }}</b></div>
+          <div class="rs-field"><span>Địa bàn</span><b>{{ resident?.areaPath || 'Chưa cập nhật' }}</b></div>
+        </div>
+      } @else {
+        <form class="rs-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <label class="rs-label">Họ và tên *</label>
+          <input type="text" class="rs-input" formControlName="fullName" maxlength="150"/>
+
+          <label class="rs-label">Giới tính *</label>
+          <select class="rs-input" formControlName="gender">
+            <option value="male">Nam</option>
+            <option value="female">Nữ</option>
+            <option value="other">Khác</option>
+          </select>
+
+          <label class="rs-label">Ngày sinh</label>
+          <input type="date" class="rs-input" formControlName="dateOfBirth"/>
+
+          <label class="rs-label">Số CCCD/CMND</label>
+          <input type="text" class="rs-input" formControlName="idCardNo" maxlength="30"/>
+
+          <label class="rs-label">Quan hệ với chủ hộ</label>
+          <input type="text" class="rs-input" formControlName="relationshipToHead" maxlength="100"/>
+
+          <label class="rs-label">Địa chỉ thường trú</label>
+          <textarea class="rs-input" formControlName="permanentAddress" maxlength="500" rows="2"></textarea>
+
+          <label class="rs-label">Địa bàn (thôn/tổ) *</label>
+          <select class="rs-input" formControlName="areaId">
+            <option [ngValue]="null" disabled>-- Chọn địa bàn --</option>
+            @for (opt of areaOptions; track opt.id) {
+              <option [ngValue]="opt.id" [disabled]="!opt.selectable">{{ opt.label }}</option>
+            }
+          </select>
+
+          <label class="rs-label">Mã hộ khẩu</label>
+          <input type="text" class="rs-input" formControlName="householdCode" maxlength="80"/>
+
+          <div class="rs-actions">
+            @if (isEditingVerified) {
+              <button type="button" class="rs-btn-outline" (click)="onCancelEdit()">Huỷ</button>
+            }
+            <button type="submit" class="rs-btn-primary" [disabled]="isSubmitting || isLocked">
+              {{ isSubmitting ? 'Đang gửi...' : (isDeclareMode ? 'Gửi khai báo' : 'Gửi yêu cầu chỉnh sửa') }}
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  }
+</div>

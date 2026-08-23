@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {finalize, of, Subscription, takeUntil, tap} from 'rxjs';
+import {of, Subscription, takeUntil} from 'rxjs';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 import {WeatherService} from '../../../../shared/services/weather.service';
 import {createShortcut, openPhone, openWebview} from 'zmp-sdk/apis';
@@ -11,22 +11,28 @@ import {CreateShortcutComponent} from '../../../../shared/components/modals/crea
 import {OffcanvasCustomService} from '../../../../shared/services/modal-canvas-custom.service';
 import {Router} from '@angular/router';
 import {FollowOfficialService} from '../../../../shared/services/feature-specific/home/follow-official.service';
-import {IResNewsItem, NewApiService} from '../../../../shared/services/api/news/new-api.service';
-import {MOCK_NEWS} from '../../../../shared/mock/news-mock.data';
 import {IResBanner, IResBannerT} from '../../../../shared/models/api';
-import {catchError, map} from 'rxjs/operators';
+import {catchError, finalize, map} from 'rxjs/operators';
 import {BannerCacheService} from '../../../../shared/models/feature-specific/banner/banner-cache.service';
-import {UserApiService} from '../../../../shared/services/api/user/user-api.service';
+import {IResPostListItem} from '../../../../shared/models/api';
+import {IResMenuItemActive} from '../../../../shared/services/api';
+import {MenuItemCacheService} from '../../../../shared/services/feature-specific/home/menu-item-cache.service';
+import {NewsCacheService} from '../../../../shared/services/feature-specific/home/news-cache.service';
+import {BusinessConfigService} from '../../../../core/services';
 
+/**
+ * Ô tiện ích trang chủ — LUÔN đến từ `menu-items/active`, không còn danh sách mặc định viết cứng
+ * trong code. Đích đến đã được BE resolve sẵn thành `linkType` + `link`.
+ */
 type HomeAction = {
   key: string;
   label: string;
   sub: string;
   iconClass: string;
-  route?: string;
-  externalUrl?: string;
-  phone?: string;
-  categoryId?: number;
+  iconUrl?: string | null;
+  linkType: IResMenuItemActive['linkType'];
+  link?: string | null;
+  ref?: IResMenuItemActive['ref'];
 };
 
 type HomeFeature = HomeAction & {
@@ -47,17 +53,31 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   slides: IResBannerT[] = [];
 
   hasFollowed = false;
-  private oaId = environment.OAId;
+  isFollowingOA = false;
+  /** OA id lấy từ business-config (mỗi xã một OA); `environment.OAId` chỉ là dự phòng. */
+  private get oaId(): string { return this.businessConfig.zaloOaId; }
+  get oaDisplayName(): string { return this.businessConfig.businessName || 'Chính quyền số'; }
 
-  // UI date
   todayWeekday = '';
   todayDate = '';
 
-  // Weather UI bindings
-  locationLabel = 'Long Hưng, Hưng Yên';
+  locationLabel = '';
   weatherText = 'Mây rải rác';
   temperatureText = '25.6°C';
   weatherIconClass = 'wx-cloud';
+
+  // Nội dung do admin xã nhập (site_settings) — một bản build dùng chung cho mọi xã, KHÔNG viết
+  // cứng tên xã/tỉnh/hotline ở đây. Chưa cấu hình thì ẩn phần tương ứng.
+  get heroEyebrow(): string { return this.businessConfig.setting('home_hero_eyebrow'); }
+  get heroTitle(): string { return this.businessConfig.setting('home_hero_title') || this.businessConfig.businessName; }
+  get heroSubtitle(): string { return this.businessConfig.setting('home_hero_subtitle'); }
+  get welcomeTitle(): string { return this.businessConfig.setting('home_welcome_title', 'Xin chào, bạn!'); }
+  get welcomeText(): string { return this.businessConfig.setting('home_welcome_text'); }
+  get hotline(): string { return this.businessConfig.hotline; }
+  /** Chưa nhập địa điểm thì ẩn hẳn khối thời tiết thay vì hiện thời tiết của xã khác. */
+  get showWeather(): boolean { return !!this.businessConfig.setting('weather_location'); }
+  /** Chưa cấu hình thì box "Quan tâm OA" tự dùng icon chuông mặc định (xem template). */
+  get followOaIconUrl(): string { return this.businessConfig.setting('home_follow_oa_icon_url'); }
 
   stats = {
     population: 0,
@@ -66,105 +86,22 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     satisfaction: '--',
     updatedMonth: ''
   };
-  quickActions: HomeAction[] = [
-    {
-      key: 'news',
-      label: 'Tin tức',
-      sub: 'mới nhất',
-      iconClass: 'fa-regular fa-newspaper',
-      route: '/news',
-    },
-    {
-      key: 'schedule',
-      label: 'Lịch công tác',
-      sub: 'hôm nay',
-      iconClass: 'fa-regular fa-calendar-days',
-    },
-    {
-      key: 'service',
-      label: 'Dịch vụ công',
-      sub: 'trực tuyến',
-      iconClass: 'fa-regular fa-desktop',
-      externalUrl: 'https://dichvucong.gov.vn/tra-cuu-ho-so',
-    },
-    {
-      key: 'feedback',
-      label: 'Phản ánh',
-      sub: 'hiện trường',
-      iconClass: 'fa-regular fa-camera',
-      route: '/feedback',
-    },
-  ];
-
-  featuredTools: HomeFeature[] = [
-    {
-      key: 'tthc',
-      label: 'Thủ tục HC',
-      sub: 'Tra cứu & nộp hồ sơ',
-      iconClass: 'fa-solid fa-file-circle-check',
-      colorClass: 'tile-blue',
-      externalUrl: 'https://dichvucong.gov.vn/tra-cuu-ho-so',
-    },
-    {
-      key: 'online',
-      label: 'Tra cứu hồ sơ',
-      sub: 'Theo dõi hồ sơ',
-      iconClass: 'fa-solid fa-folder-open',
-      colorClass: 'tile-green',
-      externalUrl: 'https://dichvucong.gov.vn/tra-cuu-ho-so',
-    },
-    {
-      key: 'feedback',
-      label: 'Gửi phản ánh',
-      sub: 'Ý kiến của bạn',
-      iconClass: 'fa-solid fa-comments',
-      colorClass: 'tile-orange',
-      route: '/feedback',
-    },
-    {
-      key: 'schedule',
-      label: 'Lịch công tác',
-      sub: 'Xem lịch làm việc',
-      iconClass: 'fa-solid fa-calendar-check',
-      colorClass: 'tile-purple',
-    },
-    {
-      key: 'documents',
-      label: 'Văn bản',
-      sub: 'Tra cứu & tải về',
-      iconClass: 'fa-solid fa-file-lines',
-      colorClass: 'tile-teal',
-      categoryId: 23,
-    },
-    {
-      key: 'qa',
-      label: 'Hỏi đáp',
-      sub: 'Hỗ trợ trực tuyến',
-      iconClass: 'fa-solid fa-user-group',
-      colorClass: 'tile-pink',
-      route: '/asked',
-    },
-    {
-      key: 'survey',
-      label: 'Khảo sát',
-      sub: 'Gửi ý kiến',
-      iconClass: 'fa-solid fa-chart-simple',
-      colorClass: 'tile-cyan',
-      externalUrl: 'https://forms.gle/BPyScAuL13n9da486',
-    },
-    {
-      key: 'map',
-      label: 'Bản đồ số',
-      sub: 'Dữ liệu đất đai',
-      iconClass: 'fa-solid fa-location-dot',
-      colorClass: 'tile-sky',
-      route: '/map',
-    },
-  ];
+  /**
+   * Ô tiện ích trang chủ nạp hoàn toàn từ `menu-items/active` (cache theo vòng đời app).
+   * KHÔNG có danh sách mặc định viết cứng: trước đây danh sách cứng hiện ra trước rồi bị API
+   * thay thế, gây nháy nội dung mỗi lần quay lại trang chủ.
+   */
+  quickActions: HomeAction[] = [];
+  featuredTools: HomeFeature[] = [];
+  loadingQuickActions = true;
+  loadingFeaturedTools = true;
   private subs = new Subscription();
+  private readonly featurePalette = ['tile-blue', 'tile-green', 'tile-orange', 'tile-purple', 'tile-teal', 'tile-pink', 'tile-cyan', 'tile-sky'];
 
   loadingNews = false;
-  newsItems: IResNewsItem[] = [];
+  newsItems: IResPostListItem[] = [];
+  newsSectionTitle = 'Tin tức nổi bật';
+  newsViewAllCategoryId: number | null = null;
 
   constructor(
     private weatherService: WeatherService,
@@ -174,9 +111,10 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     private offCanvasService: OffcanvasCustomService,
     private route: Router,
     private users: UserService,
-    private newsApi: NewApiService,
     private bannerCache: BannerCacheService,
-    private userApiService: UserApiService,
+    private menuItemCache: MenuItemCacheService,
+    private newsCache: NewsCacheService,
+    private businessConfig: BusinessConfigService,
   ) {
     super();
   }
@@ -196,17 +134,16 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
       ],
     });
     this.setToday();
-    const wardId = Number(environment.wardId || 0);
     const stored = this.users.userInfoValue ?? this.appService.getUserInfo;
     this.hasFollowed = !!stored?.followedOA;
 
-    this.loadWardStats(wardId);
-
     this.loadWeather();
-    this.loadNews();
+    this.loadHomeContent();
 
     this.loadBannerTop();
     this.loadBannerMiddle();
+    this.loadFeaturedTools();
+    this.loadQuickActions();
   }
 
   ngOnDestroy() {
@@ -214,95 +151,32 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     this.getDestroySubs();
   }
 
-  private loadWardStats(wardId: number): void {
-    this.userApiService.getWardDetail({ward_id: wardId}).pipe(
-      map((res: any) => res?.data ?? null),
-      tap((w) => {
-        if (!w) return;
-
-        const population = Number(w.population ?? 0);
-
-        const areaKm2 = Number(w.area_km2 ?? 0);
-        const areaText = areaKm2 > 0 ? this.formatKm2(areaKm2) : '--';
-
-        const servicesCount = Number(w.services_count ?? 0);
-        const servicesText = servicesCount > 0 ? `${servicesCount}+` : '--';
-
-        const avg = Number(w.satisfaction_avg ?? 0);
-        const percent = avg > 0 ? Math.round((avg / 5) * 100) : 0;
-        const satisfactionText = avg > 0 ? `${percent}%` : '--';
-
-        const updatedAt = Number(w.updated_at ?? 0);
-        const updatedMonth = updatedAt ? this.formatMonthYearFromUnix(updatedAt) : '';
-
-        this.stats = {
-          population,
-          area: areaText,
-          services: servicesText,
-          satisfaction: satisfactionText,
-          updatedMonth
-        };
-      }),
-      catchError(() => of(null)),
-      takeUntil(this.destroyed)
-    ).subscribe();
-  }
-
-  private formatKm2(v: number): string {
-    const s = v.toFixed(2).replace('.', ',');
-    return `${s} km2`;
-  }
-
-  private formatMonthYearFromUnix(unixSeconds: number): string {
-    const d = new Date(unixSeconds * 1000);
-    const m = d.getMonth() + 1;
-    const y = d.getFullYear();
-    return `${m}/${y}`;
-  }
-
   private loadBannerTop(): void {
-    // FAKE DATA (demo) — dùng ảnh banner local thay vì gọi API.
-    // Khi có API thật, bỏ đoạn dưới và mở lại đoạn gọi BannerCacheService bên dưới.
-    this.slides = [{
-      id: 0,
-      name: '',
-      image: '/assets/img/banners/93f5685b-e172-4c80-9941-b2c167bbbc45.png',
-      intro: '',
-      description: '',
-      typeVideo: false,
-    }];
-
-    // const wardId = Number(environment.wardId || 0);
-    // if (!wardId) return;
-    //
-    // this.bannerCache.getFirstBannerOnce({
-    //   ward_id: wardId,
-    //   position_key: 'HOME_TOP',
-    // }).pipe(
-    //   catchError(() => of(null)),
-    //   takeUntil(this.destroyed),
-    // ).subscribe((b) => {
-    //   const image = b?.image_url ?? '';
-    //   this.slides = image
-    //     ? [{
-    //       id: b!.id,
-    //       name: b?.title ?? '',
-    //       image,
-    //       intro: '',
-    //       description: '',
-    //       typeVideo: false,
-    //     }]
-    //     : [];
-    // });
+    this.bannerCache.getBannersOnce({
+      positionCode: 'miniapp_home_hero',
+      platform: 'miniapp',
+    }).pipe(
+      catchError(() => of([])),
+      takeUntil(this.destroyed),
+    ).subscribe((items) => {
+      this.slides = items
+        .filter((b) => !!b.imageUrl)
+        .map((b) => ({
+          id: b.id,
+          name: b.title ?? '',
+          image: b.imageUrl ?? '',
+          intro: '',
+          description: '',
+          typeVideo: false,
+          linkUrl: b.linkUrl,
+        }));
+    });
   }
 
   private loadBannerMiddle(): void {
-    const wardId = Number(environment.wardId || 0);
-    if (!wardId) return;
-
     this.bannerCache.getFirstBannerOnce({
-      ward_id: wardId,
-      position_key: 'HOME_MIDDLE',
+      positionCode: 'miniapp_home_mid',
+      platform: 'miniapp',
     }).pipe(
       catchError(() => of(null)),
       takeUntil(this.destroyed),
@@ -312,7 +186,7 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   async onOpenBanner() {
-    const url = this.bannerMiddle?.link_url;
+    const url = this.bannerMiddle?.linkUrl;
     if (!url) return;
 
     try {
@@ -329,80 +203,118 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
 
   getBannerImgUrl(b: IResBanner | null): string {
     if (!b) return '';
-    return (b.image_url || b.image || '').trim();
+    return (b.imageUrl || '').trim();
   }
 
-  loadNews() {
-    // FAKE DATA (demo) — backend /api/news chưa sẵn sàng.
-    // Khi có API thật, bỏ 2 dòng dưới và mở lại đoạn gọi NewApiService bên dưới.
-    this.loadingNews = false;
-    this.newsItems = MOCK_NEWS.slice(0, 2);
+  loadHomeContent() {
+    this.loadingNews = true;
+    this.newsCache.homeContentOnce$()
+      .pipe(
+        takeUntil(this.destroyed),
+      )
+      .subscribe((data) => {
+        this.loadingNews = false;
+        const section = data?.sections?.[0] ?? null;
+        this.newsSectionTitle = section?.title || 'Tin tức nổi bật';
+        this.newsViewAllCategoryId = section?.viewAllCategory?.id ?? null;
+        this.newsItems = section?.items?.slice(0, section.displayLimit || 2) ?? [];
 
-    // const wardId = environment.wardId;
-    //
-    // this.loadingNews = true;
-    // this.newsApi.newsList({
-    //   ward_id: wardId,
-    //   perPage: 2,
-    //   page: 1,
-    // })
-    //   .pipe(finalize(() => (this.loadingNews = false)))
-    //   .subscribe({
-    //     next: (res) => {
-    //       this.newsItems = res?.data ?? [];
-    //     },
-    //     error: () => {
-    //       this.newsItems = [];
-    //     },
-    //   });
+        const stats = data?.stats;
+        if (stats?.isActive) {
+          const getValue = (code: string) => stats.items?.find((it) => it.code === code)?.value || '--';
+          this.stats = {
+            population: Number(getValue('population')) || 0,
+            area: getValue('area'),
+            services: getValue('services'),
+            satisfaction: getValue('satisfaction'),
+            updatedMonth: stats.updatedMonth ?? ''
+          };
+        }
+      });
   }
 
-  async onQuickAction(it: HomeAction): Promise<void> {
-    if (it.phone) {
-      this.callNow(it.phone);
-      return;
-    }
+  /**
+   * Hàng nút tắt đầu trang. Nạp qua cache nên chỉ gọi API một lần cho cả vòng đời app — lần quay
+   * lại trang chủ sau đó dữ liệu có ngay, không còn khoảng rỗng rồi mới đầy.
+   */
+  private loadQuickActions(): void {
+    this.menuItemCache.activeOnce$('home_quick_actions')
+      .pipe(
+        finalize(() => (this.loadingQuickActions = false)),
+        takeUntil(this.destroyed),
+      )
+      .subscribe((items) => {
+        this.quickActions = items.map((it) => ({
+          key: String(it.id),
+          label: it.label,
+          sub: '',
+          iconClass: it.iconClass || 'fa-regular fa-circle-dot',
+          iconUrl: it.icon,
+          linkType: it.linkType,
+          link: it.link,
+          ref: it.ref,
+        }));
+      });
+  }
 
-    if (it.route) {
-      this.route.navigateByUrl(it.route);
-      return;
-    }
+  private loadFeaturedTools(): void {
+    this.menuItemCache.activeOnce$('home_utilities')
+      .pipe(
+        finalize(() => (this.loadingFeaturedTools = false)),
+        takeUntil(this.destroyed),
+      )
+      .subscribe((items) => {
+        this.featuredTools = items.map((it, index) => ({
+          key: String(it.id),
+          label: it.label,
+          sub: '',
+          iconClass: it.iconClass || 'fa-solid fa-grid-2',
+          iconUrl: it.icon,
+          colorClass: this.featurePalette[index % this.featurePalette.length],
+          linkType: it.linkType,
+          link: it.link,
+          ref: it.ref,
+        }));
+      });
+  }
 
-    if (it.externalUrl) {
-      await this.openExternalUrl(it.externalUrl);
-      return;
-    }
-
-    if (it.key === 'schedule') {
-      this._notify.info('Lịch công tác đang được cập nhật.');
-      return;
+  /**
+   * Điều hướng theo `linkType` mà BE đã resolve sẵn (`menu-items/active`).
+   *
+   * FE không tự suy diễn lại từ `actionType`: `post_category`/`post_detail` đã được BE đổi thành
+   * route `/news?categoryId=N` và `/news/N` — nhân bản logic đó ở đây là mời lệch về sau.
+   */
+  private async openByLinkType(it: HomeAction): Promise<void> {
+    switch (it.linkType) {
+      case 'route':
+        if (it.link) this.route.navigateByUrl(it.link);
+        return;
+      case 'url':
+        if (it.link) window.open(it.link, '_blank');
+        return;
+      case 'webview':
+        if (it.link) await this.openExternalUrl(it.link);
+        return;
+      case 'phone':
+        if (it.link) this.callNow(it.link);
+        return;
+      default:
+        this._notify.info('Tính năng đang được cập nhật.');
+        return;
     }
   }
 
-  async onFeatureClick(it: HomeFeature): Promise<void> {
-    if (it.categoryId) {
-      this.route.navigate(['/news'], {queryParams: {categoryId: it.categoryId}});
-      return;
-    }
+  // Mọi ô đều đến từ `menu-items/active` nên luôn có `linkType`, không còn nhánh dự phòng cũ.
+  onQuickAction(it: HomeAction): Promise<void> {
+    return this.openByLinkType(it);
+  }
 
-    if (it.route) {
-      this.route.navigateByUrl(it.route);
-      return;
-    }
-
-    if (it.externalUrl) {
-      await this.openExternalUrl(it.externalUrl);
-      return;
-    }
-
-    if (it.key === 'schedule') {
-      this._notify.info('Lịch công tác đang được cập nhật.');
-      return;
-    }
+  onFeatureClick(it: HomeFeature): Promise<void> {
+    return this.openByLinkType(it);
   }
 
   onNotificationTap(): void {
-    this._notify.info('Bạn có 3 thông báo mới.');
+    this.route.navigateByUrl('/notifications');
   }
 
   private async openExternalUrl(url: string): Promise<void> {
@@ -441,10 +353,6 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
       survey: 'https://forms.gle/BPyScAuL13n9da486',
       online:
         'https://dichvucong.gov.vn/tra-cuu-ho-so',
-      // penalty:
-      //   'https://www.csgt.vn/m/tra-cuu-phuong-tien-vi-pham.html',
-      // tv:
-      //   'https://thhp.vn/truyen-hinh?channel=THPONLINE&typeInapp=1&zarsrc=1303&utm_source=zalo&utm_medium=zalo&utm_campaign=zalo'
     };
 
     const url = externalMap[it.key];
@@ -478,8 +386,14 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     if (it.key === 'shortcut') {
 
       const appId = environment.apiConfig.appId;
-      const appName = 'UBND xã Long Hưng';
-      const appIcon = 'https://smartzalo.io.vn/assets/img/Quoc_Huy_Viet_Nam_Chuan.png';
+      // Tên/icon phím tắt lấy từ cấu hình của từng xã; dự phòng về tên đơn vị và icon mặc định.
+      const appName = this.businessConfig.setting('miniapp_shortcut_name')
+        || this.businessConfig.businessName
+        || 'Chính quyền số';
+      const appIcon = this.businessConfig.setting(
+        'miniapp_shortcut_icon_url',
+        'https://smartzalo.io.vn/assets/img/Quoc_Huy_Viet_Nam_Chuan.png',
+      );
 
       const res = await this.zmaShortcut.createShortcutSafe({
         params: {
@@ -493,36 +407,6 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
         appName,
         appIcon,
       });
-      //
-      // if (!res.ok) {
-      //   this._notify.warning(res.message || 'Không thể tạo phím tắt.');
-      //   return;
-      // }
-      //
-      // if (res.bypass) {
-      //   this._notify.info('[DEV] Đã bypass tạo phím tắt.');
-      //   return;
-      // }
-      //
-      // if (res.url) {
-      //   window.open(res.url, '_blank');
-      //   this._notify.info('Đang mở trang tạo phím tắt. Vui lòng thao tác theo hướng dẫn.');
-      //   return;
-      // }
-      //
-      // this._notify.success('Đã gửi yêu cầu tạo phím tắt. Vui lòng xác nhận trên Zalo.');
-      // const opts: NgbOffcanvasOptions = {
-      //   position: 'bottom',
-      //   backdrop: true,
-      //   keyboard: true,
-      //   scroll: false,
-      //   container: 'body',
-      //   panelClass: 'offcanvas-bottom-sheet',
-      // };
-      //
-      // const ref = this.offCanvasService.open(CreateShortcutComponent, opts);
-      // ref.componentInstance.shortcutUrl = res.url;
-
 
       await createShortcut({
         params: {
@@ -541,12 +425,16 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   onFollowOfficial() {
-    if (this.hasFollowed) return;
+    if (this.hasFollowed || this.isFollowingOA) return;
 
+    this.isFollowingOA = true;
     this.followSvc.follow$(this.oaId, {
       devBypass: false,
     })
-      .pipe(takeUntil(this.destroyed))
+      .pipe(
+        finalize(() => (this.isFollowingOA = false)),
+        takeUntil(this.destroyed),
+      )
       .subscribe((rs) => {
         if (rs === 'already') {
           this.hasFollowed = true;
@@ -576,6 +464,10 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   onViewAllNews() {
+    if (this.newsViewAllCategoryId) {
+      this.route.navigate(['/news'], {queryParams: {categoryId: this.newsViewAllCategoryId}});
+      return;
+    }
     this.route.navigateByUrl('/news');
   }
 
@@ -593,15 +485,24 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
   }
 
   private loadWeather() {
+    const location = this.businessConfig.setting('weather_location');
+    if (!location) return; // Chưa cấu hình địa danh -> ẩn khối, xem getter `showWeather`.
+
+    this.locationLabel = location;
+
     this.subs.add(
-      this.weatherService.getCurrentFixed().subscribe({
+      this.weatherService.getCurrentByLocationName(location).subscribe({
         next: (res) => {
-          // label đã được service set sẵn (Long Hưng, Hưng Yên)
-          this.locationLabel = res.label;
+          this.locationLabel = res.label || location;
 
-          this.temperatureText =
-            res.temp == null ? '--°C' : `${res.temp.toFixed(1)}°C`;
+          if (res.temp == null) {
+            this.temperatureText = '--°C';
+            this.weatherText = 'Không lấy được thời tiết';
+            this.weatherIconClass = 'wx-cloud';
+            return;
+          }
 
+          this.temperatureText = `${res.temp.toFixed(1)}°C`;
           this.weatherText = this.mapWeatherCodeToText(res.code);
           this.weatherIconClass = this.mapWeatherCodeToIconClass(res.code);
         },
@@ -609,7 +510,6 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
           this.weatherText = 'Không lấy được thời tiết';
           this.temperatureText = '--°C';
           this.weatherIconClass = 'wx-cloud';
-          this.locationLabel = 'Long Hưng, Hưng Yên';
         },
       })
     );
@@ -642,5 +542,5 @@ export class HomeComponent extends AppCommonComponent implements OnInit, OnDestr
     return 'wx-cloud';
   }
 
-  trackByNewsId = (_: number, it: IResNewsItem) => it.id;
+  trackByNewsId = (_: number, it: IResPostListItem) => it.id;
 }

@@ -46,10 +46,6 @@ export class I18nFormatDecimalPipe  extends BaseNumberImpureI18nPipe<DecimalOpts
       return `${ result }${ suffix }`;
    }
 
-   /**
-    * Optional: So sánh opts cũ - mới (shallow check)
-    * để biết có cần re-format hay không
-    */
    protected override isSameOpts(oldOpts?: DecimalOpts, newOpts?: DecimalOpts): boolean {
       if (oldOpts === newOpts) return true;
       if (!oldOpts || !newOpts) return false;

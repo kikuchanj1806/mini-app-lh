@@ -5,8 +5,8 @@ import localeJA from '@angular/common/locales/ja';
 import {LOCALE_CODE} from './business-i18n.model';
 
 interface LocaleDefinition {
-   data: any; // Dữ liệu locale từ Angular
-   code: LOCALE_CODE; // Mã định danh locale, ví dụ: 'vi', 'en'
+   data: any;
+   code: LOCALE_CODE;
 }
 
 const LOCALES: LocaleDefinition[] = [
@@ -15,9 +15,6 @@ const LOCALES: LocaleDefinition[] = [
    { data: localeJA, code: 'ja-JP' },
 ];
 
-/**
- * Hàm đăng ký các locale
- */
 export function registerLocales() {
    LOCALES.forEach(locale => {
       registerLocaleData(locale.data, locale.code);

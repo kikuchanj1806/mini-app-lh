@@ -1,0 +1,113 @@
+.fp-page {
+  min-height: calc(100vh - 56px);
+  background: #f6f8fb;
+}
+
+.fp-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 16px;
+}
+
+.fp-tabs button {
+  flex: 0 0 auto;
+  border: 1px solid #d8e1ee;
+  border-radius: 999px;
+  background: #fff;
+  color: #465568;
+  padding: 8px 13px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.fp-tabs button.active {
+  border-color: #0b65d8;
+  background: #0b65d8;
+  color: #fff;
+}
+
+.fp-list {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px 18px;
+}
+
+.fp-item {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e4eaf2;
+}
+
+.fp-item img {
+  width: 92px;
+  height: 92px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #e9eef5;
+}
+
+.fp-copy {
+  min-width: 0;
+}
+
+.fp-row,
+.fp-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fp-field,
+.fp-status {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.fp-field {
+  color: #0b65d8;
+}
+
+.fp-status {
+  color: #0f7a3f;
+}
+
+.fp-copy h2 {
+  margin: 7px 0 6px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.fp-copy p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.fp-meta {
+  margin-top: 9px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fp-meta b {
+  color: #0b65d8;
+}
+
+.fp-empty {
+  padding: 36px 0;
+  text-align: center;
+  color: #64748b;
+  font-weight: 700;
+}

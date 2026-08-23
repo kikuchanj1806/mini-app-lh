@@ -11,10 +11,9 @@ type IOptsDateI18n = {
 };
 
 /**
- *
- * - Mặc định momment xử lý giá trị timestamp dưới dạng milliseconds
- *      => chỉ định lại sang seconds để trùng với epoch seconds của BE
- * */
+ * Mặc định moment xử lý timestamp dưới dạng milliseconds — pipe này quy đổi lại sang epoch
+ * seconds để trùng định dạng timestamp của BE.
+ */
 @Pipe({
   standalone: true,
   name: 'dateI18n'
@@ -24,13 +23,10 @@ export class DateI18nPipe implements PipeTransform, OnDestroy {
   protected sub?: Subscription;
 
   constructor(private businessI18nService: BusinessI18nService) {
-    // Lấy config ban đầu
     this.language = this.businessI18nService.getLanguageCode();
 
-    // Lắng nghe thay đổi config (1 subscription duy nhất)
     this.sub = this.businessI18nService.language$.subscribe(lang => {
       this.language = lang;
-      // Lần tới transform, nếu config ref thay đổi => format lại
     });
   }
 
@@ -42,7 +38,6 @@ export class DateI18nPipe implements PipeTransform, OnDestroy {
     if (val == null || EXCEPTION_DATES.includes(val) || !type) {
       return '';
     }
-    // Đảm bảo rằng giá trị luôn là timestamp (number)
     let timestamp: number;
     if (typeof val === 'number') {
       timestamp = val;

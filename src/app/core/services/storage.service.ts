@@ -28,12 +28,11 @@ export class ZmaNativeStorageService {
   private readonly INDEX_KEY = '__index__';
   private readonly storageDriver: IStorageDriver = this.resolveDriver();
 
-  /** Tuỳ chọn: đặt namespace) */
   setNamespace(ns: string) {
     this.namespace = (ns || '').trim();
   }
 
-  // ───── API cơ bản (tương thích LocalStorageService cũ) ─────
+  // API cơ bản (tương thích LocalStorageService cũ)
 
   /** Lấy chuỗi thô, không parse JSON */
   getPure(key: string): string {
@@ -60,7 +59,6 @@ export class ZmaNativeStorageService {
     }
   }
 
-  /** Ghi JSON */
   set(key: string, value: unknown): void {
     const full = this.ns(key);
     const s = this.safeStringify(value);
@@ -68,19 +66,16 @@ export class ZmaNativeStorageService {
     this.indexAdd(full);
   }
 
-  /** Kiểm tra tồn tại key */
   has(key: string): boolean {
     return this.storageDriver.getItem(this.ns(key)) != null;
   }
 
-  /** Xoá 1 key */
   remove(key: string): void {
     const full = this.ns(key);
     this.storageDriver.removeItem(full);
     this.indexRemove(full);
   }
 
-  /** Xoá toàn bộ */
   clear(): void {
     this.storageDriver.clear();
     this.storageDriver.removeItem(this.indexKey());
@@ -98,12 +93,11 @@ export class ZmaNativeStorageService {
     this.writeIndex(remain);
   }
 
-  /** Thông tin dung lượng */
   getInfo(): INativeStorageInfo {
     return this.storageDriver.getStorageInfo();
   }
 
-  // ───── Tiện ích Box cache (dùng khi cần TTL/migration) ─────
+  // Tiện ích Box cache (dùng khi cần TTL/migration)
 
   setBox<T>(key: string, data: T, meta?: { ttl?: number; version?: number; savedAt?: number }) {
     const box: ICacheBox<T> = {
@@ -128,7 +122,7 @@ export class ZmaNativeStorageService {
     return (Date.now() - box.savedAt) < box.ttl ? box.data : null;
   }
 
-  // ───── Helpers ─────
+  // Helpers
 
   /** Nếu namespace rỗng → trả đúng key; nếu có → `${namespace}:${key}` */
   private ns(key: string, addSep: boolean = true): string {
@@ -145,7 +139,7 @@ export class ZmaNativeStorageService {
     }
   }
 
-  // ── Index nội bộ (để hỗ trợ clear-by-prefix vì nativeStorage không liệt kê được key) ──
+  // Index nội bộ để hỗ trợ clear-by-prefix vì nativeStorage không liệt kê được key
 
   private indexKey(): string {
     return this.ns(this.INDEX_KEY);
@@ -179,7 +173,7 @@ export class ZmaNativeStorageService {
     this.writeIndex(list);
   }
 
-  // ───── Driver resolver (nativeStorage ưu tiên; fallback localStorage; cuối cùng no-op) ─────
+  // Driver resolver: nativeStorage ưu tiên, fallback localStorage, cuối cùng no-op
 
   private resolveDriver(): IStorageDriver {
     if (typeof (globalThis as any)?.nativeStorage?.getItem === 'function') {
@@ -201,7 +195,7 @@ export class ZmaNativeStorageService {
         clear: () => ls.clear(),
         getStorageInfo: () => ({
           currentSize: this.approxLocalSize(ls),
-          limitSize: 10 * 1024 * 1024, // Native storage ~10MB theo bạn nói
+          limitSize: 10 * 1024 * 1024, // Giả định native storage ~10MB
         }),
       };
     }

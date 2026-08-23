@@ -1,4 +1,3 @@
-// Danh sách sản phẩm
 export interface ISearchProductParams {
   limit?: number,
   loadAttr?: boolean,
@@ -70,8 +69,6 @@ interface IResInventory {
   available: number;
 }
 
-// Chi tiết sản phẩm
-
 export interface IProductDetailParams {
   id: number
 }
@@ -108,7 +105,6 @@ export interface IResProductChild {
   color: string;
 }
 
-// related product
 export interface IRelatedProductParams {
   loadAttr: boolean;
   limit: number;

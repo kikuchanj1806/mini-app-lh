@@ -1,40 +1,31 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../../../../core/services';
-import {IResponseApi} from '../../../../core/models';
+import {IResPage, IResponseApi} from '../../../../core/models';
 import {Observable} from 'rxjs';
-
-export interface INewsCategory {
-  id: number;
-  name: string;
-}
-
-export interface INewsWard {
-  id: number;
-  name: string;
-}
-
-export interface IResNewsItem {
-  id: number;
-  title: string;
-  status: number;
-  published_at: number;
-  expired_at: string | null;
-  thumbnail: string | null;
-  excerpt: string | null;
-  content: string | null;
-  category: INewsCategory;
-  ward: INewsWard;
-  created_at: number; // unix seconds
-  updated_at: number; // unix seconds
-}
+import {IHomeContentSection, IPostCategoryMenuItem, IResHomeContent, IResPostDetail, IResPostListItem} from '../../../models/api';
 
 @Injectable({providedIn: 'root'})
 export class NewApiService extends ApiService {
-  newsList(params: any) {
-    return this.get<IResponseApi<IResNewsItem[]>>('/api/news', params);
+  publicList(params: {
+    keyword?: string;
+    categoryId?: number;
+    categorySlug?: string;
+    includeChildren?: boolean;
+    page?: number;
+    pageSize?: number;
+  }) {
+    return this.postV1<IResponseApi<IResPage<IResPostListItem>>>('/posts/public-list', params);
   }
 
-  newsDetail(id: number): Observable<IResponseApi<IResNewsItem>> {
-    return this.get<IResponseApi<IResNewsItem>>(`/api/news/${id}`, {});
+  publicDetail(idOrSlug: { id?: number; slug?: string }): Observable<IResponseApi<IResPostDetail>> {
+    return this.postV1<IResponseApi<IResPostDetail>>('/posts/public-detail', idOrSlug);
+  }
+
+  categoryMenu(): Observable<IResponseApi<IPostCategoryMenuItem[]>> {
+    return this.postV1<IResponseApi<IPostCategoryMenuItem[]>>('/post-categories/menu', {});
+  }
+
+  homeContent(): Observable<IResponseApi<IResHomeContent>> {
+    return this.postV1<IResponseApi<IResHomeContent>>('/miniapp/home-content', {});
   }
 }

@@ -17,7 +17,6 @@ export interface IOrderProduct {
   weight?: number;
 }
 
-// Save order
 export interface ISaveOrderParams {
   customer: {
     name: string;
@@ -97,10 +96,7 @@ export interface ExtraData {
   shippingFee: number;
 }
 
-// ===============================
 // Interface API Tracking
-// ===============================
-
 export interface ITrackingOrderParams {
   mobile: string,
   status?: number

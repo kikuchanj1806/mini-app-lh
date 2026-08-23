@@ -28,7 +28,6 @@ export interface ShortcutResult {
 export class ZmaShortcutService {
   private readonly IOS_BASE = 'https://miniapp.zaloplatforms.com/shortcut.html';
 
-  /** Detect platform từ Zalo Mini App SDK */
   private async detectPlatform(): Promise<'android' | 'ios' | 'unknown'> {
     try {
       const sys: any = await getSystemInfo();

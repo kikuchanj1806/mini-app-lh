@@ -4,19 +4,13 @@ import {AppService, NavService, NotifyService, SpinnerService, UserService} from
 import {IFooterConfig, IHeaderConfig} from '../models/global';
 import {HeaderFooterFacadeService} from '../services/repository/layout-service/header-footer-facade.service';
 
-/**
- * Description handle
- * - Config header and footer
- * - Set data initialization.
- * - Func handle events.
- * */
+/** Base cho các component feature: cung cấp sẵn các service dùng chung + helper set header/footer. */
 @Injectable({
   providedIn: "any"
 })
 export class AppCommonComponent {
   destroyed = new Subject()
 
-  // Handle other -----------------------------------------------------------------------------------------------------
   notifyService: NotifyService = inject(NotifyService);
   navService: NavService = inject(NavService);
   userService: UserService = inject(UserService);

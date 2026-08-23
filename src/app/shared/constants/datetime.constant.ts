@@ -1,8 +1,3 @@
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * Khai báo các định dạng khi dùng format moment sau cần check các const thừa không dùng nữa
- * ---------------------------------------------------------------------------------------------------------------------
- * */
 export const FILE_NAME_DATE_FORMAT = 'YYYY-MM-DD_HHmmss';
 
 export const DISPLAY_DATE_FORMAT = 'DD/MM/YYYY';
@@ -29,11 +24,7 @@ export const DISPLAY_SHORT_DATETIME_MOMENT_OTHER_YEAR = 'HH:mm DD/MM/YYYY';
 export const API_COMMON_DATE_TIME = 'YYYY-MM-DD HH:mm:ss';
 export const API_COMMON_MONTH_YEAR = 'MM-YYYY';
 export const API_COMMON_DATE_MONTH_YEAR = 'YYYY-MM';
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * Xử lý locales date & datetime
- * ---------------------------------------------------------------------------------------------------------------------
- * */
+// Xử lý locales date & datetime
 export const DATE_FORMATS = {
   COMMON: {
     COMMON_DATE: 'YYYY-MM-DD HH:mm:ss', // 2024-12-26 15:30:00
@@ -114,7 +105,6 @@ export const RANGES_DATE: RANGE_DATE[] = [
     label: 'common.lastMonth', // Tháng trước
   },
 ];
-// Function to get format by type
 export function getDateFormatI18(
   type: keyof (typeof DATE_FORMATS)['COMMON'],
   isVI: boolean = false
@@ -123,9 +113,6 @@ export function getDateFormatI18(
   return formats[type] ?? null;
 }
 
-/**
- * Danh sách const timestamp mặc định
- * */
 export const TIMESTAMP_CONSTS = {
   ONE_YEAR: 31104000000, // 1 năm
   SIX_MONTHS: 15552000000, // 6 tháng

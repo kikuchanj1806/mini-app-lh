@@ -27,7 +27,6 @@ export class AppConfigService {
   private _config?: AppConfig;
   private _loaded$ = new BehaviorSubject<boolean>(false);
 
-  /** Observable: emit true khi cấu hình đã được load */
   readonly loaded$ = this._loaded$.asObservable();
 
   get config(): AppConfig | undefined { return this._config; }
@@ -77,7 +76,6 @@ export class AppConfigService {
     );
   }
 
-  /** Set CSS variables từ config */
   private applyCssVars(): void {
     const app = this._config?.app ?? {};
     const primary = app.headerColor ?? '#0b2e69';

@@ -3,6 +3,32 @@
   min-height: calc(100vh - 56px);
 }
 
+.nl-tabs {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 16px 4px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.nl-tabs button {
+  flex: 0 0 auto;
+  border: 1px solid #d8e1ee;
+  border-radius: 999px;
+  background: #fff;
+  color: #465568;
+  padding: 8px 13px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.nl-tabs button.active {
+  border-color: #0b65d8;
+  background: #0b65d8;
+  color: #fff;
+}
+
 /* hàng "NEW UPDATE" + text đỏ */
 .nl-section {
   max-width: 720px;
@@ -102,6 +128,13 @@
   height: 1px;
   background: rgba(0,0,0,0.08);
   margin: 0 16px;
+}
+
+.nl-empty {
+  padding: 36px 16px;
+  text-align: center;
+  color: #6a7487;
+  font-weight: 700;
 }
 
 /* responsive */

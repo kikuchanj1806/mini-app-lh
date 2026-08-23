@@ -1,5 +1,24 @@
 <div class="fb-page">
+  <div class="fb-links">
+    <a routerLink="/feedback/my"><i class="fa-regular fa-clipboard-list"></i>Phản ánh của tôi</a>
+    <a routerLink="/feedback/public"><i class="fa-regular fa-bullhorn"></i>Phản ánh công khai</a>
+  </div>
+
   <form class="fb-form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+    @if (!feedbackSubmitEnabled) {
+      <div class="alert alert-info mb-3">
+        Tính năng gửi phản ánh đang được hoàn thiện.
+      </div>
+    }
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Lĩnh vực <span class="text-danger">*</span></label>
+      <select class="form-select" formControlName="field">
+        @for (field of fields; track field.value) {
+          <option [value]="field.value">{{ field.label }}</option>
+        }
+      </select>
+    </div>
 
     <div class="mb-3">
       <label class="form-label fw-semibold">Tiêu đề <span class="text-danger">*</span></label>
@@ -14,6 +33,22 @@
 
       <div class="invalid-feedback">
         Vui lòng nhập tiêu đề
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Vị trí</label>
+      <input type="text" class="form-control" placeholder="Nhập vị trí xảy ra phản ánh" formControlName="location" />
+    </div>
+
+    <div class="row g-2">
+      <div class="col-7">
+        <label class="form-label fw-semibold">Họ tên</label>
+        <input type="text" class="form-control" placeholder="Người gửi" formControlName="citizenName" />
+      </div>
+      <div class="col-5">
+        <label class="form-label fw-semibold">Số điện thoại</label>
+        <input type="tel" class="form-control" placeholder="Liên hệ" formControlName="phone" />
       </div>
     </div>
 
@@ -44,25 +79,17 @@
           class="btn btn-outline-secondary p-0 overflow-hidden"
           style="width:84px;height:84px;border-radius:14px;"
           (click)="onPickFile(fileInput)"
-          [disabled]="uploading"
+          [disabled]="uploading || !feedbackSubmitEnabled || previewUrls.length >= 5"
         >
-          @if (previewUrl) {
-            <img
-              [src]="previewUrl"
-              alt="preview"
-              style="width:100%;height:100%;object-fit:cover;display:block;"
-            />
-          } @else {
-            <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 text-muted">
-              <i class="fa-solid fa-plus"></i>
-              <small class="mt-1">Chọn ảnh</small>
-            </div>
-          }
+          <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 text-muted">
+            <i class="fa-solid fa-plus"></i>
+            <small class="mt-1">Chọn ảnh</small>
+          </div>
         </button>
 
         <div class="flex-grow-1">
           <div class="small text-muted">
-            Chỉ nhận ảnh (jpg/png). Dung lượng nên &lt; 5MB.
+            Tối đa 5 ảnh jpg/png/webp, mỗi ảnh không quá 5MB.
           </div>
 
           @if (uploading) {
@@ -70,23 +97,33 @@
               <div class="spinner-border spinner-border-sm" role="status"></div>
               <span class="small">Đang upload ảnh...</span>
             </div>
-          } @else if (previewUrl && !imagePath) {
-            <div class="text-danger small mt-2">
-              Ảnh chưa upload thành công.
-            </div>
-          } @else if (imagePath) {
+          } @else if (fileIds.length) {
             <div class="text-success small mt-2 d-flex align-items-center gap-2">
               <i class="fa-solid fa-circle-check"></i>
-              <span>Ảnh đã upload</span>
+              <span>{{ fileIds.length }} ảnh đã upload</span>
             </div>
           }
         </div>
       </div>
 
+      @if (previewUrls.length) {
+        <div class="fb-preview-grid mt-3">
+          @for (url of previewUrls; track url; let i = $index) {
+            <div class="fb-preview">
+              <img [src]="url" alt="Ảnh phản ánh" />
+              <button type="button" (click)="removeImage(i)" [disabled]="loading || uploading">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
       <input
         #fileInput
         type="file"
         accept="image/*"
+        multiple
         hidden
         (click)="fileInput.value=''"
         (change)="onFileChange($event)"
@@ -97,7 +134,7 @@
 
     <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2"
             type="submit"
-            [disabled]="loading || uploading">
+            [disabled]="loading || uploading || !feedbackSubmitEnabled">
       <span>{{ loading ? 'Đang gửi...' : 'Gửi phản ánh' }}</span>
       <i class="fa-solid"
          [class.fa-chevron-right]="!loading"

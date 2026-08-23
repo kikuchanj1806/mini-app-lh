@@ -46,7 +46,6 @@ export interface SlideConfig {
     }
 
     .rounded-lg {
-      //border-radius: .5rem;
     }
 
     .swiper {
@@ -70,7 +69,6 @@ export interface SlideConfig {
       object-fit: cover;
       display: block;
       flex-grow: 1;
-      //border-radius: .5rem;
       aspect-ratio: 19 / 9;
     }
 

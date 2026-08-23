@@ -23,6 +23,5 @@ export const routes: Routes = [
       },
     ]
   },
-  // Redirect bất kỳ đường dẫn không khớp nào về trang chủ
   {path: '**', redirectTo: '', pathMatch: 'full'}
 ];

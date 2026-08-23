@@ -1,0 +1,77 @@
+<div class="fm-page">
+  @if (needsLogin) {
+    <div class="fm-login">
+      <i class="fa-regular fa-circle-user"></i>
+      <h2>Xác thực số điện thoại</h2>
+      <p>Bạn cần xác thực số điện thoại Zalo để xem các phản ánh mình đã gửi.</p>
+      <button type="button" class="fm-login-btn" [disabled]="isLoggingIn" (click)="onLogin()">
+        {{ isLoggingIn ? 'Đang xác thực...' : 'Xác thực ngay' }}
+      </button>
+    </div>
+  } @else {
+    <div class="fm-list">
+      @if (items.length) {
+        @for (it of items; track it.id) {
+          <article class="fm-item" [class.expanded]="expandedId === it.id">
+            <div class="fm-head" (click)="onToggleDetail(it)">
+              <img [src]="imgSrc(it)" [alt]="it.title" loading="lazy"/>
+              <div class="fm-copy">
+                <div class="fm-row">
+                  <span class="fm-field">{{ fieldLabel(it.field) }}</span>
+                  <span class="fm-status" [attr.data-status]="it.status">
+                    {{ statusLabel[it.status] || it.status }}
+                  </span>
+                </div>
+                <h2>{{ it.title }}</h2>
+                <div class="fm-meta">
+                  <span class="fm-code">{{ it.code }}</span>
+                  <span>{{ it.createdAt | date:'dd/MM/yyyy' }}</span>
+                  @if (it.hasReply) {
+                    <b>Đã phản hồi</b>
+                  }
+                </div>
+              </div>
+              <i class="fa-solid" [class.fa-chevron-down]="expandedId !== it.id"
+                 [class.fa-chevron-up]="expandedId === it.id"></i>
+            </div>
+
+            @if (expandedId === it.id) {
+              <div class="fm-detail">
+                @if (loadingDetailId === it.id) {
+                  <p class="fm-loading">Đang tải chi tiết...</p>
+                } @else if (detailOf(it.id); as d) {
+                  @if (d.location) {
+                    <p class="fm-loc"><i class="fa-regular fa-location-dot"></i>{{ d.location }}</p>
+                  }
+                  <p class="fm-content">{{ d.content }}</p>
+
+                  @if (d.images?.length) {
+                    <div class="fm-images">
+                      @for (img of d.images; track img.id) {
+                        <img [src]="img.url" alt="Ảnh phản ánh" loading="lazy"/>
+                      }
+                    </div>
+                  }
+
+                  @if (d.reply) {
+                    <div class="fm-reply">
+                      <h3>Phản hồi của cơ quan</h3>
+                      <p>{{ d.reply }}</p>
+                      @if (d.repliedAt) {
+                        <span>{{ d.repliedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                      }
+                    </div>
+                  } @else {
+                    <p class="fm-no-reply">Phản ánh đang được xử lý, chưa có phản hồi.</p>
+                  }
+                }
+              </div>
+            }
+          </article>
+        }
+      } @else if (!loading) {
+        <div class="fm-empty">Bạn chưa gửi phản ánh nào</div>
+      }
+    </div>
+  }
+</div>

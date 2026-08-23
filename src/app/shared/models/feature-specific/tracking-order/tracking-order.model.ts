@@ -1,7 +1,4 @@
-// ===============================
-// TYPES ORDER
-// ===============================
-
+// Types order
 export const ORDER_TYPE = {
   SHIPPING: 1, // Giao hàng tận nhà
   SHOPPING: 2, // Mua tại quầy (tại cửa hàng)
@@ -16,9 +13,7 @@ export const ORDER_TYPE_LABEL: Record<(typeof ORDER_TYPE)[keyof typeof ORDER_TYP
   [ORDER_TYPE.GIFT_EXCHANGE]: 'Đổi quà',
 };
 
-// ===============================
-// STATUSES
-// ===============================
+// Statuses
 export const ORDER_STATUS = {
   PACKING: 42,
   PICKUP: 43,
@@ -59,10 +54,7 @@ export const ORDER_STATUS_LABEL: Record<(typeof ORDER_STATUS)[keyof typeof ORDER
   [ORDER_STATUS.CUSTOMER_CONFIRMING]: 'Chờ khách xác nhận',
 };
 
-// ==============================================
-// Nhóm trạng thái tracking order check riêng cho UI
-// Sẽ chỉ hiển thị các trạng thái sau: Chờ thanh toán, Chờ xác nhận, Đang xử lý, Đang giao, Đã giao, Đã hủy
-// ==============================================
+// Gom nhóm trạng thái order thành 6 trạng thái hiển thị cho UI (tracking order)
 export const ORDER_TRACKING_STATUS = {
   /** Chờ thanh toán */
   PENDING_PAYMENT: [
@@ -115,10 +107,7 @@ export const ORDER_TRACKING_STATUS_UI = {
   CANCELED: 6,
 }
 
-// ===============================
 // Xử lý cho UI
-// ===============================
-
 export type UiStatus =
   | 'PENDING_PAYMENT'
   | 'AWAIT_CONFIRM'
@@ -217,10 +206,7 @@ export function labelsFromUiKey(uiKey: UiStatus): [string, string, string, strin
   return base;
 }
 
-// ===============================
 // Interface API
-// ===============================
-
 export interface ITrackingOrderParams {
   mobile: string,
   status?: number

@@ -46,7 +46,7 @@ export class AskedQuestionsComponent extends AppCommonComponent implements OnIni
     {id: 6, question: 'Dịch vụ công trực tuyến là gì và có mấy mức độ?', answer: 'Nội dung trả lời (demo)…'},
   ];
 
-  openId: number | null = 1; // mặc định mở item đầu như ảnh (tuỳ bạn)
+  openId: number | null = 1; // mặc định mở item đầu tiên
 
   ngOnInit() {
     this.setHeader({variant: 'title', show: true, back: true, title: 'Câu hỏi thường gặp'});

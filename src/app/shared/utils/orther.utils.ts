@@ -1,19 +1,23 @@
 import {IAddressLocation} from '../models/global';
 import {IResProduct, IResProductChild, IResProductDetail} from '../models/api';
-import {HttpErrorResponse} from '@angular/common/http';
 import {IResQuestion, OptionKey} from '../models/feature-specific/game/question.model';
-type TicketConflictCode = 'SLOT_FULL'|'FIELD_DAILY_LIMIT_REACHED'|'DUPLICATE_BOOKING';
 
+type TicketConflictCode =
+  | 'SLOT_FULL'
+  | 'FIELD_DAILY_LIMIT_REACHED'
+  | 'USER_DAILY_LIMIT_REACHED'
+  | 'DUPLICATE_BOOKING';
+
+/**
+ * Đọc lỗi 409 nghiệp vụ (lấy số thứ tự) từ error đã được ApiService chuẩn hoá
+ * (xem ApiService.handleError — errorCode/messages/status được gắn lên Error,
+ * KHÔNG còn là HttpErrorResponse gốc tới đây nữa).
+ */
 export function parse409(err: unknown): { code?: TicketConflictCode; message?: string } | null {
-  if (!(err instanceof HttpErrorResponse)) return null;
-  if (err.status !== 409) return null;
+  const e: any = err;
+  if (!e || e.status !== 409) return null;
 
-  const e: any = err.error;
-  if (e && typeof e === 'object' && !(e instanceof Blob)) {
-    return { code: e.code, message: e.message };
-  }
-  if (typeof e === 'string') return { message: e };
-  return { message: err.message };
+  return { code: e.errorCode, message: Array.isArray(e.messages) ? e.messages[0] : e.message };
 }
 
 // Dùng để nối xã, quận(huyện), tỉnh -> full address

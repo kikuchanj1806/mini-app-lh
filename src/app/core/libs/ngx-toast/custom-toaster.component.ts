@@ -10,8 +10,6 @@ import { Toast } from 'ngx-toastr';
    standalone: false
 })
 export class CustomToasterComponent extends Toast implements OnInit {
-   // Tùy chỉnh các phương thức và thuộc tính ở đây
-
    alertIcon = '';
    alertClass = '';
 

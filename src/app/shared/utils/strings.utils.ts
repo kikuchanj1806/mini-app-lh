@@ -66,9 +66,6 @@ export function removeSigns(text: string): string {
    return result.trim();
 }
 
-/**
- * Tạo ID random local
- * */
 export function generateLocalId(): string {
    const matId = Math.floor(Math.random() * 100);
    const string = `xxxxxxxxxxxx${ matId }xxxyxxxxxxxxxxxxxxx`;
@@ -79,10 +76,7 @@ export function generateLocalId(): string {
    });
 }
 
-/**
- * Hàm xử lý cắt chuỗi dựa vào delimiter truyền vào
- * VD: string = " 12345 \n 67890 \n \n 54321 ";
- * */
+// VD: string = " 12345 \n 67890 \n \n 54321 ";
 export function explodeString(string: string, delimiter: string = '\n'): string[] {
    if (!string) {
       return [];
@@ -94,16 +88,10 @@ export function explodeString(string: string, delimiter: string = '\n'): string[
      .filter(str => str);
 }
 
-/**
- * Loại bỏ khoảng space trong string
- * */
 export function trimString(value: string) {
    return value ? value.trim().replace(/\s+/g, ' ') : value;
 }
 
-/**
- * Chuyển in hoa cho chữ cái đầu tiên
- * */
 export function capitalizeFirstLetter(input: string): string {
    return input.charAt(0).toUpperCase() + input.slice(1);
 }

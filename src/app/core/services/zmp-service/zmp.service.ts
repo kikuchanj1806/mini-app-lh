@@ -33,13 +33,11 @@ export interface PaymentChannel {
   subInfo?: string;
 }
 
-/** Cấu hình đầu vào cho selectPaymentMethod */
 export interface SelectPaymentConfig {
   channels?: PaymentChannel[];
   selectedMethod?: { method: string; subMethod?: string };
 }
 
-/** Kết quả trả về từ selectPaymentMethod */
 export type SelectPaymentMethodResult = {
   method: string;
   subMethod?: string;
@@ -60,44 +58,36 @@ export type TxnResult = { resultCode: number; msg?: string; [k: string]: any };
 
 @Injectable({ providedIn: 'root' })
 export class ZmpService {
-  /** Key storage systemInfor */
   private STORAGE_SYSTEM_INFOR_KEY = 'SystemInfo';
   private SECRET_KEY = 'RN6XLYsREC7Fw8ycovoF';
   constructor(
     private notify: NotifyService
   ) {}
 
-  /** Lấy user Id Observable */
   getUserId$(): Observable<any> {
     return from(getUserID({}));
   }
 
-  /** Lấy thông tin app dưới dạng Observable */
   getAppInfo$(): Observable<any> {
     return from(getAppInfo({}));
   }
 
-  /** Lấy thông tin user dưới dạng Observable */
   getUserInfo$(): Observable<any> {
     return from(getUserInfo());
   }
 
-
-  /** Lấy thông tin system dưới dạng Observable */
   getSystemInfo$(): Observable<SystemInfo> {
     return from(Promise.resolve(getSystemInfo()));
   }
-  /** Lấy trạng thái cấp quyền hiện tại */
+
   getPermissionSettings$(): Observable<GetSettingReturn> {
     return from(getSetting({}));
   }
 
-  /** Mở giao diện cài đặt quyền cho user */
   openPermissionSetting$(): Observable<any> {
     return from(openPermissionSetting({} as any));
   }
 
-  /** Mở giao diện xin cấp quyền phone number */
   getPhoneNumber(): Observable<IZmaGetPhoneNumberReturns> {
     return from(getPhoneNumber({} as any)).pipe(
       map((res: { token?: string } | null | undefined) => {
@@ -110,23 +100,19 @@ export class ZmpService {
     );
   }
 
-  /** Lấy thông tin Access Token */
   getAccessToken$(): Observable<any> {
     return from(getAccessToken({}));
   }
 
-  /** Mở giao diện xin cấp quyền sử dụng API */
   getAuthorize(scopes?: AllScope[]): Observable<Partial<Record<AllScope, boolean>>> {
     const args = scopes && scopes.length ? { scopes } : ({} as any);
     return from(authorize(args));
   }
 
-  /** Mở giao diện Follow OA */
   onFollowOA(oaId: string): Observable<void> {
     return from(followOA({ id: oaId }));
   }
 
-  /** Đồng bộ systemInfor */
   private fetchSystemInfo$(): Observable<SystemInfo> {
     try {
       const info = getSystemInfo();
@@ -140,7 +126,6 @@ export class ZmpService {
     }
   }
 
-  /** Lưu systemInfor vào storage */
   private saveSystemInfo$(info: SystemInfo) {
     return defer(() => {
       nativeStorage.setItem(this.STORAGE_SYSTEM_INFOR_KEY, JSON.stringify(info));
@@ -148,8 +133,6 @@ export class ZmpService {
     });
   }
 
-
-  /** Lấy systemInfor từ storage */
   getStoredSystemInfo$(): Observable<SystemInfo | null> {
     return defer(() => {
       try {
@@ -166,7 +149,6 @@ export class ZmpService {
     });
   }
 
-  /** Update lại nếu có SystemInfor thay đổi */
   updateSystemInfoIfChanged$(): Observable<SystemInfo | null> {
     return this.fetchSystemInfo$().pipe(
       switchMap(newInfo =>
@@ -201,28 +183,17 @@ export class ZmpService {
   }
 
 
-  /**
-   * Xin các scope cần thiết và trả về map scope=>granted
-   * Áp dụng Best Practices:
-   * 1) Dùng getSetting() để kiểm tra trước
-   * 2) Chỉ request các scope thiếu, giải thích rõ lý do
-   * 3) Bắt lỗi code -201 khi user từ chối
-   * @param scopes Mảng các scope thuộc AllScope
-   */
+  /** Kiểm tra getSetting() trước, chỉ request scope còn thiếu; bắt lỗi code -201 khi user từ chối. */
   authorizeScopes$(
     scopes: AllScope[]
   ): Observable<Record<AllScope, boolean>> {
     return from(getSetting({})).pipe(
       switchMap((settings: GetSettingReturn) => {
-        // Cast authSetting thành kiểu mở rộng
         const authSetting = settings.authSetting as Partial<Record<AllScope, boolean>>;
-        // Lọc các scope chưa được cấp
         const toRequest = scopes.filter(scope => !authSetting[scope]);
         if (!toRequest.length) {
-          // Đã có đủ quyền
           return of(authSetting as Record<AllScope, boolean>);
         }
-        // Yêu cầu cấp quyền cho các scope thiếu
         return from(authorize({ scopes: toRequest as AllScope[] })).pipe(
           map((result) => ({ ...authSetting, ...result } as Record<AllScope, boolean>)),
           catchError((error: any) => {
@@ -232,7 +203,6 @@ export class ZmpService {
             } else {
               console.error('Lỗi khi yêu cầu cấp quyền', error);
             }
-            // Trả về authSetting cũ nếu lỗi
             return of(authSetting as Record<AllScope, boolean>);
           })
         );
@@ -250,10 +220,8 @@ export class ZmpService {
       switchMap(perms => {
         const allGranted = scopes.every(s => perms[s]);
         if (!allGranted) {
-          // nếu thiếu thì thôi, trả về luôn
           return of({ perms, userInfo: null });
         }
-        // nếu đã được cấp hết, gọi getUserInfo()
         return from(getUserInfo()).pipe(
           map(res => ({
             perms,
@@ -268,7 +236,6 @@ export class ZmpService {
     );
   }
 
-  /** Lấy danh sách method */
   selectMethod$(config?: SelectPaymentConfig): Observable<SelectPaymentMethodResult> {
     const args = this.normalizeConfig(config);
     return from(Payment.selectPaymentMethod(args as any)).pipe(
@@ -276,7 +243,6 @@ export class ZmpService {
     );
   }
 
-  // Chuẩn hoá tham số cho SDK
   private normalizeConfig(config?: SelectPaymentConfig) {
     if (!config) return {};
     const args: any = {};
@@ -296,7 +262,6 @@ export class ZmpService {
     return args;
   }
 
-  //tạo shortcut lên màn hình điện thoại
   createShortcut$(params?: Record<string, string>) {
     return from(createShortcut()).pipe(
       tap(() => this.notify.success('Shortcut đã được tạo thành công!')),
@@ -307,7 +272,6 @@ export class ZmpService {
     );
   }
 
-  //tải ảnh về máy
   downloadImageToGallery$(imageUrl: string) {
     return from(
       saveImageToGallery({
@@ -324,7 +288,6 @@ export class ZmpService {
     );
   }
 
-  //chia sẻ app cho bạn bè
   shareZaloMiniApp$(params: ShareZaloMiniAppParams) {
     return from(
       openShareSheet({
@@ -346,7 +309,6 @@ export class ZmpService {
     );
   }
 
-  // Nhận trạng thái thanh toán
   purchaseAndCheck$(params: {
     desc: string;
     amount: number;

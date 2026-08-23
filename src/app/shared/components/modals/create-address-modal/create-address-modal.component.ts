@@ -126,7 +126,6 @@ export class CreateAddressModalComponent implements OnInit {
     return (this.form?.get('location.wardId')?.value ?? undefined) as number | undefined;
   }
 
-  // ----- getters tiện dùng trong template -----
   get name() {
     return this.form.get('name') as FormControl;
   }

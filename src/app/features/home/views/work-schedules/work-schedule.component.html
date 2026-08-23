@@ -1,0 +1,84 @@
+<div class="ws-page">
+  <div class="ws-weekbar">
+    <button type="button" class="ws-nav" (click)="shiftWeek(-1)" aria-label="Tuần trước">
+      <i class="fa-regular fa-chevron-left"></i>
+    </button>
+
+    <div class="ws-weekinfo">
+      <div class="ws-weeklabel">Tuần {{ weekRangeLabel }}</div>
+      @if (!isCurrentWeek) {
+        <button type="button" class="ws-today" (click)="goToThisWeek()">Về tuần này</button>
+      }
+    </div>
+
+    <button type="button" class="ws-nav" (click)="shiftWeek(1)" aria-label="Tuần sau">
+      <i class="fa-regular fa-chevron-right"></i>
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="ws-empty">Đang tải...</div>
+  } @else if (groups && groups.length) {
+    @for (group of groups; track group.date) {
+      <section class="ws-day" [class.ws-day--today]="isToday(group.date)">
+        <header class="ws-day__head">
+          <span class="ws-day__weekday">{{ weekdayLabel(group.date) }}</span>
+          <span class="ws-day__date">{{ dayLabel(group.date) }}</span>
+          @if (isToday(group.date)) {
+            <span class="ws-day__badge">Hôm nay</span>
+          }
+        </header>
+
+        @for (it of group.items; track it.id) {
+          <article class="ws-item">
+            <div class="ws-session" [ngClass]="sessionClass(it.session)">
+              {{ sessionLabel(it.session) }}
+            </div>
+
+            <div class="ws-content">
+              @if (timeLabel(it.startTime, it.endTime); as time) {
+                <div class="ws-time">
+                  <i class="fa-regular fa-clock"></i>
+                  <span>{{ time }}</span>
+                </div>
+              }
+
+              <h3 class="ws-title">{{ it.title }}</h3>
+
+              @if (it.location) {
+                <div class="ws-meta">
+                  <i class="fa-regular fa-location-dot"></i>
+                  <span>{{ it.location }}</span>
+                </div>
+              }
+
+              @if (it.hostDisplayName) {
+                <div class="ws-meta">
+                  <i class="fa-regular fa-user-tie"></i>
+                  <span>
+                    {{ it.hostDisplayName }}
+                    @if (it.hostPosition) {
+                      <em class="ws-position">— {{ it.hostPosition }}</em>
+                    }
+                  </span>
+                </div>
+              }
+
+              @if (it.participants) {
+                <div class="ws-meta">
+                  <i class="fa-regular fa-users"></i>
+                  <span>{{ it.participants }}</span>
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </section>
+    }
+  } @else {
+    <div class="ws-empty">
+      <i class="fa-regular fa-calendar-xmark"></i>
+      <div>Tuần này chưa có lịch công tác</div>
+    </div>
+  }
+</div>

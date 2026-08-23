@@ -3,16 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 
-type GeoResp = {
-  results?: Array<{
-    name: string;
-    latitude: number;
-    longitude: number;
-    admin1?: string;     // tỉnh/thành
-    admin2?: string;     // quận/huyện
-    admin3?: string;     // phường/xã
-    country?: string;
-  }>;
+type NominatimResult = {
+  lat: string;
+  lon: string;
+  display_name?: string;
+  class?: string;
+  type?: string;
 };
 
 type ForecastResp = {
@@ -38,118 +34,107 @@ export type CurrentWeatherVM = {
 export class WeatherService {
   constructor(private http: HttpClient) {}
 
-  private readonly LOCATION = {
-    nameForGeocode: 'Long Hưng, Hưng Yên, Việt Nam',
-    label: 'Long Hưng, Hưng Yên',
-    LAT: 20.8756152 as number | null,
-    LON: 106.1690703 as number | null,
-    USE_GEO_FALLBACK: false
-  };
+  /**
+   * Cache geocode theo TÊN ĐỊA DANH.
+   *
+   * Trước đây toạ độ Long Hưng được viết cứng ở service này, nên mọi xã dùng chung bản build
+   * đều thấy thời tiết của Long Hưng. Nay địa danh do admin từng xã nhập
+   * (site_settings.weather_location).
+   */
+  private geoCache = new Map<string, Observable<{ lat: number; lon: number; label: string } | null>>();
 
-  /** Cache geocode (để không gọi lại nhiều lần) */
-  private cachedGeo$?: Observable<{ lat: number; lon: number; label: string }>;
+  /**
+   * Thời tiết hiện tại theo tên địa danh, vd "Long Hưng, Hưng Yên".
+   *
+   * Không tra được toạ độ thì trả VM rỗng (temp/code = null) kèm nhãn gốc — màn hình hiện
+   * "Không lấy được thời tiết" thay vì lặng lẽ hiện thời tiết của một nơi khác.
+   */
+  getCurrentByLocationName(locationName: string): Observable<CurrentWeatherVM> {
+    const name = (locationName || '').trim();
+    const empty: CurrentWeatherVM = {
+      label: name, lat: 0, lon: 0, time: null, temp: null, code: null, isDay: null,
+    };
 
-  /** Public API: Lấy thời tiết hiện tại cho vị trí cố định */
-  getCurrentFixed(): Observable<CurrentWeatherVM> {
-    return this.resolveFixedLocation().pipe(
-      switchMap((loc) => this.getCurrentWeather(loc.lat, loc.lon).pipe(
-        map((w) => ({
-          label: loc.label,
-          lat: loc.lat,
-          lon: loc.lon,
-          time: w.time,
-          temp: w.temp,
-          code: w.code,
-          isDay: w.isDay
-        }))
-      )),
-      catchError(() => {
-        const fallbackLat = 20.8756152;
-        const fallbackLon = 106.1690703;
-        return of({
-          label: this.LOCATION.label,
-          lat: fallbackLat,
-          lon: fallbackLon,
-          time: null,
-          temp: null,
-          code: null,
-          isDay: null
-        } as CurrentWeatherVM);
-      })
+    if (!name) return of(empty);
+
+    return this.resolveLocation(name).pipe(
+      switchMap((loc) => {
+        if (!loc) return of(empty);
+
+        return this.getCurrentWeather(loc.lat, loc.lon).pipe(
+          map((w) => ({
+            label: loc.label || name,
+            lat: loc.lat,
+            lon: loc.lon,
+            time: w.time,
+            temp: w.temp,
+            code: w.code,
+            isDay: w.isDay,
+          })),
+          catchError(() => of({ ...empty, label: loc.label || name, lat: loc.lat, lon: loc.lon })),
+        );
+      }),
+      catchError(() => of(empty)),
     );
   }
 
-  // -----------------------------
-  // Internal helpers
-  // -----------------------------
+  private resolveLocation(name: string): Observable<{ lat: number; lon: number; label: string } | null> {
+    const cached = this.geoCache.get(name);
+    if (cached) return cached;
 
-  /** Resolve vị trí cố định: ưu tiên LAT/LON, nếu null thì geocode 1 lần rồi cache */
-  private resolveFixedLocation(): Observable<{ lat: number; lon: number; label: string }> {
-    // 1) Nếu có sẵn LAT/LON => dùng luôn (ổn định nhất)
-    if (this.LOCATION.LAT != null && this.LOCATION.LON != null) {
-      return of({
-        lat: this.LOCATION.LAT,
-        lon: this.LOCATION.LON,
-        label: this.LOCATION.label
-      });
-    }
+    const geo$ = this.geocodeOnce(name).pipe(
+      catchError(() => of(null)),
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
 
-    // 2) Nếu không có LAT/LON mà không cho phép fallback => trả “tạm”
-    if (!this.LOCATION.USE_GEO_FALLBACK) {
-      return of({
-        lat: 20.8756152,
-        lon: 106.1690703,
-        label: this.LOCATION.label
-      });
-    }
-
-    // 3) Geocode 1 lần + cache
-    if (!this.cachedGeo$) {
-      this.cachedGeo$ = this.geocodeOnce(this.LOCATION.nameForGeocode).pipe(
-        map((g) => {
-          // nếu geocode fail => fallback toạ độ tạm
-          if (!g) {
-            return { lat: 20.8449, lon: 106.6881, label: this.LOCATION.label };
-          }
-          return g;
-        }),
-        shareReplay(1)
-      );
-    }
-    return this.cachedGeo$;
+    this.geoCache.set(name, geo$);
+    return geo$;
   }
 
-  /** Geocode 1 lần để lấy lat/lon */
+  /**
+   * Geocode 1 lần để lấy lat/lon — dùng Nominatim (OpenStreetMap), KHÔNG dùng geocoder của
+   * Open-Meteo dù cùng nhà cung cấp thời tiết bên dưới.
+   *
+   * Lý do: geocoder Open-Meteo (nền GeoNames) không hiểu định dạng "Xã, Tỉnh" admin xã hay nhập
+   * (vd "Long Hưng, Hưng Yên" trả về 0 kết quả), và dữ liệu hành chính cấp xã của họ chưa cập
+   * nhật theo đợt sáp nhập xã/phường 2025 — nhiều xã mới hoàn toàn không có trong CSDL của họ.
+   * Nominatim vừa hiểu định dạng "Xã, Tỉnh", vừa có ranh giới hành chính mới hơn (cộng đồng OSM
+   * cập nhật nhanh). Bước lấy nhiệt độ vẫn giữ Open-Meteo vì chỉ cần lat/lon, không phụ thuộc tên
+   * địa danh.
+   */
   private geocodeOnce(locationName: string): Observable<{ lat: number; lon: number; label: string } | null> {
     const url =
-      'https://geocoding-api.open-meteo.com/v1/search' +
-      `?name=${encodeURIComponent(locationName)}` +
-      `&count=1&language=vi&format=json`;
+      'https://nominatim.openstreetmap.org/search' +
+      `?q=${encodeURIComponent(locationName)}` +
+      `&format=json&limit=5&accept-language=vi&countrycodes=vn`;
 
-    return this.http.get<GeoResp>(url).pipe(
+    return this.http.get<NominatimResult[]>(url).pipe(
       map((res) => {
-        const r = res?.results?.[0];
+        // Nominatim xếp hạng theo độ "nổi tiếng" (importance) lẫn độ khớp tên, nên kết quả đầu
+        // tiên đôi khi là một nơi to hơn, nổi hơn nhưng KHÔNG khớp tên admin nhập (vd nhập
+        // "Long Hưng, Hưng Yên" ra "Thành phố Hưng Yên" xếp đầu vì nổi tiếng hơn, còn "Xã Long
+        // Hưng" xếp thứ 2). Ưu tiên đơn vị hành chính hiện hành (`boundary`/`administrative`)
+        // thay vì lấy mù kết quả đầu tiên.
+        const admin = res?.find((it) => it.class === 'boundary' && it.type === 'administrative');
+        const r = admin ?? res?.[0];
         if (!r) return null;
 
-        // label hiển thị ưu tiên rõ ràng (name + admin3/admin2/admin1)
-        const labelParts = [
-          r.name,
-          r.admin3,
-          r.admin2,
-          r.admin1
-        ].filter(Boolean);
+        const lat = Number(r.lat);
+        const lon = Number(r.lon);
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
 
-        return {
-          lat: r.latitude,
-          lon: r.longitude,
-          label: labelParts.join(', ')
-        };
+        // display_name luôn có ", Việt Nam" ở cuối — bỏ đi cho gọn, phần còn lại (xã, tỉnh) đã đủ rõ.
+        const label = (r.display_name || locationName)
+          .split(', ')
+          .filter((part) => part !== 'Việt Nam')
+          .join(', ');
+
+        return { lat, lon, label };
       }),
       catchError(() => of(null))
     );
   }
 
-  /** Lấy thời tiết hiện tại theo lat/lon */
   private getCurrentWeather(lat: number, lon: number): Observable<{
     time: string | null;
     temp: number | null;

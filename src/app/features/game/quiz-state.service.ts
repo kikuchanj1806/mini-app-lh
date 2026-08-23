@@ -55,7 +55,7 @@ export class QuizStateService {
   getDurationSeconds(): number {
     const s = this.snapshot;
     if (!s) return 0;
-    const startedAt = s.startedAtMs; // nên là number
+    const startedAt = s.startedAtMs;
     return Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
   }
 

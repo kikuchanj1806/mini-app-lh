@@ -40,16 +40,10 @@ export class AppService {
     return this.userService.userInfoValue;
   }
 
-  /** ----------------------------------------------------
-   * Common
-   * ---------------------------------------------------*/
-
-  /** ----------------------------------------------------
-   * Đóng Splash đúng 1 lần trên 1 phiên
-   * - Dựa trên:
-   *   + app-config.app.selfControlLoading === true
-   *   + cờ sessionStorage (và dataTemp) để không gọi lại
-   * ---------------------------------------------------*/
+  /**
+   * Đóng Splash đúng 1 lần trên 1 phiên, chỉ khi `app-config.app.selfControlLoading === true`.
+   * Chặn gọi lại bằng cờ sessionStorage (và dataTemp).
+   */
   closeSplashOnce$(): Observable<void> {
     if (this._closeOnce$) return this._closeOnce$;
 

@@ -20,8 +20,13 @@ export const environment = {
   production: true,
   zaloBaseHref: '',
   apiUrl: 'https://tunglxweb.bot3s.com',
+  apiPrefix: '/api/v1',
   OAId: '762755468038541624',
   apiConfig: {
     appId: '2925298306504468674'
+  },
+  features: {
+    authEnabled: true,
+    feedbackSubmit: true
   }
 };

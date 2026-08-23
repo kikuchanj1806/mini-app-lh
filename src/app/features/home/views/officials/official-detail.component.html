@@ -1,0 +1,42 @@
+<div class="od-page">
+  @if (loading) {
+    <div class="od-empty">Đang tải...</div>
+  } @else if (item) {
+    <div class="od-card">
+      @if (item.avatarUrl) {
+        <img class="od-avatar" [src]="item.avatarUrl" alt="avatar" />
+      } @else {
+        <div class="od-avatar od-avatar--fallback"><i class="fa-solid fa-user"></i></div>
+      }
+
+      <div class="od-name">{{ item.fullName }}</div>
+      <div class="od-position">{{ item.position }}</div>
+      @if (item.departmentName) {
+        <div class="od-department">{{ item.departmentName }}</div>
+      }
+
+      @if (item.workPhone) {
+        <button type="button" class="od-contact" (click)="callNow(item.workPhone)">
+          <i class="fa-solid fa-phone"></i>
+          <span>{{ item.workPhone }}</span>
+        </button>
+      }
+
+      @if (item.workEmail) {
+        <a class="od-contact" [href]="'mailto:' + item.workEmail">
+          <i class="fa-solid fa-envelope"></i>
+          <span>{{ item.workEmail }}</span>
+        </a>
+      }
+
+      @if (item.responsibilities) {
+        <div class="od-section">
+          <div class="od-section__title">Nhiệm vụ phụ trách</div>
+          <div class="od-section__body">{{ item.responsibilities }}</div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="od-empty">Không tìm thấy thông tin cán bộ.</div>
+  }
+</div>

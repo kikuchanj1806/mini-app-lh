@@ -51,10 +51,6 @@ export class I18nFormatPercentDecimalPipe  extends BaseNumberImpureI18nPipe<Inte
       return `${ result }${ suffix }`;
    }
 
-   /**
-    * Optional: So sánh opts cũ - mới (shallow check)
-    * để biết có cần re-format hay không
-    */
    protected override isSameOpts(oldOpts?: PercentDecimalOpts, newOpts?: PercentDecimalOpts): boolean {
       if (oldOpts === newOpts) return true;
       if (!oldOpts || !newOpts) return false;

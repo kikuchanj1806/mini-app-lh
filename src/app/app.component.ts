@@ -1,8 +1,9 @@
-import {AfterViewInit, Component, OnInit, ViewEncapsulation} from "@angular/core";
+import {AfterViewInit, Component, inject, OnInit, ViewEncapsulation} from "@angular/core";
 import {NavigationEnd, Router} from "@angular/router";
-import {filter} from "rxjs";
+import {catchError, filter, of} from "rxjs";
 import {AppUrlService} from './core/services/app-url.service';
 import {isAndroid} from './core/utils/app.utils';
+import {MiniappApiService} from './shared/services/api/miniapp/miniapp-api.service';
 
 
 @Component({
@@ -16,17 +17,18 @@ import {isAndroid} from './core/utils/app.utils';
 })
 export class AppComponent implements OnInit, AfterViewInit {
   title = 'fashion-app-1';
+  private miniappApi = inject(MiniappApiService);
+
   constructor(
     private router: Router,
     private urlSvc: AppUrlService
   ) {}
 
   ngOnInit() {
+    this.trackVisit();
     this.router.events.pipe(
-      // đây là type-predicate: tells TS “nếu true thì evt is NavigationEnd”
       filter((evt): evt is NavigationEnd => evt instanceof NavigationEnd)
     ).subscribe(evt => {
-      // TS now knows evt is NavigationEnd
       console.log('Navigated to:', evt.urlAfterRedirects);
       this.urlSvc.recomputeBaseFrom(location.href);
     });
@@ -39,9 +41,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Dùng để debug xem style top và bottom có hoạt động hay không
-    // Lưu ý là chỉ dùng ở local, tuyệt đối không commit code
-
+    // Chỉ dùng để debug local, tuyệt đối không commit code debug này
     const top = this.readCssVar('--zaui-safe-area-inset-top');
     const bottom = this.readCssVar('--zaui-safe-area-inset-bottom');
     console.log({ top, bottom });
@@ -51,6 +51,16 @@ export class AppComponent implements OnInit, AfterViewInit {
         bottom: this.readCssVar('--zaui-safe-area-inset-bottom'),
       });
     });
+  }
+
+  /**
+   * Đếm lượt mở mini app — fire-and-forget, một lần mỗi phiên. Lỗi ở đây tuyệt đối không được nổi
+   * lên UI: đây là số liệu thống kê, không phải chức năng người dân đang chờ.
+   */
+  private trackVisit(): void {
+    this.miniappApi.trackVisit()
+      .pipe(catchError(() => of(null)))
+      .subscribe();
   }
 
   private readCssVar(name: string): string {

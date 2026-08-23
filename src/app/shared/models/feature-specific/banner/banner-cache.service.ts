@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import {BannerPositionKey, IResBanner} from '../../api';
+import {BannerPositionCode, IResBanner} from '../../api';
 import {BannerApiService} from '../../../services/api/banners/banner-api.service';
 
 export interface BannerQuery {
-  ward_id: number;
-  position_key: BannerPositionKey;
+  positionCode: BannerPositionCode;
+  platform?: 'miniapp';
   limit?: number;         // default 10
   forceRefresh?: boolean; // default false
 }
@@ -19,7 +19,7 @@ export class BannerCacheService {
 
   private makeKey(q: BannerQuery): string {
     const limit = q.limit ?? 10;
-    return `${q.ward_id}:${q.position_key}:${limit}`;
+    return `${q.platform ?? 'miniapp'}:${q.positionCode}:${limit}`;
   }
 
   getBannersOnce(q: BannerQuery): Observable<IResBanner[]> {
@@ -35,13 +35,19 @@ export class BannerCacheService {
     const limit = q.limit ?? 10;
 
     const req$ = this.api.getBanners({
-      ward_id: q.ward_id,
-      position_key: q.position_key,
+      positionCode: q.positionCode,
+      platform: q.platform ?? 'miniapp',
     }).pipe(
-      map(res => res?.data ?? []),
-      catchError(() => of([])),
-      // cache request + replay cho subscriber sau
-      shareReplay({ bufferSize: 1, refCount: true }),
+      map(res => (res?.data ?? []).slice(0, limit)),
+      catchError(() => {
+        // Lỗi mạng thì không giữ lại cache rỗng, lần vào sau thử lại.
+        this.cache.delete(key);
+        return of([]);
+      }),
+      // refCount: false — trang chủ bị huỷ/dựng lại mỗi lần chuyển tab (không có
+      // RouteReuseStrategy); refCount: true sẽ xả cache ngay khi subscriber cuối (component bị
+      // huỷ) huỷ đăng ký, khiến lần quay lại sau lại gọi API. Xem thêm MenuItemCacheService.
+      shareReplay({ bufferSize: 1, refCount: false }),
     );
 
     this.cache.set(key, req$);
@@ -58,10 +64,10 @@ export class BannerCacheService {
     this.cache.clear();
   }
 
-  clearByWard(wardId: number): void {
-    const prefix = `${wardId}:`;
+  clearByPosition(positionCode: BannerPositionCode): void {
+    const suffix = `:${positionCode}:`;
     for (const k of this.cache.keys()) {
-      if (k.startsWith(prefix)) this.cache.delete(k);
+      if (k.includes(suffix)) this.cache.delete(k);
     }
   }
 }

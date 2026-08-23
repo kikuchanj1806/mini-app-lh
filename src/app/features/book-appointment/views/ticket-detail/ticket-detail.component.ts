@@ -1,13 +1,11 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ZmaTicketApiService} from '../../../../shared/services/api/ticket/ticket-api.service';
-import {UserManageService} from '../../../../shared/services/feature-specific/user/user-manage.service';
+import {IZmaTicketDetail, ZmaTicketApiService} from '../../../../shared/services/api/ticket/ticket-api.service';
 import {NotifyService} from '../../../../core/services';
-import {environment} from '../../../../../environments';
 import {finalize, of, takeUntil, tap} from 'rxjs';
-import {formatTicketNumber, normalizeTicketDateYmd} from '../../../../shared/utils';
+import {formatTicketCreatedAt, formatTicketNumber, formatTicketStatus} from '../../../../shared/utils';
 
 @Component({
   selector: 'app-ticket-detail',
@@ -20,7 +18,6 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private api = inject(ZmaTicketApiService);
-  private userMs = inject(UserManageService);
   private notify = inject(NotifyService);
 
   loading = false;
@@ -46,11 +43,12 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
       return;
     }
 
-    const appId = String(environment.apiConfig?.appId ?? '');
+    // Không tự đăng nhập ngầm ở đây: màn này chỉ mở được từ danh sách phiếu, tức người dân đã đăng
+    // nhập từ trước. Token hết hạn/bị thu hồi thì nhánh 401 bên dưới đưa về màn danh sách để đăng
+    // nhập lại — đúng một đường xử lý, không có luồng xin quyền bung ra giữa màn chi tiết.
     this.loading = true;
 
-    this.userMs.getValidToken$(appId).pipe(
-      switchMap(() => this.api.showTicket(id)),
+    this.api.showTicket(id).pipe(
       map(res => res?.data ?? null),
       tap(data => this.applyDetail(data)),
       catchError((err) => {
@@ -87,96 +85,17 @@ export class TicketDetailComponent extends AppCommonComponent implements OnInit,
     this.getDestroySubs();
   }
 
-  private applyDetail(raw: any | null) {
+  /** Đọc thẳng status/ticketDate/field/timeSlot từ BE — không tự suy diễn từ giờ hẹn nữa. */
+  private applyDetail(raw: IZmaTicketDetail | null) {
     if (!raw) return;
 
-    const order = Number(raw?.orderNumber ?? raw?.order_number ?? 0);
-    const appointmentDate = normalizeTicketDateYmd(
-      raw?.appointmentDate ?? raw?.appointment_date ?? raw?.createdAt ?? raw?.created_at
-    );
-    this.ticketNo = formatTicketNumber(order, appointmentDate ?? raw?.createdAt ?? raw?.created_at);
+    this.ticketNo = formatTicketNumber(raw.orderNumber, raw.ticketDate);
 
-    const sf = raw?.serviceField ?? raw?.service_field ?? null;
-    this.fieldIndex = Number(sf?.id ?? 0);
-    this.fieldName = String(sf?.name ?? sf?.title ?? '');
+    this.fieldIndex = raw.field?.id ?? 0;
+    this.fieldName = raw.field?.name ?? '';
 
-    const ts = raw?.timeSlot ?? raw?.time_slot ?? null;
-    const start = String(ts?.startTime ?? ts?.start_time ?? '').slice(0, 5);
-    const end = String(ts?.endTime ?? ts?.end_time ?? '').slice(0, 5);
-    this.timeRange = (start && end) ? `${start} - ${end}` : '--:-- - --:--';
-
-    const apptDate = appointmentDate ?? '';
-
-    this.statusText = this.mapScheduleStatus(apptDate, start, end);
-
-    const createdUnix = Number(raw?.createdAt ?? raw?.created_at ?? 0);
-    this.createdAt = createdUnix ? this.formatUnix(createdUnix) : '';
-  }
-
-  private mapScheduleStatus(
-    appointmentDate: string | null | undefined,
-    startHHmm: string | null | undefined,
-    endHHmm: string | null | undefined
-  ): string {
-    const today = this.formatYmd(new Date());
-    const dateStr = (appointmentDate ?? today).toString().slice(0, 10);
-
-    const start = (startHHmm ?? '').toString().slice(0, 5); // "HH:mm"
-    const end = (endHHmm ?? '').toString().slice(0, 5);
-
-    // Nếu không có ngày -> coi như hôm nay
-    const isValidYmd = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
-    const ymd = isValidYmd ? dateStr : today;
-
-    // Nếu ngày khác hôm nay: chỉ phân loại theo quá khứ/tương lai
-    if (ymd !== today) {
-      const d = this.buildDateTime(ymd, '00:00');
-      const t = this.buildDateTime(today, '00:00');
-      return d.getTime() < t.getTime() ? 'Đã quá giờ hẹn' : 'Chưa tới giờ hẹn';
-    }
-
-    // Ngày = hôm nay
-    if (!start && !end) return 'Chưa tới giờ hẹn';
-
-    const now = new Date();
-
-    if (start && end) {
-      const startAt = this.buildDateTime(today, start);
-      const endAt = this.buildDateTime(today, end);
-
-      // phòng trường hợp data lỗi: end < start (qua ngày) -> tạm coi end cùng ngày nhưng nếu bé hơn start thì coi như end = start
-      const safeEndAt = endAt.getTime() < startAt.getTime() ? startAt : endAt;
-
-      if (now.getTime() < startAt.getTime()) return 'Chưa tới giờ hẹn';
-      if (now.getTime() >= safeEndAt.getTime()) return 'Đã quá giờ hẹn';
-      return 'Đã tới giờ hẹn';
-    }
-
-    // Chỉ có start
-    if (start) {
-      const startAt = this.buildDateTime(today, start);
-      return now.getTime() >= startAt.getTime() ? 'Đã tới giờ hẹn' : 'Chưa tới giờ hẹn';
-    }
-
-    // Chỉ có end
-    const endAt = this.buildDateTime(today, end);
-    return now.getTime() >= endAt.getTime() ? 'Đã quá giờ hẹn' : 'Chưa tới giờ hẹn';
-  }
-
-  private formatYmd(d: Date): string {
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  }
-
-  private buildDateTime(ymd: string, hhmm: string): Date {
-    const [y, m, d] = ymd.split('-').map(Number);
-    const [hh, mm] = hhmm.split(':').map(Number);
-    return new Date(y, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0, 0, 0);
-  }
-
-  private formatUnix(unixSeconds: number): string {
-    const d = new Date(unixSeconds * 1000);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    this.timeRange = raw.timeSlot ? `${raw.timeSlot.startTime} - ${raw.timeSlot.endTime}` : '--:-- - --:--';
+    this.statusText = formatTicketStatus(raw.status);
+    this.createdAt = formatTicketCreatedAt(raw.createdAt);
   }
 }

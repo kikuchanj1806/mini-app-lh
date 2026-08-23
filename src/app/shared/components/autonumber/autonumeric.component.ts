@@ -235,7 +235,7 @@ export class AutoNumericComponent implements OnInit, OnDestroy, OnChanges {
   @Output() valueChange = new EventEmitter<any>();
   private valSubscription?: Subscription;
 
-  @Input() step = 1; // nếu muốn cấu hình bước nhảy
+  @Input() step = 1;
   @ViewChild('pNum') pNum!: InputNumber;
 
   constructor() {
@@ -274,7 +274,6 @@ export class AutoNumericComponent implements OnInit, OnDestroy, OnChanges {
     const current = Number(this.value) || 0;
     const next = current + direction * this.step;
 
-    // áp min / max
     const clamped = Math.min(Math.max(next, this.minValue), 999999999999.9);
 
     this.value = clamped;

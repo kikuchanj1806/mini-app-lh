@@ -1,0 +1,93 @@
+<div class="pf-page">
+  @if (needsLogin) {
+    <div class="pf-login">
+      <i class="fa-regular fa-circle-user"></i>
+      <h2>Đăng nhập để dùng đầy đủ tính năng</h2>
+      <p>Đăng nhập bằng Zalo để xem hồ sơ, khai báo thông tin cư trú và theo dõi các yêu cầu của bạn.</p>
+      <button type="button" class="pf-login-btn" [disabled]="isLoggingIn" (click)="onLogin()">
+        {{ isLoggingIn ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+      </button>
+    </div>
+  } @else if (loading) {
+    <div class="pf-loading">Đang tải...</div>
+  } @else {
+    <div class="pf-content">
+      <!-- Thẻ hồ sơ -->
+      <section class="pf-card pf-user">
+        @if (avatarUrl) {
+          <img class="pf-avatar-img" [src]="avatarUrl" alt="Ảnh đại diện" (error)="onAvatarError()" />
+        } @else {
+          <i class="fa-solid fa-circle-user pf-avatar"></i>
+        }
+        <div class="pf-user-info">
+          <div class="pf-user-name">
+            {{ profile?.fullName || 'Chưa cập nhật tên' }}
+            @if (profile?.phoneVerified) {
+              <span class="pf-verified-badge"><i class="fa-solid fa-circle-check"></i>Đã xác thực</span>
+            }
+          </div>
+          @if (profile?.phone) {
+            <div class="pf-user-phone">{{ profile?.phone }}</div>
+          }
+        </div>
+      </section>
+
+      <!-- Thẻ thông tin cư trú -->
+      <section class="pf-card pf-residence">
+        <div class="pf-card-head">
+          <span>Thông tin cư trú</span>
+        </div>
+
+        @if (!resident) {
+          <p class="pf-residence-empty">Chưa khai báo thông tin cư trú</p>
+          <button type="button" class="pf-btn-outline" routerLink="/profile/residence">
+            Khai báo ngay
+          </button>
+        } @else {
+          <div class="pf-residence-row">
+            <div class="pf-residence-name">{{ resident.fullName }}</div>
+            <span class="pf-status-badge" [attr.data-status]="resident.verificationStatus">
+              {{ verificationBadgeLabel() }}
+            </span>
+          </div>
+          @if (resident.areaPath) {
+            <div class="pf-residence-area"><i class="fa-regular fa-location-dot"></i>{{ resident.areaPath }}</div>
+          }
+          @if (resident.verificationStatus === 'rejected' && resident.rejectReason) {
+            <p class="pf-reject-reason">Lý do từ chối: {{ resident.rejectReason }}</p>
+          }
+          @if (resident.pendingChangeRequest) {
+            <p class="pf-pending-note"><i class="fa-regular fa-clock"></i>Đang có yêu cầu chỉnh sửa chờ duyệt</p>
+          }
+          <button type="button" class="pf-btn-outline" routerLink="/profile/residence">
+            Xem chi tiết
+          </button>
+        }
+      </section>
+
+      <!-- Lối tắt -->
+      <section class="pf-card pf-links">
+        <a class="pf-link-item" routerLink="/bookappointment">
+          <i class="fa-regular fa-ticket"></i>
+          <span>Phiếu lấy số của tôi</span>
+          <i class="fa-regular fa-chevron-right pf-link-chevron"></i>
+        </a>
+        <a class="pf-link-item" routerLink="/feedback/my">
+          <i class="fa-regular fa-pen-to-square"></i>
+          <span>Phản ánh của tôi</span>
+          <i class="fa-regular fa-chevron-right pf-link-chevron"></i>
+        </a>
+        <a class="pf-link-item" routerLink="/notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span>Thông báo</span>
+          <i class="fa-regular fa-chevron-right pf-link-chevron"></i>
+        </a>
+      </section>
+
+      <button type="button" class="pf-logout-btn" [disabled]="isLoggingOut" (click)="onLogout()">
+        <i class="fa-regular fa-arrow-right-from-bracket"></i>
+        {{ isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất' }}
+      </button>
+    </div>
+  }
+</div>

@@ -11,6 +11,7 @@ import {SharedCommonModule} from './shared';
 import {Select} from 'primeng/select';
 import {environment} from '../environments';
 import {AppConfigService} from './core/services/app-config.service';
+import {BusinessConfigService} from './core/services/business-config.service';
 import {AppService} from './core/services';
 import {LayoutComponent} from './layouts/layout.component';
 import {AppFooterComponent} from './shared/components/footer/footer.component';
@@ -43,6 +44,9 @@ import {FloatingAssistComponent} from "./shared/components/actions/floating-assi
     {provide: LOCALE_ID, useValue: 'vi-VN'},
     {provide: DEFAULT_CURRENCY_CODE, useValue: 'VND'},
     provideAppInitializer(() => inject(AppConfigService).load$()),
+    // Branding/OA id/feature flags theo `appId`. `load()` không bao giờ reject nên app vẫn mở được
+    // khi mất mạng — chỉ chạy bằng giá trị dự phòng trong environment.
+    provideAppInitializer(() => inject(BusinessConfigService).load()),
     AppService
   ],
   bootstrap: [AppComponent]

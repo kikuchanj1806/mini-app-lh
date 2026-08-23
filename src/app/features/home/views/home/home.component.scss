@@ -349,6 +349,19 @@ button {
   line-height: 1;
 }
 
+.feature-icon-img {
+  width: 29px;
+  height: 29px;
+  object-fit: contain;
+}
+
+/* Icon do admin upload cho nút tắt — khớp kích thước với <i> mặc định để hàng nút không nhảy. */
+.quick-icon-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
 .quick-item strong {
   display: -webkit-box;
   width: 100%;
@@ -451,6 +464,74 @@ button {
   border: 2px solid rgba(210, 255, 255, 0.78);
   border-radius: 50%;
   background: #0571ff;
+}
+
+.follow-oa-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  border: 1px solid rgba(224, 232, 243, 0.86);
+  border-radius: 13px;
+  padding: 12px 14px;
+  background: #ffffff;
+  box-shadow: 0 7px 20px rgba(25, 64, 122, 0.06);
+}
+
+.follow-oa-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1678ff 0%, #0058d9 100%);
+  color: #ffffff;
+  font-size: 19px;
+}
+
+.follow-oa-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.follow-oa-copy {
+  min-width: 0;
+}
+
+.follow-oa-copy h3 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.25;
+}
+
+.follow-oa-copy p {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  color: #6b7280;
+  line-height: 1.35;
+}
+
+.follow-oa-btn {
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, #1678ff 0%, #0058d9 100%);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.follow-oa-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .welcome-art span::after {
@@ -760,5 +841,62 @@ button {
 
   .news-item {
     grid-template-columns: 112px minmax(0, 1fr);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Skeleton cho lưới tiện ích / hàng nút tắt.
+   Giữ ĐÚNG kích thước ô thật để khi dữ liệu về, phần bên dưới không bị nhảy chỗ.
+   --------------------------------------------------------------------------- */
+.quick-panel--skeleton .quick-item--skeleton,
+.feature-tile--skeleton {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  cursor: default;
+  pointer-events: none;
+}
+
+.feature-tile--skeleton {
+  background: #eef1f6;
+  box-shadow: none;
+}
+
+.sk-circle,
+.sk-line {
+  display: block;
+  background: linear-gradient(90deg, #e3e8ef 25%, #eef2f7 37%, #e3e8ef 63%);
+  background-size: 400% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+}
+
+.sk-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.sk-line {
+  width: 62%;
+  height: 9px;
+  margin-top: 9px;
+  border-radius: 5px;
+}
+
+.quick-item--skeleton .sk-circle {
+  width: 26px;
+  height: 26px;
+}
+
+@keyframes sk-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* Người dùng bật giảm chuyển động thì tắt hiệu ứng chạy, chỉ giữ khối xám tĩnh. */
+@media (prefers-reduced-motion: reduce) {
+  .sk-circle,
+  .sk-line {
+    animation: none;
   }
 }

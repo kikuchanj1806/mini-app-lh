@@ -36,16 +36,10 @@ export function validateDate(dateString: string) {
    return regex.test(dateString);
 }
 
-/**
- * Kiểm tra giá trị có phải là 1 số hợp lệ ?
- * */
 export function validIsNumber(value: any) {
    return !isNaN(Number(value))
 }
 
-/**
- * Kiểm tra messages có phải là string hoặc 1 mảng không empty
- * */
 export function isArrayOrStringMessages(mess: any): boolean {
    return (isArray(mess) && mess.length) || mess
 }

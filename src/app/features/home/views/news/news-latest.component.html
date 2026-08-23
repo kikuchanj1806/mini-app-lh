@@ -1,6 +1,25 @@
 <div class="nl-page">
-  @if (items && items.length) {
-    <div class="nl-list">
+  <div class="nl-tabs">
+    <button
+      type="button"
+      [class.active]="selectedCategoryId === null"
+      (click)="onCategoryTap(null)"
+    >
+      Tất cả
+    </button>
+    @for (cat of categories; track cat.id) {
+      <button
+        type="button"
+        [class.active]="selectedCategoryId === cat.id"
+        (click)="onCategoryTap(cat.id)"
+      >
+        {{ cat.name }}
+      </button>
+    }
+  </div>
+
+  <div class="nl-list">
+    @if (items && items.length) {
       @for (it of items; track it.id) {
         <article class="nl-item" [routerLink]="'/newdetail'" [queryParams]="{ id: it.id }">
           <h2 class="nl-title">{{ it.title }}</h2>
@@ -31,10 +50,8 @@
 
         <div class="nl-divider"></div>
       }
-
-      @if (!items.length) {
-        <div class="nl-empty">Chưa có dữ liệu</div>
-      }
-    </div>
-  }
+    } @else {
+      <div class="nl-empty">Chưa có dữ liệu</div>
+    }
+  </div>
 </div>

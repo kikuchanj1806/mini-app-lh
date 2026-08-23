@@ -88,7 +88,6 @@ const IMPORT_ALONE: any[] = [
   ],
   imports: [
     ...MODULES,
-    // ...PIPES,
     ...MODULES_DYNAMIC,
     ...IMPORT_ALONE,
     ...COMPONENTS_ALONE,

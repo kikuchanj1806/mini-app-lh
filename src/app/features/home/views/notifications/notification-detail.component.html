@@ -1,0 +1,32 @@
+<div class="ntd-page">
+  @if (loading) {
+    <div class="ntd-empty">Đang tải...</div>
+  } @else if (item) {
+    <div class="ntd-card">
+      <div class="ntd-badge" [ngClass]="typeClass">
+        <i [class]="typeIcon"></i>
+        <span>{{ typeLabel }}</span>
+      </div>
+
+      <h1 class="ntd-title">{{ item.title }}</h1>
+
+      <div class="ntd-date">
+        <i class="fa-regular fa-clock"></i>
+        <span>{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+
+      @if (safeContent) {
+        <div class="ntd-content" [innerHTML]="safeContent"></div>
+      }
+
+      @if (item.linkUrl) {
+        <button type="button" class="ntd-link" (click)="openLink(item.linkUrl)">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>Xem chi tiết</span>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="ntd-empty">Không tìm thấy thông báo.</div>
+  }
+</div>

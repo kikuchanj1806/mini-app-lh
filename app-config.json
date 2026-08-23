@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "Long Hưng Số",
-    "headerTitle": "Long Hưng Số",
+    "title": "Long Hưng Smart",
+    "headerTitle": "Long Hưng Smart",
     "headerColor": "#1843EF",
     "statusBar": "transparent",
     "actionBarHidden": true,
@@ -18,10 +18,10 @@
     "main.js"
   ],
   "listAsyncJS": [
-    "327.js",
+    "195.js",
     "502.js",
     "607.js",
-    "860.js",
-    "common.js"
+    "704.js",
+    "860.js"
   ]
 }

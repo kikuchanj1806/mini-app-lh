@@ -41,22 +41,18 @@ export type IBusinessI18nConfig = {
   percentDecimals: number, //  0,1,2,3 => Mặc định để là 2
 };
 
-/**
- * -----------------------------------------------------------------------------------------------------
- * INTERFACE API ---------------------------------------------------------------------------------------------
- * -----------------------------------------------------------------------------------------------------
- * */
+// Interface API
 // Cài đặt theo DN
 export type IBusinessLocaleSymbol = "none" | "symbol" | "code";
 export type IBusinessLocaleSettings = {
   country: string, // server sẽ trả in hoa dạng short "VN" FE cần mapping lại
   currency: {
-    code: LOCALE_SYMBOL_CODE, // VND
+    code: LOCALE_SYMBOL_CODE,
     // none = Không hiển thị, symbol = đ, code = VND
-    display: IBusinessLocaleSymbol, // "none" | "symbol" | "code"
+    display: IBusinessLocaleSymbol,
   },
-  timezone: string, // Asia/Ho_Chi_Minh
-  percentDecimals: number, //  0,1,2,3
+  timezone: string,
+  percentDecimals: number,
 };
 
 // Cài đặt theo user
@@ -64,12 +60,7 @@ export type IUserLocaleSettings = {
   language: string
 }
 
-
-/**
- * -----------------------------------------------------------------------------------------------------
- * INTERFACE PIPE ---------------------------------------------------------------------------------------------
- * -----------------------------------------------------------------------------------------------------
- * */
+// Interface Pipe
 export type IOtpPipeI18n = {
    showZeroValue?: boolean,
    abs?: boolean,

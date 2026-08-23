@@ -1,5 +1,4 @@
 
-// Danh sách danh mục
 export interface ILoadCategoryParams {
   parentId?: number
 }
@@ -14,7 +13,6 @@ export interface IResLoadCategory {
   childs?: IResLoadCategory[];
 }
 
-// Lấy danh sách sản phẩm theo danh mục
 export interface IProductByCategoryParams {
   categoryId: string,
   page?: number,

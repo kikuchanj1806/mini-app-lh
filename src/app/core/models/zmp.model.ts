@@ -1,4 +1,3 @@
-/** getAppInfo */
 export interface IResAppInfo {
   appUrl: string
   description: string
@@ -8,9 +7,7 @@ export interface IResAppInfo {
   logoUrl: string
 }
 
-/** getAppInfo
- * https://mini.zalo.me/documents/api/getUserInfo/
- * */
+/** getUserInfo — https://mini.zalo.me/documents/api/getUserInfo/ */
 export interface IUserInfoParams {
   autoRequestPermission?: boolean,
   avatarType?: "small" | "normal" | "large"
@@ -25,10 +22,7 @@ export interface IResUserInfo {
   name: string
   phoneNumber: string;
 
-  /** isHaveFollow
-   * Biến nội bộ, check việc user đó đã từng follow hay chưa,
-   * nếu đã từng follow và dùng lượt để chơi game rồi, thì sẽ check = true
-   * */
+  /** Biến nội bộ: user đã từng follow và dùng lượt chơi game rồi thì set true. */
   isHaveFollow?: boolean;
 }
 

@@ -1,0 +1,40 @@
+<div class="fp-page">
+  <div class="fp-tabs">
+    <button type="button" [class.active]="selectedField === ''" (click)="onFieldTap('')">
+      Tất cả
+    </button>
+    @for (field of fields; track field.value) {
+      <button type="button" [class.active]="selectedField === field.value" (click)="onFieldTap(field.value)">
+        {{ field.label }}
+      </button>
+    }
+  </div>
+
+  <div class="fp-list">
+    @if (items.length) {
+      @for (it of items; track it.id) {
+        <article class="fp-item">
+          <img [src]="imgSrc(it)" [alt]="it.title" loading="lazy" />
+          <div class="fp-copy">
+            <div class="fp-row">
+              <span class="fp-field">{{ fieldLabel(it.field) }}</span>
+              <span class="fp-status">{{ statusLabel[it.status] || it.status }}</span>
+            </div>
+            <h2>{{ it.title }}</h2>
+            @if (it.location) {
+              <p><i class="fa-regular fa-location-dot"></i>{{ it.location }}</p>
+            }
+            <div class="fp-meta">
+              <span>{{ it.createdAt | date:'dd/MM/yyyy' }}</span>
+              @if (it.hasReply) {
+                <b>Đã phản hồi</b>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    } @else {
+      <div class="fp-empty">Chưa có dữ liệu</div>
+    }
+  </div>
+</div>

@@ -23,13 +23,10 @@ export class MapsComponent extends AppCommonComponent implements OnInit, OnDestr
 
     openWebview({
       url,
-      // optional (nếu SDK bạn đang >= 2.30.0):
-      // config: { style: 'normal' }
     });
   }
 
   openDirection(): void {
-    // Điều hướng (Directions)
     const url = `https://www.google.com/maps/dir/?api=1&destination=${this.lat},${this.lng}`;
 
     openWebview({ url });

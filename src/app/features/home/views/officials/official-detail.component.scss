@@ -1,0 +1,90 @@
+.od-page {
+  padding: 16px;
+}
+
+.od-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 16px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.od-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 12px;
+}
+
+.od-avatar--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 32px;
+}
+
+.od-name {
+  font-weight: 700;
+  font-size: 18px;
+  color: #111827;
+}
+
+.od-position {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.od-department {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.od-contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px auto 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #059669;
+  border: none;
+  font-size: 14px;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.od-section {
+  text-align: left;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.od-section__title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.od-section__body {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.od-empty {
+  text-align: center;
+  color: #9ca3af;
+  padding: 40px 0;
+  font-size: 14px;
+}

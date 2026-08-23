@@ -12,20 +12,22 @@
       <!-- Field 1 -->
       <label class="gn-label">Chọn lĩnh vực cần thực hiện:</label>
       <div class="gn-select">
-        <select [(ngModel)]="selectedFieldId">
+        <select [(ngModel)]="selectedFieldId" (ngModelChange)="onFieldChange()" [disabled]="loadingFields">
           <option [ngValue]="undefined">-- Chọn lĩnh vực --</option>
-          <option *ngFor="let f of fields" [ngValue]="f.id">{{ f.name }}</option>
+          <option *ngFor="let f of fields" [ngValue]="f.id" [disabled]="f.remaining <= 0">
+            {{ f.name }}{{ f.remaining <= 0 ? ' (Hết số hôm nay)' : '' }}
+          </option>
         </select>
-
       </div>
 
       <!-- Field 2 -->
       <label class="gn-label">Chọn thời gian đến:</label>
       <div class="gn-select">
-        <select [(ngModel)]="selectedSlotId">
+        <select [(ngModel)]="selectedSlotId" [disabled]="!selectedFieldId || loadingSlots">
           <option [ngValue]="undefined">-- Chọn thời gian --</option>
-          <option *ngFor="let s of slots" [ngValue]="s.id">
-            {{ s.start_time }} - {{ s.end_time }}
+          <option *ngFor="let s of slots" [ngValue]="s.id" [disabled]="s.alreadyBooked || s.remaining <= 0">
+            {{ s.startTime }} - {{ s.endTime }}
+            {{ s.alreadyBooked ? '(Đã lấy số)' : (s.remaining <= 0 ? '(Đã đủ số)' : '(còn ' + s.remaining + ')') }}
           </option>
         </select>
       </div>

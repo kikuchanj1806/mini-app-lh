@@ -1,0 +1,165 @@
+.ws-page {
+  padding: 12px 16px 24px;
+}
+
+.ws-weekbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.ws-nav {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.ws-weekinfo {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.ws-weeklabel {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+}
+
+.ws-today {
+  margin-top: 2px;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 12px;
+  color: #2563eb;
+}
+
+.ws-day {
+  margin-bottom: 18px;
+}
+
+.ws-day__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+
+.ws-day__weekday {
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+  text-transform: capitalize;
+}
+
+.ws-day__date {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.ws-day__badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.ws-day--today .ws-day__weekday {
+  color: #059669;
+}
+
+.ws-item {
+  display: flex;
+  gap: 10px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.ws-session {
+  flex-shrink: 0;
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.ws-session--morning { background: #eff6ff; color: #2563eb; }
+.ws-session--afternoon { background: #fffbeb; color: #d97706; }
+.ws-session--full-day { background: #f0fdfa; color: #0d9488; }
+
+.ws-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ws-time {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 3px;
+}
+
+.ws-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.45;
+  margin: 0 0 6px;
+}
+
+.ws-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-top: 3px;
+
+  i {
+    margin-top: 3px;
+    color: #9ca3af;
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+}
+
+.ws-position {
+  color: #9ca3af;
+  font-style: normal;
+}
+
+.ws-empty {
+  text-align: center;
+  color: #9ca3af;
+  padding: 48px 0;
+  font-size: 14px;
+
+  i {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 10px;
+    opacity: .5;
+  }
+}

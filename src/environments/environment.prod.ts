@@ -3,11 +3,16 @@ import {envbase} from './env.const';
 export const environment = {
   ...envbase,
   production: true,
-  zaloBaseHref: '/zapps/3702118187570639533/',
-  apiUrl: 'https://smartzalo.io.vn',
+  zaloBaseHref: '/zapps/2319246518410154776/',
+  apiUrl: 'https://api.zalo.hungyen.vn',
+  apiPrefix: '/api/v1',
   apiConfig: {
-    appId: '3702118187570639533'
+    appId: '2319246518410154776'
   },
-  OAId: '1256206394473517476',
+  features: {
+    authEnabled: true,
+    feedbackSubmit: true
+  },
+  OAId: '2471135367682107807',
   wardId: 4
 };

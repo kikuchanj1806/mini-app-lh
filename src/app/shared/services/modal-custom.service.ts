@@ -13,11 +13,7 @@ export class ModalCustomService {
      private _modalService: NgbModal,
    ) {}
 
-   /**
-    * Mở modal với cấu hình mặc định để không đóng khi click bên ngoài.
-    * @param content Nội dung của modal
-    * @param options Các tùy chọn của modal (nếu có)
-    */
+   /** Mở modal với cấu hình mặc định để không đóng khi click bên ngoài. */
    openDefault(content: any, options?: NgbModalOptions): NgbModalRef {
       options = options || {};
       options.backdrop = 'static';
@@ -27,18 +23,10 @@ export class ModalCustomService {
       return this._modalService.open(content, options);
    }
 
-   /**
-    * Mở modal với các tùy chọn được truyền vào từ bên ngoài.
-    * @param content Nội dung của modal
-    * @param options Các tùy chọn của modal (nếu có)
-    */
    openIntro(content: any, options?: NgbModalOptions): NgbModalRef {
       return this._modalService.open(content, options);
    }
 
-   /**
-    * Đóng modal.
-    */
    dismissAll(reason?: any){
       return this._modalService.dismissAll(reason);
    }

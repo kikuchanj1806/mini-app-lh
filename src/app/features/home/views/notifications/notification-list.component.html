@@ -1,0 +1,36 @@
+<div class="nt-page">
+  @if (loading) {
+    <div class="nt-empty">Đang tải...</div>
+  } @else if (items && items.length) {
+    @for (it of items; track it.id) {
+      <article class="nt-item" [routerLink]="'/notificationdetail'" [queryParams]="{ id: it.id }">
+        <div class="nt-icon" [ngClass]="typeClass(it.type)">
+          <i [class]="typeIcon(it.type)"></i>
+        </div>
+
+        <div class="nt-body">
+          <div class="nt-type">{{ typeLabel(it.type) }}</div>
+          <h2 class="nt-title">{{ it.title }}</h2>
+          <p class="nt-preview">{{ it.contentPreview }}</p>
+          <div class="nt-date">
+            <i class="fa-regular fa-clock"></i>
+            <span>{{ it.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+
+        <i class="fa-regular fa-chevron-right nt-chevron"></i>
+      </article>
+    }
+
+    @if (hasMore) {
+      <button type="button" class="nt-more" [disabled]="loadingMore" (click)="loadMore()">
+        {{ loadingMore ? 'Đang tải...' : 'Xem thêm' }}
+      </button>
+    }
+  } @else {
+    <div class="nt-empty">
+      <i class="fa-regular fa-bell-slash"></i>
+      <div>Hiện chưa có thông báo nào</div>
+    </div>
+  }
+</div>

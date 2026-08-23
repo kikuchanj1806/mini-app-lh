@@ -7,10 +7,6 @@ export const DISPLAY_DATE_FORMAT_MOMENT = 'dd/mm/yy';
 export const EXCEPTION_DATES = ["0000-00-00", "00-00-0000", "9999-12-31", "0000-00-00 00:00:00"];
 
 
-/**
- * Khai báo các định dạng khi dùng formart moment sau cần check các const thừa không dùng nữa
- * */
-
 export const DISPLAY_SHORT_MONTHYEAR_MOMENT = 'MM/YYYY';
 
 export const COMMON_DATE_MOMENT = 'YYYY-MM-DD';
@@ -76,11 +72,7 @@ export const RANGES_MONTH: { key: string, value: number }[] = [
    },
 ]
 
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * Xử lý locales date & datetime
- * ---------------------------------------------------------------------------------------------------------------------
- * */
+// Xử lý locales date & datetime
 export const DATE_FORMATS_PHP = {
    COMMON_DATE: 'Y-m-d H:i:s',      // 2024-12-26 15:30:00
    MINIMAL_DATE: 'd',               // 26
@@ -125,7 +117,6 @@ export const DATE_FORMATS = {
    }
 };
 
-// Function to get format by type
 export function getDateFormatI18(type: keyof typeof DATE_FORMATS['COMMON'], isVI: boolean = false): string | null {
    const formats = isVI ? DATE_FORMATS.VI : DATE_FORMATS.COMMON;
    return formats[type] ?? null;

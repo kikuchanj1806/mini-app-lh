@@ -1,4 +1,3 @@
-// voucher.models.ts
 export interface PromoProgram {
   id: string;
   name: string;

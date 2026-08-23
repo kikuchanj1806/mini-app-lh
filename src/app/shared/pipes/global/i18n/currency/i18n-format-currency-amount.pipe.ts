@@ -51,10 +51,6 @@ export class I18nFormatCurrencyAmountPipe extends BaseNumberImpureI18nPipe<OptCu
     );
   }
 
-  /**
-   * Optional: So sánh opts cũ - mới (shallow check)
-   * để biết có cần re-format hay không
-   */
   protected override isSameOpts(oldOpts?: OptCurrencyAmount, newOpts?: OptCurrencyAmount): boolean {
     if (oldOpts === newOpts) return true;
     if (!oldOpts || !newOpts) return false;

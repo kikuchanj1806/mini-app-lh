@@ -134,3 +134,68 @@
 
   i { font-size: 14px; opacity: 0.95; }
 }
+
+.fb-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.fb-preview {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #eef2f7;
+}
+
+.fb-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fb-preview button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.74);
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+
+/* Lối tắt sang 2 màn theo dõi — đặt ngay đầu trang gửi phản ánh vì đây là nơi người dân
+   quay lại nhiều nhất sau khi gửi. */
+.fb-links {
+  display: flex;
+  gap: 10px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 16px 0;
+}
+
+.fb-links a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 8px;
+  border: 1px solid #d8e1ee;
+  border-radius: 10px;
+  background: #fff;
+  color: #0b65d8;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.fb-links a i {
+  font-size: 14px;
+}

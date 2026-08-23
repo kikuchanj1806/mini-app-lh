@@ -20,29 +20,22 @@ export class UserService {
     this.checkAndLoadCache();
   }
 
-  /**
-   * Kiểm tra quyền người dùng + load dữ liệu cache (nếu còn hợp lệ)
-   */
   private async checkAndLoadCache(): Promise<void> {
     try {
       const settings = await getSetting({});
       const authSetting = settings.authSetting as Record<string, boolean>;
 
-      // Lấy scopes từ storage
       const scopesJson = await nativeStorage.getItem(STORAGE_KEYS.GRANTED_SCOPES);
       const storedScopes: string[] = scopesJson ? JSON.parse(scopesJson) : [];
 
-      // Nếu scope nào bị thu hồi → xóa toàn bộ cache
       const revoked = storedScopes.filter(scope => !authSetting[scope]);
       if (revoked.length > 0) {
         this.clearCache();
         return;
       }
 
-      // Gán lại scopes
       storedScopes.forEach(s => this._grantedScopes.add(s));
 
-      // Load user info
       const userJson = await nativeStorage.getItem(STORAGE_KEYS.USER_INFO);
       if (userJson) {
         const info: IResUserInfo = JSON.parse(userJson);
@@ -54,9 +47,6 @@ export class UserService {
     }
   }
 
-  /**
-   * Lưu granted scopes và user info vào bộ nhớ thiết bị + BehaviorSubject
-   */
   async saveGrantAndUser(
     granted: Record<string, boolean>,
     info: IResUserInfo
@@ -77,9 +67,6 @@ export class UserService {
     }
   }
 
-  /**
-   * Xóa cache khi người dùng logout hoặc thu hồi quyền
-   */
   async clearCache(): Promise<void> {
     try {
       await nativeStorage.removeItem(STORAGE_KEYS.GRANTED_SCOPES);
@@ -91,17 +78,11 @@ export class UserService {
     this._userInfo$.next(null);
   }
 
-  /**
-   * Lấy danh sách scopes đã được cấp quyền
-   */
   getGrantedScopes(): string[] {
     return Array.from(this._grantedScopes);
   }
 
-  /** @deprecated
-   * -> Chuyển qua dùng userInfoValue
-   * Lấy data user lưu trong storage
-   */
+  /** @deprecated Chuyển qua dùng userInfoValue */
   getDataUser() {
     return nativeStorage.getItem(STORAGE_KEYS.USER_INFO);
   }
@@ -111,13 +92,11 @@ export class UserService {
   }
 
   hydrateFromStorage$() {
-    // Lấy user info mới nhất
     const latest$ = from(getUserInfo()).pipe(
       map((res: any) => (res?.userInfo ?? res) as Partial<IResUserInfo> | null),
       catchError(() => of(null))
     );
 
-    // Check lại cache, nếu có thay đổi thì update lại
     return latest$.pipe(
       switchMap((latest) =>
         defer(() => {
@@ -185,9 +164,6 @@ export class UserService {
     });
   }
 
-  /**
-   * Hàm dùng để update lại isHaveFollow
-   */
   updateIsHaveFollow(flag: boolean): void {
     const cur = this._userInfo$.value;
     this.zmaStorage.set(STORAGE_KEYS.USER_INFO, { ...cur, isHaveFollow: flag });

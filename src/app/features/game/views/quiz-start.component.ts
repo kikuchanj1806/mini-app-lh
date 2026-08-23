@@ -9,7 +9,6 @@ import {environment} from '../../../../environments';
 import {AppCommonComponent} from '../../../shared/components/app-common.service';
 import {IResUserInfo} from '../../../core/models/zmp.model';
 import {UserManageService} from '../../../shared/services/feature-specific/user/user-manage.service';
-import {AllScope} from '../../../shared/models/feature-specific/zmp.model';
 
 @Component({
   selector: 'app-quiz-start',
@@ -35,7 +34,6 @@ export class QuizStartComponent extends AppCommonComponent implements OnInit, On
   authLoading = false;
 
   userInfo!: IResUserInfo;
-  private appId = String(environment.apiConfig?.appId ?? '');
 
   ngOnInit(): void {
     const wardId = Number(environment.wardId || 0);
@@ -69,33 +67,25 @@ export class QuizStartComponent extends AppCommonComponent implements OnInit, On
           return;
         }
         if (info) this.userInfo = info;
-        this.authReady = !!(info && info.name && this.userMsService.getTokenIfValid());
+        this.authReady = !!(info && info.name && this.userMsService.isLoggedIn());
       });
   }
 
+  /**
+   * Đăng nhập theo yêu cầu, chạy từ thao tác bấm nút của người dân — `login$()` cần ngữ cảnh tương
+   * tác để `authorize()`/`getPhoneNumber()` hoạt động, không gọi được từ luồng nền.
+   */
   private ensureQuizAuth$(): Observable<boolean> {
     if (this.authReady) return of(true);
 
-    const scopes: AllScope[] = ['scope.userInfo', 'scope.userPhonenumber'];
-    const appId = this.appId;
-
     this.authLoading = true;
 
-    return this.userMsService.grantPermissionAndFetchUser$(scopes).pipe(
-      switchMap((res) => {
-        if (!res) return of(false);
-
-        const {perms, userInfo} = res;
-        if (!userInfo) return of(false);
-
-        this.userService.saveGrantAndUser(perms, userInfo);
-        this.userInfo = userInfo;
-
-        const phone = (userInfo && userInfo.phoneNumber) ? userInfo.phoneNumber : '';
-        return this.userMsService.refresh$(appId, phone).pipe(
-          map(() => !!this.userMsService.getTokenIfValid()),
-          catchError(() => of(false))
-        );
+    return this.userMsService.login$().pipe(
+      map((profile) => {
+        const loggedIn = this.userMsService.isLoggedIn();
+        this.authReady = loggedIn;
+        if (profile?.fullName) this.userInfo = {...this.userInfo, name: profile.fullName};
+        return loggedIn;
       }),
       finalize(() => (this.authLoading = false))
     );

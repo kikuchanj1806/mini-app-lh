@@ -1,0 +1,45 @@
+<div class="ol-page">
+  <div class="ol-search">
+    <i class="fa-regular fa-magnifying-glass"></i>
+    <input
+      type="text"
+      placeholder="Tìm theo tên, chức vụ..."
+      [(ngModel)]="keyword"
+      (keyup.enter)="onSearch()"
+      (blur)="onSearch()"
+    />
+  </div>
+
+  @if (loading) {
+    <div class="ol-empty">Đang tải...</div>
+  } @else if (groups && groups.length) {
+    @for (group of groups; track group.departmentId) {
+      <div class="ol-group">
+        <div class="ol-group__title">{{ group.departmentName }}</div>
+
+        @for (o of group.officials; track o.id) {
+          <article class="ol-item" [routerLink]="'/officialdetail'" [queryParams]="{ id: o.id }">
+            @if (o.avatarUrl) {
+              <img class="ol-avatar" [src]="o.avatarUrl" alt="avatar" loading="lazy" />
+            } @else {
+              <div class="ol-avatar ol-avatar--fallback"><i class="fa-solid fa-user"></i></div>
+            }
+
+            <div class="ol-info">
+              <div class="ol-name">{{ o.fullName }}</div>
+              <div class="ol-position">{{ o.position }}</div>
+            </div>
+
+            @if (o.workPhone) {
+              <button type="button" class="ol-call" (click)="callNow(o.workPhone, $event)">
+                <i class="fa-solid fa-phone"></i>
+              </button>
+            }
+          </article>
+        }
+      </div>
+    }
+  } @else {
+    <div class="ol-empty">Chưa có dữ liệu</div>
+  }
+</div>

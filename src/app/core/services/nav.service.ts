@@ -32,9 +32,6 @@ export class NavService {
     }
   }
 
-  /**
-   * Thay thế lại toàn bộ params
-   * */
   setParams(params = {}, paramsHandling: QueryParamsHandling = '', fromPage?: any) {
     this._router.navigate([], {
       relativeTo: this._activatedRoute,
@@ -45,17 +42,11 @@ export class NavService {
     });
   }
 
-  /**
-   * Thêm hoặc sửa nhiều param
-   * */
   addParams(params: Params) {
     const currentParams = this.getParams();
     this.setParams({...currentParams,...params})
   }
 
-  /**
-   * Xóa params khỏi url
-   * */
   removeParams(params: string[]) {
     if (!params || !params.length){
       return;
@@ -71,29 +62,13 @@ export class NavService {
     }
 
     this._router.navigateByUrl(urlTree.toString()).catch(() => {
-      // Xử lý lỗi nếu có
     });
   }
 
-  /**
-   * Điều hướng đến một route theo mảng commands và các tuỳ chọn NavigationExtras.
-   *
-   * @param commands   - Mảng segments xác định route (có thể là absolute ['/a','b'] hoặc relative ['../','c'])
-   * @param extras     - Các tuỳ chọn như:
-   *                     • queryParams: object của query string
-   *                     • queryParamsHandling: 'merge' | 'preserve' | ''
-   *                     • replaceUrl: true để thay thế history thay vì push
-   *                     • skipLocationChange: true để không thay đổi URL trên trình duyệt
-   */
   redirect(commands: any[], extras?: NavigationExtras) {
     this._router.navigate(commands, extras).then();
   }
 
-  /**
-   * Điều hướng trực tiếp đến một URL đầy đủ (string), bao gồm cả path và query params.
-   *
-   * @param routerUrl  - Chuỗi URL tuyệt đối hoặc tương đối, ví dụ '/orders/123?foo=bar'
-   */
   redirectByUrl(routerUrl: string) {
     this._router.navigateByUrl(routerUrl.toString()).then()
   }

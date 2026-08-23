@@ -64,3 +64,31 @@ export function formatTicketNumber(
 
   return `${pad2(date.getDate())}${pad2(date.getMonth() + 1)}${serial}`;
 }
+
+/**
+ * Nguồn sự thật DUY NHẤT cho trạng thái phiếu — khớp enum thật của BE
+ * (App\Models\AppointmentTicket::STATUSES). Không tự suy diễn trạng thái từ
+ * ngày/giờ hẹn ở phía FE.
+ */
+export type TicketStatus = 'waiting' | 'called' | 'done' | 'cancelled' | 'no_show';
+
+export const TICKET_STATUS_LABEL: Record<TicketStatus, string> = {
+  waiting: 'Chờ tiếp nhận',
+  called: 'Đã gọi số',
+  done: 'Đã hoàn thành',
+  cancelled: 'Đã huỷ',
+  no_show: 'Không đến',
+};
+
+export function formatTicketStatus(status: string | null | undefined): string {
+  return TICKET_STATUS_LABEL[(status ?? '') as TicketStatus] ?? 'Không xác định';
+}
+
+/** createdAt từ BE là epoch millisecond (xem BaseModel::booted() phía BE). */
+export function formatTicketCreatedAt(createdAt: number | null | undefined): string {
+  const date = parseTicketDate(createdAt);
+  if (!date) return '';
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}

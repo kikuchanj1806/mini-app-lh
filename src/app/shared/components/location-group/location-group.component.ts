@@ -40,15 +40,11 @@ interface IConfigLocation {
     placeholderInput?: string
     classInput?: string
     label?: string,
-    hideWard?: boolean // Ản lựa chọn xã phường
+    hideWard?: boolean
 }
 
 /**
- * cho chọn 1 lúc thành phố, quận huyễn, phường xã
- * tìm kiếm, chọn địa chỉ theo nhóm
- * đưa vào các input mặc định là các Id
- * emit ra 1 object chứa các Id, name của select đã chọn
- * @author DungMV
+ * Chọn địa chỉ theo nhóm thành phố/quận huyện/phường xã, có tìm kiếm; emit ra Id + name đã chọn.
  */
 @Component({
     selector: 'app-location-dynamic',
@@ -72,7 +68,7 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
     districts: IDisplayList[] = []
     wards: IDisplayList[] = []
     tabActive = 1
-    displayList: IDisplayList[] = [] // hiển thị theo tab chọn
+    displayList: IDisplayList[] = []
     locations = {
         cityName: '',
         districtName: '',
@@ -86,14 +82,14 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
     private isLoadingWard = false
     locationsSearch: any = []
     isShowSearch = false
-    placeholder = '' // placeholder hiển thị kq của lần chọn trước
+    placeholder = ''
 
-    @Input() styles?: object; // Id Thành phố mặc định
-    @Input() cityId?: number; // Id Thành phố mặc định
-    @Input() districtId?: number; // Id Quận huyện mặc định
-    @Input() wardId?: number; // Id Phường xã mặc định
-    @Input() config!: IConfigLocation// config các attribute bổ sung của Input
-    @Output() valueChange = new EventEmitter<IGroupLocation>(); // Emit khi địa chỉ được thay đổi
+    @Input() styles?: object;
+    @Input() cityId?: number;
+    @Input() districtId?: number;
+    @Input() wardId?: number;
+    @Input() config!: IConfigLocation
+    @Output() valueChange = new EventEmitter<IGroupLocation>();
 
     @ViewChild('refSuggest') refSuggest: ElementRef | any;
     @ViewChild('refSelect') refSelect: ElementRef | any;
@@ -225,31 +221,21 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
     }
 
 
-    /**
-     * mở lần đầu hoặc đã chọn xong hết: chọn sẵn tab city
-     * focus vào xóa value ở input đi để cho phép tìm kiếm, chỉ hiện placeholder nếu dã chọn trước đó
-     */
+    // Mở lần đầu hoặc đã chọn xong hết thì chọn sẵn tab city, xóa value input để cho phép tìm kiếm.
     focusInput() {
         if (!this.isOpenResult) {
-            // mở lần đầu
             this.moveTabContinue()
         }
         this.setStringDisplay()
-        this.valueDisplay = '' // set lại value input = '', chỉ giữ lại placeholder
+        this.valueDisplay = ''
         this.isOpenResult = true
     }
 
-    /**
-     * chọn đủ cả 3 trường
-     * chọn đủ cả 2 trường
-     */
     isValidGroups() {
-        // 2 trường khi ẩn ward
         if (this.configUI.hideWard){
             return !!(this.cityId && this.districtId);
         }
 
-        // 3 trường
         return !!(this.cityId && this.districtId && this.wardId);
     }
 
@@ -382,10 +368,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
         this.setDisplay()
     }
 
-    /**
-     * kiểm tra chuyển 'tab' được không
-     * @param tab
-     */
     conditionTab(tab: number) {
         if (!this.cityId) {
             if (tab == this.DISTRICT || tab == this.WARD) {
@@ -402,10 +384,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
         this.tabActive = tab
     }
 
-    /**
-     * đã có Id đưa vào từ init -> current nó để lấy valueDisplay hiển thị
-     * @param tab
-     */
     findValueDefault(tab: number) {
         let name = ''
         switch (tab) {
@@ -441,12 +419,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
 
     }
 
-    /**
-     * set lại name từng tab đã chọn
-     * set lại values, palceholder theo name mới
-     * @param tab
-     * @param name
-     */
     setLocationName(tab: number, name: string) {
         switch (tab) {
             case this.CITY: {
@@ -465,9 +437,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
         this.setStringDisplay()
     }
 
-    /**
-     * set lại values, palceholder theo name mới
-     */
     setStringDisplay() {
         this.placeholder = ''
         this.valueDisplay = ''
@@ -486,12 +455,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
 
     }
 
-    /**
-     * chọn 1 item:
-     * + check là loại nào
-     * + set data
-     * + chuyển tab tiếp theo
-     */
     choose(item: IDisplayList) {
         this.resetSelect()
         switch (this.tabActive) {
@@ -529,11 +492,7 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
         this.setStringDisplay()
 
         if (this.isValidGroups()) {
-            /*
-            * 2 tình huống sẽ đóng dropdown
-            * - Tab active là WARD
-            * - Tab active là DISTRICT && configUI.hideWard
-            * */
+            // Đóng dropdown khi tab active là WARD, hoặc DISTRICT khi configUI.hideWard
             if (this.tabActive == this.WARD || (this.tabActive == this.DISTRICT && this.configUI.hideWard)) {
                 this._close()
             }
@@ -543,7 +502,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
     private _close() {
         this.isOpenResult = false
         this.isShowSearch = false
-        // set lại value input
         this.setStringDisplay()
         const dataEmit: IGroupLocation = {
             cityId: castInt(this.cityId ?? 0),
@@ -562,9 +520,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
         }
     }
 
-    /**
-     * set lại display select đang chọn theo tab header
-     */
     setDisplay() {
         this.displayList = []
         switch (this.tabActive) {
@@ -628,7 +583,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
     chooseItemSearch(locations: ILocationsSearch[]) {
         this.resetSelect()
         this.resetGroup()
-        // lấy từ tỉnh xuống
         if (isArray(locations) && locations.length) {
             locations.sort((a, b) => b.level - a.level)
             const city = locations[0]
@@ -653,11 +607,9 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
             this.setStringDisplay()
             this.loadInit()
             if (this.isValidGroups()) {
-                // chọn item đủ -> đóng
                 this._close()
             } else {
                 this.isShowSearch = false
-                // chọn thiếu, tiếp tục chọn
                 this.moveTabContinue()
             }
         }
@@ -674,9 +626,6 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
     }
 
 
-    /**
-     * xóa value:
-     */
     clearGroup() {
         this.resetGroup()
         this.setStringDisplay()
@@ -691,9 +640,7 @@ export class LocationDynamicComponent implements OnInit, AfterViewInit, OnChange
         return !!(this.isOpenResult && (this.cityId || this.districtId || this.wardId))
     }
 
-    /**
-     * Khi chưa chọn gì, thì mới hiện ra icon search. Có giá trị rồi, thì ẩn icon search đi, chỉ hiện icon x
-     */
+    // Chưa chọn gì thì hiện icon search; có giá trị rồi thì ẩn đi, chỉ hiện icon x
     isShowIconSearch() {
         return (this.isOpenResult && !this.placeholder)
     }
