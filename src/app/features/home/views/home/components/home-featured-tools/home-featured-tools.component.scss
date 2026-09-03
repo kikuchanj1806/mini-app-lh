@@ -1,0 +1,177 @@
+:host {
+  display: block;
+}
+
+button {
+  font: inherit;
+}
+
+.feature-section {
+  margin-top: 17px;
+}
+
+.section-heading {
+  margin: 0;
+  color: #101828;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 11px;
+}
+
+.feature-tile {
+  display: grid;
+  min-width: 0;
+  min-height: 99px;
+  align-content: center;
+  justify-items: center;
+  border: 0;
+  border-radius: 13px;
+  padding: 8px 4px;
+  color: #ffffff;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 9px 18px rgba(25, 64, 122, 0.12);
+}
+
+.feature-tile i {
+  height: 28px;
+  font-size: 27px;
+  line-height: 1;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.12));
+}
+
+.feature-icon-img {
+  width: 29px;
+  height: 29px;
+  object-fit: contain;
+}
+
+.feature-tile strong {
+  display: -webkit-box;
+  width: 100%;
+  margin-top: 9px;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.18;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.feature-tile span {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  margin-top: 3px;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.18;
+  opacity: 0.9;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tile-blue {
+  background: linear-gradient(145deg, #4c8dff 0%, #115cea 100%);
+}
+
+.tile-green {
+  background: linear-gradient(145deg, #16d99a 0%, #00a969 100%);
+}
+
+.tile-orange {
+  background: linear-gradient(145deg, #ffb04a 0%, #ff7a16 100%);
+}
+
+.tile-purple {
+  background: linear-gradient(145deg, #a993ff 0%, #7f61db 100%);
+}
+
+.tile-teal {
+  background: linear-gradient(145deg, #17d8cd 0%, #00a6aa 100%);
+}
+
+.tile-pink {
+  background: linear-gradient(145deg, #ff5e91 0%, #ec2469 100%);
+}
+
+.tile-cyan {
+  background: linear-gradient(145deg, #17c3f7 0%, #0086d8 100%);
+}
+
+.tile-sky {
+  background: linear-gradient(145deg, #17b8ed 0%, #007bc1 100%);
+}
+
+/* Skeleton lưới tiện ích. Giữ ĐÚNG kích thước ô thật để khi dữ liệu về, phần bên dưới không bị
+   nhảy chỗ. */
+.feature-tile--skeleton {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  cursor: default;
+  pointer-events: none;
+  background: #eef1f6;
+  box-shadow: none;
+}
+
+.sk-circle,
+.sk-line {
+  display: block;
+  background: linear-gradient(90deg, #e3e8ef 25%, #eef2f7 37%, #e3e8ef 63%);
+  background-size: 400% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+}
+
+.sk-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.sk-line {
+  width: 62%;
+  height: 9px;
+  margin-top: 9px;
+  border-radius: 5px;
+}
+
+@keyframes sk-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-circle,
+  .sk-line {
+    animation: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .feature-grid {
+    gap: 8px;
+  }
+
+  .feature-tile {
+    min-height: 88px;
+    padding: 7px 3px;
+  }
+
+  .feature-tile strong {
+    font-size: 10px;
+  }
+
+  .feature-tile span {
+    font-size: 9px;
+  }
+}

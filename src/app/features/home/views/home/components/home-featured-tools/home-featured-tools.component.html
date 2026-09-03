@@ -1,0 +1,34 @@
+@if (loading) {
+  <section class="feature-section" aria-hidden="true">
+    <h2 class="section-heading">Tiện ích nổi bật</h2>
+    <div class="feature-grid">
+      @for (i of skeletonSlots; track i) {
+        <div class="feature-tile feature-tile--skeleton">
+          <span class="sk-circle"></span>
+          <span class="sk-line"></span>
+        </div>
+      }
+    </div>
+  </section>
+} @else if (items.length) {
+  <section class="feature-section">
+    <h2 class="section-heading">Tiện ích nổi bật</h2>
+    <div class="feature-grid">
+      @for (item of items; track item.key) {
+        <button
+          type="button"
+          class="feature-tile"
+          [ngClass]="item.colorClass"
+          (click)="itemClick.emit(item)"
+        >
+          @if (item.iconUrl) {
+            <img class="feature-icon-img" [src]="item.iconUrl" [alt]="item.label" />
+          } @else {
+            <i [class]="item.iconClass"></i>
+          }
+          <strong>{{ item.label }}</strong>
+        </button>
+      }
+    </div>
+  </section>
+}

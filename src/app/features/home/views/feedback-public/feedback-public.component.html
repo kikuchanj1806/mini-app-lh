@@ -24,6 +24,11 @@
             @if (it.location) {
               <p><i class="fa-regular fa-location-dot"></i>{{ it.location }}</p>
             }
+            @if (hasCoordinates(it)) {
+              <button type="button" class="fp-map-link" (click)="openMap(it.latitude, it.longitude)">
+                <i class="fa-regular fa-map-location-dot"></i>Xem trên bản đồ
+              </button>
+            }
             <div class="fp-meta">
               <span>{{ it.createdAt | date:'dd/MM/yyyy' }}</span>
               @if (it.hasReply) {

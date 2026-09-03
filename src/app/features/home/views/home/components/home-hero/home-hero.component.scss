@@ -1,0 +1,329 @@
+:host {
+  display: block;
+}
+
+button {
+  font: inherit;
+}
+
+.home-hero {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  min-height: 306px;
+  margin: 0 auto;
+  padding: calc(max(18px, var(--zaui-safe-area-inset-top)) + 8px) 16px 82px;
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    linear-gradient(90deg, rgba(0, 67, 193, 0.36) 0%, rgba(0, 127, 227, 0.14) 55%, rgba(0, 153, 203, 0.08) 100%),
+    url('/assets/img/banners/home-hero-building-bg.png') center 72% / cover no-repeat;
+}
+
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 72% 42%, rgba(255, 255, 255, 0.22), transparent 26%),
+    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.16), transparent 28%),
+    linear-gradient(90deg, rgba(0, 70, 196, 0.82) 0%, rgba(0, 117, 224, 0.52) 52%, rgba(0, 183, 221, 0.16) 100%);
+  opacity: 1;
+}
+
+.home-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 78px;
+  background: linear-gradient(180deg, rgba(244, 247, 251, 0) 0%, #f4f7fb 88%);
+}
+
+.hero-brand,
+.hero-weather {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-brand {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hero-lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 26px;
+}
+
+.hero-logo {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.25));
+  flex: 0 0 auto;
+}
+
+.hero-title {
+  min-width: 0;
+  text-shadow: 0 2px 8px rgba(0, 44, 113, 0.25);
+}
+
+.hero-eyebrow,
+.hero-province {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero-province {
+  margin-top: 4px;
+  font-weight: 500;
+  opacity: 0.88;
+}
+
+.hero-title h1 {
+  margin: 2px 0 0;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.06;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.hero-actions {
+  display: grid;
+  gap: 10px;
+  width: 128px;
+  flex: 0 0 auto;
+  padding-top: 32px;
+}
+
+.hero-pill {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 42px;
+  border: 0;
+  border-radius: 13px;
+  padding: 8px;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0, 73, 164, 0.18);
+}
+
+.hero-pill i {
+  font-size: 15px;
+}
+
+.hero-pill span {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero-pill b {
+  position: absolute;
+  top: -7px;
+  right: -6px;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  border-radius: 50%;
+  background: #ff3a68;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.hero-pill--light {
+  background: rgba(255, 255, 255, 0.94);
+  color: #26313d;
+}
+
+.hero-pill--light i {
+  color: #0067d8;
+}
+
+.hero-pill--blue {
+  background: linear-gradient(135deg, #1678ff 0%, #0058d9 100%);
+  color: #ffffff;
+}
+
+.hero-weather {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 31px;
+}
+
+.weather-symbol {
+  position: relative;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 auto;
+  background: transparent;
+  filter: drop-shadow(0 7px 13px rgba(0, 51, 114, 0.28));
+  mask: none;
+  -webkit-mask: none;
+}
+
+.weather-symbol::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #ffd447;
+  box-shadow: 0 0 0 2px rgba(255, 212, 71, 0.12);
+}
+
+.weather-symbol::after {
+  content: "";
+  position: absolute;
+  right: 1px;
+  bottom: 5px;
+  width: 29px;
+  height: 15px;
+  border-radius: 12px 12px 8px 8px;
+  background: #ffffff;
+  box-shadow: -9px -5px 0 -2px #ffffff;
+}
+
+.weather-line {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.25;
+  text-shadow: 0 2px 8px rgba(0, 44, 113, 0.2);
+}
+
+.weather-line strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.weather-line span:first-of-type {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.78);
+  flex: 0 0 auto;
+}
+
+.weather-place {
+  margin-top: 5px;
+  font-size: 12px;
+  opacity: 0.92;
+}
+
+.hero-building {
+  display: none;
+}
+
+.hero-building i {
+  font-size: 122px;
+  filter: drop-shadow(0 20px 24px rgba(0, 55, 110, 0.18));
+}
+
+.wx-sun {
+  mask-image: url("/assets/img/icons/weather/sun.svg");
+  -webkit-mask-image: url("/assets/img/icons/weather/sun.svg");
+}
+
+.wx-cloud {
+  mask-image: url("/assets/img/icons/weather/cloud.svg");
+  -webkit-mask-image: url("/assets/img/icons/weather/cloud.svg");
+}
+
+.wx-rain {
+  mask-image: url("/assets/img/icons/weather/rain.svg");
+  -webkit-mask-image: url("/assets/img/icons/weather/rain.svg");
+}
+
+.wx-shower {
+  mask-image: url("/assets/img/icons/weather/shower.svg");
+  -webkit-mask-image: url("/assets/img/icons/weather/shower.svg");
+}
+
+.wx-thunder {
+  mask-image: url("/assets/img/icons/weather/thunder.svg");
+  -webkit-mask-image: url("/assets/img/icons/weather/thunder.svg");
+}
+
+.wx-fog {
+  mask-image: url("/assets/img/icons/weather/fog.svg");
+  -webkit-mask-image: url("/assets/img/icons/weather/fog.svg");
+}
+
+.wx-drizzle {
+  mask-image: url("/assets/img/icons/weather/drizzle.svg");
+  -webkit-mask-image: url("/assets/img/icons/weather/drizzle.svg");
+}
+
+.wx-snow {
+  mask-image: url("/assets/img/icons/weather/snow.svg");
+  -webkit-mask-image: url("/assets/img/icons/weather/snow.svg");
+}
+
+@media (max-width: 380px) {
+  .home-hero {
+    min-height: 306px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .hero-lockup {
+    gap: 9px;
+  }
+
+  .hero-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .hero-title h1 {
+    font-size: 21px;
+  }
+
+  .hero-eyebrow,
+  .hero-province {
+    font-size: 12px;
+  }
+
+  .hero-actions {
+    width: 132px;
+  }
+
+  .hero-pill {
+    min-height: 39px;
+    padding: 7px 10px;
+  }
+
+  .hero-pill span {
+    font-size: 11px;
+  }
+}

@@ -13,6 +13,5 @@ export const environment = {
     authEnabled: true,
     feedbackSubmit: true
   },
-  OAId: '1256206394473517476',
-  wardId: 4
+  OAId: '1256206394473517476'
 };

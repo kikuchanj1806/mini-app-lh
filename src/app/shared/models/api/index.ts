@@ -1,5 +1,6 @@
 export * from './banner/banner-api.model'
 export * from './category/category-api.model'
+export * from './home/home-api.model'
 export * from './product/product-api.model'
 export * from './news/news-api.model'
 export * from './officials/officials-api.model'

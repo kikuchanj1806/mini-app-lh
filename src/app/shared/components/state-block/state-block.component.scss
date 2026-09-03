@@ -1,0 +1,60 @@
+:host {
+  display: block;
+}
+
+.state {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 14px;
+  text-align: center;
+}
+
+.state__icon {
+  width: 46px;
+  height: 46px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #eaf3ff;
+  color: var(--brand-color, #0a7bf0);
+  font-size: 21px;
+  margin-bottom: 12px;
+}
+
+.state--error .state__icon {
+  background: #fff4e5;
+  color: #e07900;
+}
+
+.state__text {
+  color: #3d4652;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.state--error .state__text {
+  color: #dc2626;
+}
+
+.state__desc {
+  max-width: 300px;
+  margin: 8px auto 0;
+  color: #5a6370;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.state__action {
+  margin-top: 12px;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: var(--brand-color, #0a7bf0);
+  color: #fff;
+  font-weight: 700;
+
+  &:disabled {
+    opacity: .65;
+  }
+}

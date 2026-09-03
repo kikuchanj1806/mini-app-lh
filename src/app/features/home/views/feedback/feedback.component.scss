@@ -9,6 +9,41 @@
   padding: 18px 16px 22px;
 }
 
+.fb-location-help {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.fb-location-attached {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.fb-location-attached span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #e9f8ef;
+  color: #16794a;
+  font-weight: 700;
+}
+
+.fb-location-attached button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #0b65d8;
+  font-weight: 700;
+}
+
 .fb-uploading {
   display: flex;
   align-items: center;

@@ -1,0 +1,5 @@
+@if (banner) {
+  <div class="banner-mid" (click)="openBanner.emit(banner.linkUrl)">
+    <img [src]="imgUrl" [alt]="banner.title || ''" loading="lazy" />
+  </div>
+}

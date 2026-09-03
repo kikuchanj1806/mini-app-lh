@@ -1,0 +1,33 @@
+<div class="dl-page">
+  @if (businessConfig.setting('dvc_lookup_intro'); as intro) {
+    <div class="dl-intro">{{ intro }}</div>
+  }
+
+  @if (loading) {
+    <div class="dl-state">Đang tải...</div>
+  }
+
+  @if (!loading && portals.length) {
+    <div class="dl-list">
+      @for (p of portals; track p.id) {
+        <button type="button" class="dl-item" (click)="onPortalTap(p)">
+          <span class="dl-item__icon">
+            @if (p.icon) {
+              <img [src]="p.icon" alt="" />
+            } @else {
+              <i class="fa-solid" [ngClass]="p.iconClass || 'fa-earth-asia'"></i>
+            }
+          </span>
+          <span class="dl-item__body">
+            <span class="dl-item__title">{{ p.label }}</span>
+          </span>
+          <i class="fa-regular fa-chevron-right"></i>
+        </button>
+      }
+    </div>
+  }
+
+  @if (businessConfig.setting('dvc_lookup_footnote'); as footnote) {
+    <div class="dl-footnote">{{ footnote }}</div>
+  }
+</div>

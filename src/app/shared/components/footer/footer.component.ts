@@ -16,7 +16,6 @@ import {Subject, takeUntil} from 'rxjs';
 import {environment} from '../../../../environments';
 import {HeaderFooterFacadeService} from '../../services/repository/layout-service/header-footer-facade.service';
 import {NotifyService} from '../../../core/services';
-import {Router} from '@angular/router';
 
 
 @Component({
@@ -99,7 +98,6 @@ export class AppFooterComponent implements OnInit, OnChanges, OnDestroy {
   private readonly cd = inject(ChangeDetectorRef);
   private readonly offcanvasSvc = inject(OffcanvasCustomService);
   private readonly notify = inject(NotifyService);
-  private readonly router = inject(Router);
 
   private destroy$ = new Subject<void>();
 
@@ -142,12 +140,6 @@ export class AppFooterComponent implements OnInit, OnChanges, OnDestroy {
           this.notify.warning('Không thể mở trình quét QR. Vui lòng kiểm tra quyền camera và cấu hình Mini App.');
         }
       }
-      return;
-    }
-
-    if (item.path === '__profile__') {
-      ev.preventDefault();
-      this.router.navigateByUrl('/profile');
       return;
     }
 

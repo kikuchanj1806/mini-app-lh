@@ -1,0 +1,41 @@
+@if (isLoading) {
+  <app-state-block state="loading" text="Đang tải bản tin..."/>
+} @else if (item; as b) {
+  <article class="broadcast-detail">
+    <div class="broadcast-detail__body">
+      <div class="broadcast-detail__topline">
+        <span class="broadcast-detail__tag">{{ b.category }}</span>
+        @if (b.isUrgent) {
+          <span class="broadcast-detail__urgent">Khẩn</span>
+        }
+      </div>
+
+      <h1 class="broadcast-detail__title">{{ b.title }}</h1>
+
+      <div class="broadcast-detail__meta">
+        <span><i class="fal fa-tower-broadcast"></i> {{ b.channel }}</span>
+        <span>{{ b.date }}</span>
+        @if (b.duration) {
+          <span>{{ b.duration }}</span>
+        }
+      </div>
+
+      @if (b.audioUrl) {
+        <audio class="broadcast-detail__audio" [src]="b.audioUrl" controls preload="metadata"></audio>
+      } @else {
+        <div class="broadcast-detail__audio-unavailable">
+          <i class="fal fa-volume-slash"></i>
+          Chưa có tệp âm thanh
+        </div>
+      }
+
+      @if (b.content) {
+        <div class="broadcast-detail__content" [innerHTML]="b.content"></div>
+      } @else {
+        <p class="broadcast-detail__summary">{{ b.summary }}</p>
+      }
+    </div>
+  </article>
+} @else {
+  <app-state-block state="empty" text="Không tìm thấy bản tin"/>
+}

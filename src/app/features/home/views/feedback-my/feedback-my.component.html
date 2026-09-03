@@ -43,9 +43,14 @@
                   @if (d.location) {
                     <p class="fm-loc"><i class="fa-regular fa-location-dot"></i>{{ d.location }}</p>
                   }
+                  @if (hasCoordinates(d)) {
+                    <button type="button" class="fm-map-link" (click)="openMap(d.latitude, d.longitude)">
+                      <i class="fa-regular fa-map-location-dot"></i>Xem trên bản đồ
+                    </button>
+                  }
                   <p class="fm-content">{{ d.content }}</p>
 
-                  @if (d.images?.length) {
+                  @if (d.images && d.images.length) {
                     <div class="fm-images">
                       @for (img of d.images; track img.id) {
                         <img [src]="img.url" alt="Ảnh phản ánh" loading="lazy"/>

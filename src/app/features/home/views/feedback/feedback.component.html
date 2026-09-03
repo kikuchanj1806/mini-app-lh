@@ -28,6 +28,7 @@
         class="form-control"
         placeholder="Nhập tiêu đề"
         formControlName="title"
+        maxlength="200"
         [class.is-invalid]="form.get('title')?.touched && form.get('title')?.invalid"
       />
 
@@ -36,9 +37,64 @@
       </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label fw-semibold">Vị trí</label>
-      <input type="text" class="form-control" placeholder="Nhập vị trí xảy ra phản ánh" formControlName="location" />
+    <div class="mb-3 fb-location">
+      <label class="form-label fw-semibold">Vị trí xảy ra sự việc</label>
+
+      <div class="d-flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="btn btn-outline-primary btn-sm"
+          [disabled]="locating"
+          (click)="onUseCurrentLocation()"
+        >
+          <i class="fa-regular fa-location-crosshairs me-1"></i>
+          {{ locating ? 'Đang lấy vị trí...' : 'Dùng vị trí hiện tại' }}
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="onShowMapLinkInput()">
+          <i class="fa-regular fa-link me-1"></i>Dán link Google Maps
+        </button>
+      </div>
+
+      <p class="fb-location-help">
+        Vị trí giúp cán bộ xác định đúng nơi xảy ra sự việc. Bạn có thể bỏ qua và mô tả bằng chữ.
+      </p>
+
+      @if (hasCoordinates) {
+        <div class="fb-location-attached">
+          <span><i class="fa-solid fa-circle-check"></i>Đã đính kèm vị trí ({{ coordinateLabel }})</span>
+          <button type="button" (click)="openMap()">Xem bản đồ</button>
+          <button type="button" class="text-danger" (click)="removeLocation()">Xoá vị trí</button>
+        </div>
+      }
+
+      @if (showMapLinkInput) {
+        <div class="input-group mt-2">
+          <input
+            type="url"
+            class="form-control"
+            placeholder="Dán link Google Maps"
+            maxlength="500"
+            [value]="mapLinkDraft"
+            (input)="onMapLinkDraftChange($any($event.target).value)"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            [disabled]="resolvingLink"
+            (click)="onResolveMapLink()"
+          >
+            {{ resolvingLink ? 'Đang kiểm tra...' : 'Kiểm tra link' }}
+          </button>
+        </div>
+      }
+
+      <input
+        type="text"
+        class="form-control mt-2"
+        placeholder="Mô tả vị trí bằng chữ"
+        formControlName="location"
+        maxlength="255"
+      />
     </div>
 
     <div class="row g-2">
@@ -48,7 +104,7 @@
       </div>
       <div class="col-5">
         <label class="form-label fw-semibold">Số điện thoại</label>
-        <input type="tel" class="form-control" placeholder="Liên hệ" formControlName="phone" />
+        <input type="tel" class="form-control" placeholder="Liên hệ" formControlName="phone" maxlength="20" />
       </div>
     </div>
 
@@ -60,8 +116,13 @@
         class="form-control"
         placeholder="Nhập nội dung"
         formControlName="content"
+        maxlength="5000"
         [class.is-invalid]="form.get('content')?.touched && form.get('content')?.invalid"
       ></textarea>
+
+      <div class="text-end small text-muted mt-1">
+        {{ form.get('content')?.value?.length || 0 }}/5000 ký tự
+      </div>
 
       <div class="invalid-feedback">
         Vui lòng nhập nội dung
@@ -79,7 +140,7 @@
           class="btn btn-outline-secondary p-0 overflow-hidden"
           style="width:84px;height:84px;border-radius:14px;"
           (click)="onPickFile(fileInput)"
-          [disabled]="uploading || !feedbackSubmitEnabled || previewUrls.length >= 5"
+          [disabled]="uploading || !feedbackSubmitEnabled || attachments.length >= 5"
         >
           <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 text-muted">
             <i class="fa-solid fa-plus"></i>
@@ -97,21 +158,27 @@
               <div class="spinner-border spinner-border-sm" role="status"></div>
               <span class="small">Đang upload ảnh...</span>
             </div>
-          } @else if (fileIds.length) {
+          } @else if (attachedCount) {
             <div class="text-success small mt-2 d-flex align-items-center gap-2">
               <i class="fa-solid fa-circle-check"></i>
-              <span>{{ fileIds.length }} ảnh đã upload</span>
+              <span>{{ attachedCount }} ảnh đã đính kèm</span>
             </div>
           }
         </div>
       </div>
 
-      @if (previewUrls.length) {
+      @if (attachments.length) {
         <div class="fb-preview-grid mt-3">
-          @for (url of previewUrls; track url; let i = $index) {
+          @for (attachment of attachments; track attachment.localId) {
             <div class="fb-preview">
-              <img [src]="url" alt="Ảnh phản ánh" />
-              <button type="button" (click)="removeImage(i)" [disabled]="loading || uploading">
+              @if (attachment.previewUrl) {
+                <img [src]="attachment.previewUrl" alt="Ảnh phản ánh" />
+              } @else {
+                <div class="h-100 d-flex align-items-center justify-content-center">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+              }
+              <button type="button" (click)="removeImage(attachment.localId)" [disabled]="loading || uploading">
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
@@ -134,7 +201,7 @@
 
     <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2"
             type="submit"
-            [disabled]="loading || uploading || !feedbackSubmitEnabled">
+            [disabled]="loading || uploading || locating || resolvingLink || !feedbackSubmitEnabled">
       <span>{{ loading ? 'Đang gửi...' : 'Gửi phản ánh' }}</span>
       <i class="fa-solid"
          [class.fa-chevron-right]="!loading"

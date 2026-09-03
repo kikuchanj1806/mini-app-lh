@@ -41,3 +41,13 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Config sinh bởi `npm run pull-config` — mỗi máy/mỗi xã một khác, không commit.
+# Bản mẫu để nhân bản: src/environments/environment.example.ts
+/src/environments/environment.ts
+/src/environments/environment.prod.ts
+/.build-target.json
+
+# Chứa ZMP_TOKEN (token deploy Zalo) và BUILD_CONFIG_TOKEN — KHÔNG BAO GIỜ commit.
+/.env
+/.env.local

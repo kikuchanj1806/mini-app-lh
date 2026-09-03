@@ -1,0 +1,51 @@
+<section class="home-hero">
+  <div class="hero-brand">
+    <div class="hero-lockup">
+      <img
+        class="hero-logo"
+        src="/assets/img/ChatGPT Image Aug 16, 2026, 11_04_49 PM.png"
+        alt="Quốc huy Việt Nam"
+      />
+      <div class="hero-title">
+        @if (heroEyebrow) {
+          <div class="hero-eyebrow">{{ heroEyebrow }}</div>
+        }
+        <h1>{{ heroTitle }}</h1>
+        @if (heroSubtitle) {
+          <div class="hero-province">{{ heroSubtitle }}</div>
+        }
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      @if (hotline) {
+        <button type="button" class="hero-pill hero-pill--light" (click)="callHotline.emit()">
+          <i class="fa-solid fa-phone"></i>
+          <span>Đường dây nóng</span>
+        </button>
+      }
+      <button type="button" class="hero-pill hero-pill--blue" (click)="notificationTap.emit()">
+        <i class="fa-regular fa-bell"></i>
+        <span>Thông báo</span>
+      </button>
+    </div>
+  </div>
+
+  @if (showWeather) {
+    <div class="hero-weather">
+      <div class="weather-symbol" [ngClass]="weatherIconClass"></div>
+      <div>
+        <div class="weather-line">
+          <strong>{{ temperatureText }}</strong>
+          <span></span>
+          <span>{{ weatherText || 'Đang tải thời tiết...' }}</span>
+        </div>
+        <div class="weather-place">{{ locationLabel }}</div>
+      </div>
+    </div>
+  }
+
+  <div class="hero-building" aria-hidden="true">
+    <i class="fa-light fa-landmark"></i>
+  </div>
+</section>

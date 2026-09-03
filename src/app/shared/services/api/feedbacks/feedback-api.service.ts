@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../../../../core/services';
 import {IResPage, IResponseApi} from '../../../../core/models';
+import {CUSTOMER_API_ENDPOINTS} from '../../../../core/constants';
 
 export const FEEDBACK_FIELDS = [
   { value: 'an_ninh', label: 'An ninh trật tự' },
@@ -30,6 +31,9 @@ export interface IReqCreateFeedback {
   title: string;
   content: string;
   location?: string;
+  latitude?: number;
+  longitude?: number;
+  mapUrl?: string;
   citizenName?: string;
   phone?: string;
   fileIds: number[];
@@ -41,6 +45,8 @@ export interface IFeedbackPublicItem {
   field: string;
   title: string;
   location: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   status: string;
   coverImageUrl: string | null;
   hasReply: boolean;
@@ -57,6 +63,19 @@ export interface IFeedbackPublicDetail extends IFeedbackPublicItem {
 export interface IFeedbackMyDetail extends IFeedbackPublicDetail {
   citizenName?: string | null;
   phone?: string | null;
+  mapUrl?: string | null;
+}
+
+export interface IFeedbackResolvedLocation {
+  latitude: number;
+  longitude: number;
+  provider: string | null;
+}
+
+export interface IFeedbackResolvedMapLink {
+  latitude: number;
+  longitude: number;
+  resolvedUrl: string;
 }
 
 export type IResFeedbackItem = IFeedbackPublicItem;
@@ -81,6 +100,20 @@ export class FeedbackApiService extends ApiService {
 
   createFeedback(payload: IReqCreateFeedback) {
     return this.postV1<IResponseApi<IFeedbackMyDetail>>('/customer/feedbacks/create', payload);
+  }
+
+  resolveLocation(accessToken: string, locationToken: string) {
+    return this.postV1<IResponseApi<IFeedbackResolvedLocation>>(
+      CUSTOMER_API_ENDPOINTS.FEEDBACKS_RESOLVE_LOCATION,
+      {accessToken, locationToken},
+    );
+  }
+
+  resolveMapLink(url: string) {
+    return this.postV1<IResponseApi<IFeedbackResolvedMapLink>>(
+      CUSTOMER_API_ENDPOINTS.FEEDBACKS_RESOLVE_MAP_LINK,
+      {url},
+    );
   }
 
   myList(params?: { status?: string; page?: number; pageSize?: number }) {

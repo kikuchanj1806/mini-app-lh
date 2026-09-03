@@ -1,0 +1,26 @@
+@if (loading) {
+  <!-- Khung xám giữ đúng chỗ hàng nút trong lúc chờ API — tránh nội dung bên dưới nhảy lên
+       rồi bị đẩy xuống khi dữ liệu về. -->
+  <section class="quick-panel quick-panel--skeleton" aria-hidden="true">
+    @for (i of [1, 2, 3, 4]; track i) {
+      <div class="quick-item quick-item--skeleton">
+        <span class="sk-circle"></span>
+        <span class="sk-line"></span>
+      </div>
+    }
+  </section>
+} @else if (items.length) {
+  <section class="quick-panel" aria-label="Lối tắt">
+    @for (item of items; track item.key) {
+      <button type="button" class="quick-item" (click)="itemClick.emit(item)">
+        @if (item.iconUrl) {
+          <img class="quick-icon-img" [src]="item.iconUrl" [alt]="item.label" />
+        } @else {
+          <i [class]="item.iconClass"></i>
+        }
+        <strong>{{ item.label }}</strong>
+        <span>{{ item.sub }}</span>
+      </button>
+    }
+  </section>
+}

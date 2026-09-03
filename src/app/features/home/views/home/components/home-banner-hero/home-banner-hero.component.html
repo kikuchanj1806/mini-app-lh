@@ -1,0 +1,20 @@
+@if (slides.length) {
+  <section class="home-banner-hero">
+    <app-universal-slide
+      [items]="slides"
+      [config]="{
+        showNavigation: false,
+        showPagination: slides.length > 1,
+        autoplay: slides.length > 1,
+        autoplayDelay: 4000,
+        loop: slides.length > 1,
+        showName: false
+      }">
+      <ng-template let-item>
+        <div class="banner-hero-slide" (click)="openBanner.emit(item.linkUrl)">
+          <img [src]="item.image" [alt]="item.name || ''" loading="eager" fetchpriority="high" />
+        </div>
+      </ng-template>
+    </app-universal-slide>
+  </section>
+}

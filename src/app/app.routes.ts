@@ -17,9 +17,9 @@ export const routes: Routes = [
           import('./features/book-appointment/book-appointment.module').then(m => m.BookAppointmentModule)
       },
       {
-        path: 'quiz',
+        path: 'broadcasts',
         loadChildren: () =>
-          import('./features/game/quiz.module').then(m => m.QuizModule)
+          import('./features/broadcasts/broadcasts.module').then(m => m.BroadcastsModule)
       },
     ]
   },

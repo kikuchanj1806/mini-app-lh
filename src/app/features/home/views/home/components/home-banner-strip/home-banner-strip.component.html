@@ -1,0 +1,23 @@
+@if (banners.length) {
+  <section class="banner-strip">
+    <h2 class="section-heading">{{ title }}</h2>
+    <div class="banner-strip-list">
+      <app-universal-slide
+        [items]="banners"
+        [config]="{
+          showNavigation: false,
+          showPagination: banners.length > 1,
+          autoplay: banners.length > 1,
+          autoplayDelay: 4500,
+          loop: banners.length > 1,
+          showName: false
+        }">
+        <ng-template let-item>
+          <div class="banner-strip-slide" (click)="openBanner.emit(item.linkUrl)">
+            <img [src]="item.image" [alt]="item.name || ''" loading="lazy" />
+          </div>
+        </ng-template>
+      </app-universal-slide>
+    </div>
+  </section>
+}

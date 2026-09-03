@@ -36,6 +36,11 @@ export const uriFeConst = {
     detail: '/news/detail',                                                 // Chi tiết tin tức
     category: '/news/category',                                             // Danh mục tin tức
   },
+  broadcasts: {
+    index: '/broadcasts',
+    channel: (slug: string) => `/broadcasts?channel=${encodeURIComponent(slug)}`,
+    detail: (id: string | number) => `/broadcasts/${encodeURIComponent(String(id))}`,
+  },
   album: {
     index: '/albums/index',                                                 // Danh sách album
     detail: '/albums/detail',                                               // Chi tiết album

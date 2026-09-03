@@ -1,0 +1,43 @@
+<div class="dm-page">
+  @if (loading) {
+    <div class="dm-state">Đang tải...</div>
+  }
+
+  @if (!loading && items.length) {
+    <div class="dm-card">
+      @for (it of items; track it.id) {
+        <button type="button" class="dm-item" (click)="onItemTap(it)">
+          <span class="dm-item__icon">
+            @if (it.icon) {
+              <img [src]="it.icon" alt="" />
+            } @else {
+              <i class="fa-solid" [ngClass]="it.iconClass || 'fa-circle-info'"></i>
+            }
+          </span>
+          <span class="dm-item__body">
+            <span class="dm-item__title">{{ it.label }}</span>
+            @if (it.description) {
+              <span class="dm-item__desc">{{ it.description }}</span>
+            }
+          </span>
+          <i class="fa-regular fa-chevron-right dm-item__chevron"></i>
+        </button>
+      }
+    </div>
+  }
+
+  @if (!loading && !hasError && !items.length) {
+    <div class="dm-state">
+      <i class="fa-regular fa-folder-open dm-state__icon"></i>
+      <div>Chưa có mục dịch vụ công nào được cấu hình.</div>
+      <div>Vui lòng liên hệ đơn vị quản lý để bổ sung.</div>
+    </div>
+  }
+
+  @if (!loading && hasError) {
+    <div class="dm-state">
+      <i class="fa-regular fa-circle-exclamation dm-state__icon"></i>
+      <div>Không tải được danh sách dịch vụ công.</div>
+    </div>
+  }
+</div>

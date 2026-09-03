@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
-import {ApiService} from '../../../../core/services';
+import {ApiService, VisitorIdService} from '../../../../core/services';
 import {IResPage, IResponseApi} from '../../../../core/models';
 
 /** Khớp `BusinessConfig::toPublic()` phía BE. */
@@ -36,14 +36,23 @@ export interface IResNotificationDetail {
 
 @Injectable({providedIn: 'root'})
 export class MiniappApiService extends ApiService {
+  private visitorId = inject(VisitorIdService);
+
   /** Branding + OA id + feature flags của doanh nghiệp, resolve theo `appId`. */
   businessConfig(): Observable<IResponseApi<IResBusinessConfig>> {
     return this.postV1<IResponseApi<IResBusinessConfig>>('/business-config', {});
   }
 
-  /** Thống kê lượt mở mini app. Fire-and-forget, không chặn luồng khởi động. */
+  /**
+   * Thống kê lượt mở mini app. Fire-and-forget, không chặn luồng khởi động.
+   *
+   * `visitorId` là BẮT BUỘC phía BE (MiniappVisitTrackFilter) — thiếu nó request bị chặn ở tầng
+   * validate và không có lượt nào được ghi nhận.
+   */
   trackVisit(): Observable<IResponseApi<unknown>> {
-    return this.postV1<IResponseApi<unknown>>('/miniapp/visits/track', {});
+    return this.postV1<IResponseApi<unknown>>('/miniapp/visits/track', {
+      visitorId: this.visitorId.get(),
+    });
   }
 
   notifications(params?: {type?: string; page?: number; pageSize?: number}) {

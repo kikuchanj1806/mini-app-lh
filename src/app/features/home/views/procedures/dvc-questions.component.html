@@ -1,0 +1,44 @@
+<div class="dq-page">
+  <div class="dq-intro">
+    Gửi câu hỏi về thủ tục, dịch vụ công. Cán bộ xã trả lời và gửi thông báo lại cho bạn qua Zalo.
+  </div>
+
+  <div class="dq-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label class="dq-label">Câu hỏi của bạn</label>
+      <textarea
+        class="dq-textarea"
+        formControlName="question"
+        rows="5"
+        placeholder="Nhập câu hỏi về dịch vụ công, thủ tục hành chính..."
+      ></textarea>
+
+      <button type="submit" class="dq-submit-btn" [disabled]="submitting || isAuthenticating">
+        {{ submitting || isAuthenticating ? 'Đang gửi...' : 'Gửi câu hỏi' }}
+      </button>
+    </form>
+  </div>
+
+  @if (!loadingList && items.length === 0) {
+    <div class="dq-empty">Chưa có câu hỏi nào. Hãy là người đầu tiên đặt câu hỏi!</div>
+  }
+
+  @if (items.length) {
+    <div class="dq-list">
+      @for (it of items; track trackById($index, it)) {
+        <div class="dq-item">
+          @if (it.isFaq) {
+            <div class="dq-item__badge">Thường gặp</div>
+          }
+          <div class="dq-item__question">{{ it.question }}</div>
+          @if (it.answer) {
+            <div class="dq-item__answer">
+              <i class="fa-solid fa-reply"></i>
+              <span>{{ it.answer }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

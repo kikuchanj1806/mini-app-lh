@@ -9,8 +9,6 @@ import {AskedQuestionsComponent} from './views/asked-questions/asked-questions.c
 import {ReviewComponent} from './views/review/review.component';
 import {MapsComponent} from './views/maps/maps.component';
 import {NewDetailComponent} from './views/news/new-detail.component';
-import {TthcVideoListComponent} from './views/tthc-video/tthc-video-list.component';
-import {TthcVideoPlayerComponent} from './views/tthc-video/tthc-video-player.component';
 import {OfficialListComponent} from './views/officials/official-list.component';
 import {OfficialDetailComponent} from './views/officials/official-detail.component';
 import {NotificationListComponent} from './views/notifications/notification-list.component';
@@ -18,6 +16,11 @@ import {NotificationDetailComponent} from './views/notifications/notification-de
 import {WorkScheduleComponent} from './views/work-schedules/work-schedule.component';
 import {ProfileComponent} from './views/profile/profile.component';
 import {ResidenceComponent} from './views/profile/residence.component';
+import {DvcMenuComponent} from './views/procedures/dvc-menu.component';
+import {ProcedureListComponent} from './views/procedures/procedure-list.component';
+import {ProcedureDetailComponent} from './views/procedures/procedure-detail.component';
+import {DvcLookupComponent} from './views/procedures/dvc-lookup.component';
+import {DvcQuestionsComponent} from './views/procedures/dvc-questions.component';
 
 const routes: Routes = [
   {
@@ -56,15 +59,18 @@ const routes: Routes = [
     path: 'newdetail',
     component: NewDetailComponent
   },
-  {path: 'tthc/videos', component: TthcVideoListComponent},
-  {path: 'tthc/videos/player', component: TthcVideoPlayerComponent},
   {path: 'officials', component: OfficialListComponent},
   {path: 'officialdetail', component: OfficialDetailComponent},
   {path: 'notifications', component: NotificationListComponent},
   {path: 'notificationdetail', component: NotificationDetailComponent},
   {path: 'workschedule', component: WorkScheduleComponent},
   {path: 'profile', component: ProfileComponent},
-  {path: 'profile/residence', component: ResidenceComponent}
+  {path: 'profile/residence', component: ResidenceComponent},
+  {path: 'dvc', component: DvcMenuComponent},
+  {path: 'dvc/tthc', component: ProcedureListComponent},
+  {path: 'dvc/tthc/detail', component: ProcedureDetailComponent},
+  {path: 'dvc/tra-cuu-ho-so', component: DvcLookupComponent},
+  {path: 'dvc/hoi-dap', component: DvcQuestionsComponent}
 ];
 
 @NgModule({

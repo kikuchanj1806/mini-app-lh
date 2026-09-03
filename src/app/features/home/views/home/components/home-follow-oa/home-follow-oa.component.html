@@ -1,0 +1,18 @@
+@if (!hasFollowed) {
+  <section class="follow-oa-card mb-2">
+    <div class="follow-oa-icon">
+      @if (followOaIconUrl) {
+        <img [src]="followOaIconUrl" alt="" />
+      } @else {
+        <i class="fa-solid fa-bell"></i>
+      }
+    </div>
+    <div class="follow-oa-copy">
+      <h3>Quan tâm {{ oaDisplayName }}</h3>
+      <p>Nhận thông báo mới nhất  về thủ tục hành chính, tin tức và lịch làm việc.</p>
+    </div>
+    <button type="button" class="follow-oa-btn" [disabled]="isFollowingOA" (click)="follow.emit()">
+      {{ isFollowingOA ? 'Đang xử lý...' : 'Quan tâm' }}
+    </button>
+  </section>
+}

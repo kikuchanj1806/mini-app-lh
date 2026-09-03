@@ -15,6 +15,7 @@ import {FloatLabel} from 'primeng/floatlabel';
 import {InputNumber} from 'primeng/inputnumber';
 import {UniversalSlideComponent} from './components/actions';
 import {NavTabsComponent} from './components/app-nav-tabs/app-nav-tab.component';
+import {StateBlockComponent} from './components/state-block/state-block.component';
 import {SpinnerWithLogoComponent} from './components/spinner/spinner-with-logo/spinner-with-logo.component';
 import {NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmDialogComponent} from './components/dialog';
@@ -32,7 +33,8 @@ const COMPONENTS_DYNAMIC: any[] = []
 
 const COMPONENTS_ALONE: any[] = [
   UniversalSlideComponent,
-  NavTabsComponent
+  NavTabsComponent,
+  StateBlockComponent,
 ]
 
 const DIRECTIVES: any[] = []

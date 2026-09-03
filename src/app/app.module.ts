@@ -17,6 +17,8 @@ import {LayoutComponent} from './layouts/layout.component';
 import {AppFooterComponent} from './shared/components/footer/footer.component';
 import {AppHeaderComponent} from './shared/components/header/header.component';
 import {FloatingAssistComponent} from "./shared/components/actions/floating-assist/floating-assist.component";
+import {AppLoadDebugOverlayComponent} from './shared/components/debug/app-load-debug-overlay.component';
+import {markAppLoad, measureInit} from './core/utils/app-load-timer.util';
 
 
 @NgModule({
@@ -37,19 +39,27 @@ import {FloatingAssistComponent} from "./shared/components/actions/floating-assi
 		  }),
 		  Select,
 		  FloatingAssistComponent,
+		  AppLoadDebugOverlayComponent,
 
 	 ],
   providers: [
     {provide: APP_BASE_HREF, useValue: environment.zaloBaseHref},
     {provide: LOCALE_ID, useValue: 'vi-VN'},
     {provide: DEFAULT_CURRENCY_CODE, useValue: 'VND'},
-    provideAppInitializer(() => inject(AppConfigService).load$()),
+    // Hai initializer dưới đây CHẶN render (app trắng màn tới khi cả hai xong) nên được bọc
+    // `measureInit` để tách bạch phần chờ mạng ra khỏi phần bootstrap Angular.
+    provideAppInitializer(() => measureInit('init:app-config', inject(AppConfigService).load$())),
     // Branding/OA id/feature flags theo `appId`. `load()` không bao giờ reject nên app vẫn mở được
     // khi mất mạng — chỉ chạy bằng giá trị dự phòng trong environment.
-    provideAppInitializer(() => inject(BusinessConfigService).load()),
+    provideAppInitializer(() => measureInit('init:business-config', inject(BusinessConfigService).load())),
     AppService
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
+  constructor() {
+    // Chạy TRƯỚC các APP_INITIALIZER. Khoảng từ `bootstrap:start` tới đây chính là chi phí dựng
+    // platform + eval cây module (JS parse), không dính gì tới mạng.
+    markAppLoad('ng-module:constructed');
+  }
 }

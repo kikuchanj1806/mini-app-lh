@@ -38,21 +38,21 @@ export class ApiInterceptor implements HttpInterceptor {
     return this.legacyNeedsAuth(req);
   }
 
-  /** Backend đời trước (quiz, tthc-video) — gỡ hẳn khi hai cụm đó được chuyển sang v1. */
+  /**
+   * Backend đời trước. Hai cụm duy nhất còn gọi sang đây (quiz, tthc-video) đã được gỡ khỏi app
+   * cùng lúc với `environment.wardId` — chúng vốn đã 404 từ khi `apiUrl` trỏ sang hcc-admin-api.
+   * Giữ lại vài nhánh upload/admin phòng khi còn màn hình cũ nào chưa rà tới.
+   */
   private legacyNeedsAuth(req: HttpRequest<any>): boolean {
     const u = req.url;
 
     if (u.includes('/api/zma/auth/sync')) return false;
     if (u.includes('/api/zma/getphonenumber')) return false;
-    if (req.method === 'GET' && u.includes('/api/questions/list')) return false;
-    if (req.method === 'GET' && u.includes('/api/quiz-results')) return false;
 
     if (u.includes('/api/admin/')) return true;
     if (u.includes('/api/users')) return true;
     if (u.includes('/api/upload')) return true;
     if (u.includes('/api/zma/upload')) return true;
-    if (u.includes('/api/zma/quiz-results-zma')) return true;
-    if (u.includes('/api/questions')) return req.method !== 'GET';
 
     return false;
   }

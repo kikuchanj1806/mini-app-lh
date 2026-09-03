@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration=production",
+    "pull-config": "node pull-config.js",
     "update-config": "node update-app-config.js mini-app-LH",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

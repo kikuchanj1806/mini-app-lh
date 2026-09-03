@@ -39,7 +39,21 @@ export interface IHomeContentStats {
   items: { code: string; label: string; tag: string | null; value: string; iconClass: string | null; tone: string | null }[];
 }
 
+export interface IHomeBroadcastChannel {
+  id: number; name: string; slug: string; description?: string | null; iconUrl?: string | null; streamUrl?: string | null;
+}
+
+export interface IHomeBroadcastFeatureCard {
+  title: string | null; description: string | null; badge: string | null; tone: 'blue' | 'red';
+  channel: IHomeBroadcastChannel | null; iconUrl?: string | null;
+}
+
+export interface IHomeBroadcast {
+  title: string; showChannels: boolean; channels: IHomeBroadcastChannel[]; featureCards: IHomeBroadcastFeatureCard[];
+}
+
 export interface IResHomeContent {
   sections: IHomeContentSection[];
   stats: IHomeContentStats | null;
+  broadcast?: IHomeBroadcast | null;
 }

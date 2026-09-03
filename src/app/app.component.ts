@@ -3,12 +3,13 @@ import {NavigationEnd, Router} from "@angular/router";
 import {catchError, filter, of} from "rxjs";
 import {AppUrlService} from './core/services/app-url.service';
 import {isAndroid} from './core/utils/app.utils';
+import {markAppLoad} from './core/utils/app-load-timer.util';
 import {MiniappApiService} from './shared/services/api/miniapp/miniapp-api.service';
 
 
 @Component({
   selector: '[id=app]',
-  template: `<router-outlet></router-outlet>`,
+  template: `<router-outlet></router-outlet><app-load-debug-overlay></app-load-debug-overlay>`,
   standalone: false,
   styles: [`
     :host { display: block; height: 100%; }
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
+    markAppLoad('app-component:init');
     this.trackVisit();
     this.router.events.pipe(
       filter((evt): evt is NavigationEnd => evt instanceof NavigationEnd)
@@ -41,6 +43,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    markAppLoad('app-component:view-ready');
+
     // Chỉ dùng để debug local, tuyệt đối không commit code debug này
     const top = this.readCssVar('--zaui-safe-area-inset-top');
     const bottom = this.readCssVar('--zaui-safe-area-inset-bottom');

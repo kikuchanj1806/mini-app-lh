@@ -1,0 +1,67 @@
+<div class="pd-page">
+  @if (loading) {
+    <div class="pd-state">Đang tải...</div>
+  }
+
+  @if (!loading && item) {
+    <div class="pd-card">
+      <div class="pd-badges">
+        @if (item.category) {
+          <span class="pd-badge pd-badge--category">{{ item.category.name }}</span>
+        }
+        @if (item.hasOnlineSubmit) {
+          <span class="pd-badge pd-badge--online">Nộp online</span>
+        }
+      </div>
+
+      <h1 class="pd-title">{{ item.name }}</h1>
+
+      @if (item.summary) {
+        <p class="pd-summary">{{ item.summary }}</p>
+      }
+
+      @if (item.documents && item.documents.length) {
+        <h2 class="pd-section-title">Hồ sơ cần chuẩn bị</h2>
+        <ul class="pd-doc-list">
+          @for (doc of item.documents; track $index) {
+            <li>{{ doc }}</li>
+          }
+        </ul>
+      }
+
+      <h2 class="pd-section-title">Thông tin xử lý</h2>
+      <div class="pd-info-list">
+        <div class="pd-info-row">
+          <span class="pd-info-label">Lệ phí</span>
+          <span class="pd-info-value">{{ item.feeText || 'Chưa cập nhật' }}</span>
+        </div>
+        <div class="pd-info-row">
+          <span class="pd-info-label">Thời gian</span>
+          <span class="pd-info-value">{{ item.durationText || 'Chưa cập nhật' }}</span>
+        </div>
+        @if (item.submitPlace) {
+          <div class="pd-info-row">
+            <span class="pd-info-label">Nơi nộp</span>
+            <span class="pd-info-value pd-info-value--right">{{ item.submitPlace }}</span>
+          </div>
+        }
+      </div>
+
+      @if (item.legalBasis) {
+        <h2 class="pd-section-title">Căn cứ pháp lý</h2>
+        <p class="pd-summary">{{ item.legalBasis }}</p>
+      }
+
+      @if (item.hasOnlineSubmit) {
+        <button type="button" class="pd-submit-btn" (click)="onSubmitOnline()">
+          <i class="fa-solid fa-earth-asia"></i>
+          Nộp trực tuyến
+        </button>
+      }
+    </div>
+  }
+
+  @if (!loading && !item) {
+    <div class="pd-state">Không tìm thấy thủ tục hành chính.</div>
+  }
+</div>

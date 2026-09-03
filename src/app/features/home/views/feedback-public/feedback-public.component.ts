@@ -8,6 +8,7 @@ import {
 } from '../../../../shared/services/api/feedbacks/feedback-api.service';
 import {AppCommonComponent} from '../../../../shared/components/app-common.service';
 import {NotifyService} from '../../../../core/services';
+import {openWebview} from 'zmp-sdk/apis';
 
 @Component({
   selector: 'app-feedback-public',
@@ -62,6 +63,17 @@ export class FeedbackPublicComponent extends AppCommonComponent implements OnIni
 
   imgSrc(it: IFeedbackPublicItem): string {
     return it.coverImageUrl || '/assets/img/tin_tuc_img_default.jpg';
+  }
+
+  hasCoordinates(item: IFeedbackPublicItem): boolean {
+    return typeof item.latitude === 'number' && typeof item.longitude === 'number';
+  }
+
+  openMap(latitude?: number | null, longitude?: number | null): void {
+    if (typeof latitude !== 'number' || typeof longitude !== 'number') return;
+    void openWebview({
+      url: `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
+    });
   }
 
   ngOnDestroy(): void {

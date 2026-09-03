@@ -1,0 +1,91 @@
+:host {
+  display: block;
+}
+
+.stat-section {
+  margin-top: 17px;
+}
+
+.section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-heading {
+  margin: 0;
+  color: #101828;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.stat-updated {
+  flex-shrink: 0;
+  color: #6b7280;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 11px;
+}
+
+.stat-tile {
+  display: grid;
+  min-height: 92px;
+  align-content: center;
+  justify-items: start;
+  border-radius: 13px;
+  padding: 12px 14px;
+  color: #ffffff;
+  box-shadow: 0 9px 18px rgba(25, 64, 122, 0.12);
+}
+
+.stat-tile i {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stat-tile strong {
+  margin-top: 6px;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.stat-tile span {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.stat-tile small {
+  margin-top: 1px;
+  font-size: 10.5px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.stat-tile--blue {
+  background: linear-gradient(145deg, #4c8dff 0%, #115cea 100%);
+}
+
+.stat-tile--green {
+  background: linear-gradient(145deg, #16d99a 0%, #00a969 100%);
+}
+
+.stat-tile--purple {
+  background: linear-gradient(145deg, #a993ff 0%, #7f61db 100%);
+}
+
+.stat-tile--red {
+  background: linear-gradient(145deg, #ff6b6b 0%, #e02424 100%);
+}

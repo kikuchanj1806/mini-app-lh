@@ -1,0 +1,123 @@
+:host {
+  display: block;
+}
+
+.welcome-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 116px;
+  align-items: center;
+  min-height: 111px;
+  margin-top: 19px;
+  overflow: hidden;
+  border-radius: 12px;
+  padding: 17px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 83% 28%, rgba(44, 220, 255, 0.56), transparent 29%),
+    linear-gradient(135deg, #005ee9 0%, #0048d2 58%, #008dff 100%);
+  box-shadow: 0 16px 30px rgba(0, 83, 189, 0.2);
+}
+
+.welcome-avatar {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #005bdc;
+  font-size: 26px;
+}
+
+.welcome-copy {
+  min-width: 0;
+}
+
+.welcome-copy h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+.welcome-copy p {
+  max-width: 190px;
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.9;
+}
+
+.welcome-art {
+  position: relative;
+  display: grid;
+  width: 112px;
+  height: 76px;
+  place-items: center;
+  justify-self: end;
+  border: 1px solid rgba(119, 237, 255, 0.5);
+  border-radius: 45px;
+  background: rgba(0, 207, 255, 0.14);
+  color: #c8fbff;
+}
+
+.welcome-art i {
+  position: relative;
+  z-index: 2;
+  font-size: 46px;
+}
+
+.welcome-art span {
+  position: absolute;
+  right: 13px;
+  bottom: 11px;
+  width: 27px;
+  height: 27px;
+  border: 2px solid rgba(210, 255, 255, 0.78);
+  border-radius: 50%;
+  background: #0571ff;
+}
+
+.welcome-art span::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 5px;
+  width: 8px;
+  height: 13px;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  transform: rotate(38deg);
+}
+
+@media (max-width: 380px) {
+  .welcome-card {
+    grid-template-columns: 48px minmax(0, 1fr) 88px;
+    padding: 14px;
+  }
+
+  .welcome-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .welcome-copy h2 {
+    font-size: 16px;
+  }
+
+  .welcome-copy p {
+    font-size: 11px;
+  }
+
+  .welcome-art {
+    width: 82px;
+    height: 62px;
+  }
+
+  .welcome-art i {
+    font-size: 34px;
+  }
+}

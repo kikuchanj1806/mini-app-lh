@@ -11,6 +11,7 @@ import {
   getSystemInfo,
   nativeStorage,
   getPhoneNumber,
+  getLocation,
   getAccessToken,
   createShortcut,
   saveImageToGallery,
@@ -102,6 +103,12 @@ export class ZmpService {
 
   getAccessToken$(): Observable<any> {
     return from(getAccessToken({}));
+  }
+
+  getLocationToken$(): Observable<string> {
+    return from(getLocation({})).pipe(
+      map((res) => res?.token ?? '')
+    );
   }
 
   getAuthorize(scopes?: AllScope[]): Observable<Partial<Record<AllScope, boolean>>> {

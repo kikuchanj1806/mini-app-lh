@@ -1,0 +1,63 @@
+<div class="broadcast-page">
+  <div class="broadcast-chips">
+    <button
+      type="button"
+      class="chip"
+      [class.chip--active]="selectedChannelSlug === null"
+      (click)="selectChannel(null)">Tất cả</button>
+
+    @for (channel of channels; track channel.id) {
+      <button
+        type="button"
+        class="chip"
+        [class.chip--active]="selectedChannelSlug === channel.slug"
+        (click)="selectChannel(channel.slug)">{{ channel.name }}</button>
+    }
+  </div>
+
+  <div class="broadcast-headline">
+    <div class="broadcast-headline__label">{{ selectedChannelName }}</div>
+    <div class="broadcast-headline__title">Bản tin đã phát</div>
+  </div>
+
+  @if (isLoading) {
+    <app-state-block state="loading" text="Đang tải bản tin..."/>
+  } @else {
+    <div class="broadcast-items">
+      @for (item of items; track item.id) {
+        <article class="broadcast-item">
+          <button type="button" class="broadcast-item__body" (click)="openDetail(item)">
+            <span class="broadcast-item__topline">
+              <span class="broadcast-tag">{{ item.category }}</span>
+              @if (item.isUrgent) {
+                <span class="broadcast-urgent">Khẩn</span>
+              }
+            </span>
+            <span class="broadcast-item__title">{{ item.title }}</span>
+            <span class="broadcast-item__summary">{{ item.summary }}</span>
+            <span class="broadcast-meta">
+              <i class="fal fa-tower-broadcast"></i>
+              {{ item.channel }} · {{ item.date }}
+              @if (item.duration) {
+                · {{ item.duration }}
+              }
+            </span>
+          </button>
+
+          @if (item.audioUrl) {
+            <audio class="broadcast-audio" [src]="item.audioUrl" controls preload="none"></audio>
+          } @else {
+            <div class="broadcast-audio-unavailable">
+              <i class="fal fa-volume-slash"></i>
+              Chưa có tệp âm thanh
+            </div>
+          }
+        </article>
+      }
+    </div>
+
+    @if (items.length === 0) {
+      <app-state-block state="empty" text="Chưa có bản tin truyền thanh"/>
+    }
+  }
+</div>

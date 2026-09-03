@@ -1,0 +1,42 @@
+<div class="pl-page">
+  <div class="pl-search">
+    <i class="fa-regular fa-magnifying-glass"></i>
+    <input
+      type="text"
+      placeholder="Tìm thủ tục..."
+      [value]="keyword"
+      (input)="onSearchChange($any($event.target).value)"
+    />
+  </div>
+
+  <div class="pl-tabs">
+    <button type="button" [class.active]="selectedCategoryId === null" (click)="onCategoryTap(null)">
+      Tất cả
+    </button>
+    @for (cat of categories; track cat.id) {
+      <button type="button" [class.active]="selectedCategoryId === cat.id" (click)="onCategoryTap(cat.id)">
+        {{ cat.name }}
+      </button>
+    }
+  </div>
+
+  <div class="pl-list">
+    @if (loading) {
+      <div class="pl-state">Đang tải...</div>
+    }
+
+    @if (!loading && items.length === 0) {
+      <div class="pl-state">Không tìm thấy thủ tục phù hợp.</div>
+    }
+
+    @for (it of items; track trackById($index, it)) {
+      <article class="pl-item" [routerLink]="'/dvc/tthc/detail'" [queryParams]="{ id: it.id }">
+        <div class="pl-item__main">
+          <div class="pl-item__title">{{ it.name }}</div>
+          <div class="pl-item__sub">{{ it.category?.name || 'Thủ tục hành chính' }}</div>
+        </div>
+        <i class="fa-regular fa-chevron-right"></i>
+      </article>
+    }
+  </div>
+</div>

@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+// Banner "hero" (miniapp_home_hero) — section đầu tiên trong .home-main khi có slide, nên
+// KHÔNG có margin-top (giữ hiệu ứng đè lên đáy .home-hero nhờ margin âm của .home-main).
+// margin-bottom thay cho margin-top của .quick-panel ngay sau nó khi có banner.
+.home-banner-hero {
+  margin-bottom: 19px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 16px 36px rgba(0, 80, 150, 0.14);
+}
+
+.banner-hero-slide {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 5;
+  cursor: pointer;
+}
+
+.banner-hero-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

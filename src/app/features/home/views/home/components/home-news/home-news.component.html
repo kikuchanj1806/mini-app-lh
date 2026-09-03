@@ -1,0 +1,81 @@
+<section class="news-section">
+  <div class="section-bar">
+    <h2 class="section-heading">{{ sectionTitle }}</h2>
+    <button type="button" class="view-all" (click)="viewAll.emit()">
+      <span>Xem tất cả</span>
+      <i class="fa-regular fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <div class="news-list">
+    @if (loading && !items.length) {
+      <article class="news-hero news-hero--skeleton">
+        <div class="news-hero-thumb sk-block"></div>
+        <div class="news-hero-copy">
+          <span class="sk-line sk-line--date"></span>
+          <span class="sk-line sk-line--title"></span>
+          <span class="sk-line sk-line--text"></span>
+        </div>
+      </article>
+
+      @for (i of newsSkeletonRows; track i) {
+        <article class="news-item news-item--skeleton">
+          <div class="news-thumb sk-block"></div>
+          <div class="news-copy">
+            <span class="sk-line sk-line--date"></span>
+            <span class="sk-line sk-line--title"></span>
+            <span class="sk-line sk-line--text"></span>
+          </div>
+        </article>
+      }
+    } @else if (items.length) {
+      @if (newsFeatured; as top) {
+        <article class="news-hero" (click)="itemClick.emit(top)">
+          <img
+            class="news-hero-thumb"
+            [src]="newsThumb(top)"
+            [alt]="top.title || 'Tin tức'"
+            loading="lazy"
+            (error)="onNewsImgError($event)"
+          />
+          <div class="news-hero-copy">
+            <span class="news-date">{{ top.publishedAt ? (top.publishedAt | date:'dd/MM/yyyy') : '' }}</span>
+            <h3>{{ top.title }}</h3>
+            @if (top.excerpt) {
+              <p>{{ top.excerpt }}</p>
+            }
+          </div>
+        </article>
+      }
+
+      @for (item of newsRest; track trackByNewsId($index, item)) {
+        <article class="news-item" (click)="itemClick.emit(item)">
+          <img
+            class="news-thumb"
+            [src]="newsThumb(item)"
+            [alt]="item.title || 'Tin tức'"
+            loading="lazy"
+            (error)="onNewsImgError($event)"
+          />
+          <div class="news-copy">
+            <span class="news-date">{{ item.publishedAt ? (item.publishedAt | date:'dd/MM/yyyy') : '' }}</span>
+            <h3>{{ item.title }}</h3>
+            @if (item.excerpt) {
+              <p>{{ item.excerpt }}</p>
+            }
+          </div>
+        </article>
+      }
+    } @else {
+      <article class="news-item news-item--empty">
+        <img class="news-thumb" src="/assets/img/tin_tuc_img_default.jpg" alt="Tin tức" />
+        <div class="news-copy">
+          <h3>Chưa có dữ liệu</h3>
+          <div class="news-meta">
+            <span>Đang cập nhật</span>
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</section>

@@ -8,7 +8,12 @@ export interface IResBannerT {
   linkUrl?: string | null;
 }
 
-export type BannerPositionCode = 'miniapp_home_hero' | 'miniapp_home_mid' | 'miniapp_propaganda';
+export type BannerPositionCode =
+  | 'miniapp_home_hero'
+  | 'miniapp_home_mid'
+  | 'miniapp_propaganda'
+  | 'miniapp_home_events'
+  | 'miniapp_home_partners';
 
 export interface IResBannerActive {
   id: number;

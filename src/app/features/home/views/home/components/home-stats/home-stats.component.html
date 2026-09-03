@@ -1,0 +1,22 @@
+@if (stats) {
+  <section class="stat-section">
+    <div class="section-bar">
+      <h2 class="section-heading">{{ stats.title }}</h2>
+      @if (stats.updatedMonth) {
+        <span class="stat-updated">Cập nhật: {{ stats.updatedMonth }}</span>
+      }
+    </div>
+    <div class="stat-grid">
+      @for (item of stats.items; track item.code) {
+        <div class="stat-tile" [ngClass]="'stat-tile--' + (item.tone || 'blue')">
+          <i [class]="item.iconClass || 'fa-regular fa-chart-simple'"></i>
+          <strong>{{ item.value }}</strong>
+          <span>{{ item.label }}</span>
+          @if (item.tag) {
+            <small>{{ item.tag }}</small>
+          }
+        </div>
+      }
+    </div>
+  </section>
+}
